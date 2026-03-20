@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastapriori"
+version = "0.1.0"
+description = "Fast pairwise co-occurrence and association analysis for transactional data."
+requires-python = ">=3.9"
+license = {text = "MIT"}
+dependencies = [
+    "pandas>=1.5",
+    "numpy>=1.23",
+]
+
+[project.optional-dependencies]
+progress = ["tqdm>=4.60"]
+polars = ["polars>=0.20"]
+graph = ["networkx>=3.0"]
+benchmark = [
+    "efficient-apriori>=2.0",
+    "faker>=18.0",
+    "tqdm>=4.60",
+    "jupyter",
+]
+
+[tool.setuptools.packages.find]
+include = ["fastapriori*"]

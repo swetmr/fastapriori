@@ -1,0 +1,13 @@
+pyproject.toml
+fastapriori/__init__.py
+fastapriori/core.py
+fastapriori/triplets.py
+fastapriori/utils.py
+fastapriori.egg-info/PKG-INFO
+fastapriori.egg-info/SOURCES.txt
+fastapriori.egg-info/dependency_links.txt
+fastapriori.egg-info/requires.txt
+fastapriori.egg-info/top_level.txt
+fastapriori/backends/__init__.py
+fastapriori/backends/pandas_backend.py
+fastapriori/backends/polars_backend.py
