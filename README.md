@@ -2,7 +2,7 @@
 
 Fast pairwise (k=2) co-occurrence and association analysis for transactional data.
 
-Uses a polars backend to compute all item-pair metrics **5-10x faster** than traditional Apriori implementations on large datasets (>100k rows) and low support condition (<.01).
+Uses a polars/pandas backend to compute all item-pair metrics. **5-10x faster** and **2-5x memory-efficient** than efficient-apriori on large datasets (>100k rows) with low support condition (<.01).
 
 ## Installation
 
@@ -16,7 +16,7 @@ For best performance, install with polars:
 pip install fastapriori polars
 ```
 
-If polars is not installed, fastapriori falls back to a pandas Counter+chain backend automatically.
+If polars is not installed, fastapriori falls back to a pandas backend automatically.
 
 ## Quick Start
 
