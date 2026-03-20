@@ -1,8 +1,8 @@
 # fastapriori
 
-Fast pairwise (k=2) co-occurrence and association analysis for transactional data.
+Fast pairwise (k=2) co-occurrence and association analysis for real-world, long-tail transactional data.
 
-Uses a polars/pandas backend to compute all item-pair metrics. **5-10x faster** and **2-5x memory-efficient** than efficient-apriori on large datasets (>100k rows) with low support condition (<.01).
+Uses a polars/pandas backend to compute all item-pair metrics. **5-10x faster** and **2-5x memory-efficient** than efficient-apriori on large datasets (>100k rows) with low support condition (<.01) and other conditions like confidence, lift, etc. Works well even for data with 10 million rows and no support criteria.
 
 ## Installation
 
@@ -155,7 +155,7 @@ Benchmarked on the online-retail dataset, pairwise (k=2) associations — sweepi
 - **Left** — varying `min_support` (log scale 0.0001–0.01, confidence=0.0): execution time
 - **Right** — varying `min_confidence` (0.05–0.50, support=0.001): execution time
 
-The polars backend is consistently **5-10x faster** than efficient-apriori for k=2, with both backends producing matching rule counts across all threshold values.
+Fastapriori can be **5-100x faster** than efficient-apriori depending upon the dataset size and the filtering conditions. 
 
 ## When to Use Something Else
 
