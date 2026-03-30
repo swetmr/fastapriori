@@ -1,14 +1,9 @@
 # fastapriori
 
-<<<<<<< HEAD
-Fast association rules mining even at low suppport
+## Fast association rules mining even at low suppport
 
 Built on a compiled **Rust engine** with an inverted-index architecture that counts exhaustively at k=2 and applies Apriori pruning at k>=3. Achieves **7-89x speedups** over efficient-apriori across eight real-world benchmark datasets.
-=======
-Fast pairwise (k=2) co-occurrence and association analysis for real-world, long-tail transactional data.
 
-Uses a polars/pandas backend to compute all item-pair metrics. **5-10x faster** and **2-5x memory-efficient** than efficient-apriori on large datasets (>100k rows) with low support condition (<.01) and other conditions like confidence, lift, etc. Works well even for data with 10 million rows and no support criteria.
->>>>>>> c392119dc09b5e93d3d41dafb663a0e9d9e856f4
 
 ## Installation
 
@@ -22,11 +17,6 @@ The Rust extension is included in the wheel. If building from source, you need t
 pip install -e .
 ```
 
-<<<<<<< HEAD
-=======
-If polars is not installed, fastapriori falls back to a pandas backend automatically.
-
->>>>>>> c392119dc09b5e93d3d41dafb663a0e9d9e856f4
 ## Quick Start
 
 ```python
@@ -231,24 +221,6 @@ G = to_graph(result, metric="lift", min_value=1.5)  # returns networkx.DiGraph
 
 Requires `networkx` (`pip install fastapriori[graph]`).
 
-<<<<<<< HEAD
-=======
-## Performance
-
-Benchmarked on the online-retail dataset, pairwise (k=2) associations — sweeping `min_support` and `min_confidence` side by side:
-
-![Benchmark: min_support and min_confidence sweep](benchmarks/retail_support_confidence_sweep.png)
-
-- **Left** — varying `min_support` (log scale 0.0001–0.01, confidence=0.0): execution time
-- **Right** — varying `min_confidence` (0.05–0.50, support=0.001): execution time
-
-Fastapriori can be **5-100x faster** than efficient-apriori depending upon the dataset size and the filtering conditions. 
-
-## When to Use Something Else
-
-fastapriori is currently optimized for **pairwise (k=2) associations only**. If you need higher-order itemsets (k=3, k=4, ...), use efficient-apriori.
-
->>>>>>> c392119dc09b5e93d3d41dafb663a0e9d9e856f4
 ## License
 
 MIT
