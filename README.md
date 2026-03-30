@@ -100,9 +100,9 @@ Benchmarked on eight real-world datasets at k=2 to 9, sweeping min_support from 
 
 **fastapriori's runtime is flat at k=2** across all support levels (it computes everything regardless), while efficient-apriori slows dramatically at low support.
 
-For k>=3, fastapriori dominates asymptotically
+For k>=3, fastapriori dominates asymptotically, with decreasing support, its growth rate is lower as compared to classic apriori (paper soon).
 
-**The risk is asymmetric:** when fastapriori is suboptimal (high support), the penalty is milliseconds. When efficient-apriori is suboptimal (low support), the penalty is 5-53 minutes.
+**The risk is asymmetric:** when fastapriori is suboptimal (high support), the penalty is milliseconds. When efficient-apriori is suboptimal (low support), the penalty is 2-10x.
 
 ### Verbose Mode
 
@@ -149,16 +149,16 @@ find_associations(
     k=2,                    # itemset size (2-50)
     min_support=None,       # minimum pair support (float or None)
     min_confidence=0.0,     # minimum P(B|A)
-    min_lift=0.0,           # minimum lift (k=2 only)
+    min_lift=0.0,           # minimum lift
     min_conviction=0.0,     # minimum conviction (k=2 only)
     min_leverage=None,      # minimum leverage (k=2 only)
     min_cosine=0.0,         # minimum cosine similarity (k=2 only)
     min_jaccard=0.0,        # minimum Jaccard similarity (k=2 only)
     show_progress=False,    # tqdm progress bar (Python backend only)
-    backend="auto",         # "auto", "rust", "python", "polars", "pandas"
+    backend="auto",         # "auto", "rust", "python"
     algo="fast",            # "fast", "classic", or "auto"
     sorted_by="support",    # sort column (or None to skip)
-    low_memory=False,       # pre-filter infrequent items to reduce memory
+    low_memory=False,       # pre-filter infrequent items to reduce memory, useful for large datasets (>1M rows)
     verbose=False,          # print dataset stats and density warnings
 )
 ```
