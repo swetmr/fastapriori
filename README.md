@@ -1,6 +1,6 @@
 # fastapriori
 
-## Fast association rules mining even at low suppport
+## Faster association rules mining, even at low support
 
 Built on a compiled **Rust engine** with an inverted-index architecture that counts exhaustively at k=2 and applies Apriori pruning at k>=3. Achieves **7-89x speedups** over efficient-apriori across eight real-world benchmark datasets.
 
