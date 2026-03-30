@@ -11,6 +11,7 @@ def compute_associations(
     transaction_col: str,
     item_col: str,
     show_progress: bool,
+    trans_dict: dict | None = None,
 ) -> pd.DataFrame:
     """Compute pairwise associations using Polars self-join approach.
 

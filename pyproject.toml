@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=68.0", "setuptools-rust>=1.7"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -21,8 +21,14 @@ benchmark = [
     "efficient-apriori>=2.0",
     "faker>=18.0",
     "tqdm>=4.60",
+    "matplotlib>=3.5",
     "jupyter",
 ]
 
 [tool.setuptools.packages.find]
 include = ["fastapriori*"]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "fastapriori._fastapriori_rs"
+exclude = ["**/__pycache__", "**/.ipynb_checkpoints", "**/*.pyc", "**/*~"]

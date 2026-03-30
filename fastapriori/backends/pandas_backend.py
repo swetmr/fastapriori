@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, defaultdict
 from itertools import chain
 
 import numpy as np
@@ -23,12 +23,21 @@ def compute_associations(
     transaction_col: str,
     item_col: str,
     show_progress: bool,
+    trans_dict: dict | None = None,
 ) -> pd.DataFrame:
     """Compute pairwise associations using pandas Counter+chain approach."""
     df = df.dropna(subset=[transaction_col, item_col])
 
     # Build transaction dict (transaction -> set of items)
-    trans_dict: dict = df.groupby(transaction_col)[item_col].apply(set).to_dict()
+    if trans_dict is None:
+        # defaultdict loop is ~5x faster than groupby.apply(set).to_dict()
+        _td: dict = defaultdict(set)
+        _txns = df[transaction_col].values
+        _items = df[item_col].values
+        for _i in range(len(_txns)):
+            _td[_txns[_i]].add(_items[_i])
+        trans_dict = dict(_td)
+        del _td, _txns, _items
     total_transactions = len(trans_dict)
 
     # Build item groups (item -> set of transactions, + count)

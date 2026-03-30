@@ -2,7 +2,326 @@
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
+
+
+def describe_dataset(
+    df: pd.DataFrame,
+    transaction_col: str,
+    item_col: str,
+    k: int = 2,
+    min_support: float | None = None,
+) -> pd.DataFrame:
+    """Analyze dataset properties and recommend fastapriori vs efficient-apriori.
+
+    Computes key dataset statistics -- transaction count, unique items,
+    items-per-transaction distribution, item frequency distribution (skewness),
+    and density -- then prints a structured profile with an algorithm
+    recommendation for the given k level.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Input data with transaction and item columns.
+    transaction_col : str
+        Name of the transaction ID column.
+    item_col : str
+        Name of the item column.
+    k : int
+        Association level (2 = pairs, 3 = triplets). Affects recommendation.
+    min_support : float or None
+        Planned min_support threshold. Affects recommendation since
+        efficient-apriori benefits greatly from higher thresholds.
+
+    Returns
+    -------
+    pd.DataFrame
+        Item frequency distribution table (item, count, support, cumulative%).
+    """
+    # --- Basic counts ---
+    n_rows = len(df)
+    txn_groups = df.groupby(transaction_col)[item_col]
+    n_txn = txn_groups.ngroups
+    items_per_txn = txn_groups.count()
+
+    item_counts = df[item_col].value_counts()
+    n_items = len(item_counts)
+
+    avg_iptn = items_per_txn.mean()
+    median_iptn = items_per_txn.median()
+    std_iptn = items_per_txn.std()
+    max_iptn = items_per_txn.max()
+    min_iptn = items_per_txn.min()
+
+    # --- Item frequency distribution ---
+    item_supports = item_counts / n_txn
+    freq_skewness = float(item_counts.skew())
+    freq_kurtosis = float(item_counts.kurtosis())
+
+    # Top-heavy ratio: fraction of total item appearances from top 10% of items
+    top_10pct_n = max(1, n_items // 10)
+    top_10pct_share = item_counts.nlargest(top_10pct_n).sum() / item_counts.sum()
+
+    # Gini coefficient for item frequency inequality
+    sorted_counts = np.sort(item_counts.values).astype(float)
+    n = len(sorted_counts)
+    gini = (2 * np.sum((np.arange(1, n + 1)) * sorted_counts) - (n + 1) * np.sum(sorted_counts)) / (n * np.sum(sorted_counts)) if np.sum(sorted_counts) > 0 else 0.0
+
+    # Distribution shape classification
+    if gini < 0.15:
+        dist_shape = "uniform"
+    elif gini < 0.35:
+        dist_shape = "mildly skewed"
+    elif gini < 0.55:
+        dist_shape = "moderately skewed (Zipf-like)"
+    else:
+        dist_shape = "highly skewed (power-law)"
+
+    # --- Density metrics ---
+    density = avg_iptn / n_items  # fraction of items per transaction
+    if k == 2:
+        avg_pairs_per_txn = avg_iptn * (avg_iptn - 1) / 2
+        theoretical_pairs = n_items * (n_items - 1) / 2
+        pair_density = avg_pairs_per_txn / theoretical_pairs if theoretical_pairs > 0 else 0
+    else:
+        from math import comb
+        avg_ksets_per_txn = comb(int(round(avg_iptn)), k) if avg_iptn >= k else 0
+        theoretical_ksets = comb(n_items, k) if n_items >= k else 0
+        pair_density = avg_ksets_per_txn / theoretical_ksets if theoretical_ksets > 0 else 0
+
+    # --- Effective min_support analysis ---
+    min_item_support = float(item_supports.min())
+    max_item_support = float(item_supports.max())
+    median_item_support = float(item_supports.median())
+
+    if min_support is not None:
+        items_surviving = int((item_supports >= min_support).sum())
+        pct_surviving = 100.0 * items_surviving / n_items
+    else:
+        items_surviving = n_items
+        pct_surviving = 100.0
+
+    # --- Print profile ---
+    print("=" * 64)
+    print("  DATASET PROFILE")
+    print("=" * 64)
+    print(f"  Rows (txn, item pairs)   : {n_rows:>12,}")
+    print(f"  Transactions             : {n_txn:>12,}")
+    print(f"  Unique items             : {n_items:>12,}")
+    print()
+    print("  Items per transaction:")
+    print(f"    mean / median          : {avg_iptn:>8.1f} / {median_iptn:.1f}")
+    print(f"    std                    : {std_iptn:>8.1f}")
+    print(f"    range                  : [{min_iptn}, {max_iptn}]")
+    print()
+    print("  Item frequency distribution:")
+    print(f"    skewness               : {freq_skewness:>8.2f}")
+    print(f"    kurtosis               : {freq_kurtosis:>8.2f}")
+    print(f"    Gini coefficient       : {gini:>8.3f}")
+    print(f"    top 10% items share    : {top_10pct_share:>8.1%}")
+    print(f"    shape                  : {dist_shape}")
+    print()
+    print(f"    min item support       : {min_item_support:.6f}")
+    print(f"    median item support    : {median_item_support:.6f}")
+    print(f"    max item support       : {max_item_support:.6f}")
+    print()
+    print("  Density:")
+    print(f"    items/txn / n_items    : {density:.6f}")
+    if k == 2:
+        print(f"    avg pairs per txn      : {avg_pairs_per_txn:>8.1f}")
+    else:
+        print(f"    avg {k}-sets per txn     : {avg_ksets_per_txn:>8.1f}")
+    print(f"    k={k} set density         : {pair_density:.2e}")
+
+    # --- min_support analysis ---
+    if min_support is not None:
+        print()
+        print(f"  min_support = {min_support}:")
+        print(f"    items surviving        : {items_surviving:>6} / {n_items} ({pct_surviving:.1f}%)")
+        if pct_surviving < 5:
+            print("    WARNING: <5% of items survive -- efficient-apriori will")
+            print("    prune aggressively, making it appear fast but finding nothing.")
+        elif pct_surviving < 50:
+            print("    NOTE: Many items pruned -- favors efficient-apriori (less work).")
+
+    # --- Recommendation ---
+    print()
+    print("-" * 64)
+    print("  RECOMMENDATION (k={})".format(k))
+    print("-" * 64)
+
+    reasons_fa = []
+    reasons_ea = []
+
+    # Factor 1: min_support effect
+    if min_support is not None:
+        if min_support < 0.005:
+            reasons_fa.append(f"Low min_support ({min_support}) -- EA cannot prune, "
+                              f"FA constant-time")
+        elif min_support > 0.05:
+            reasons_ea.append(f"High min_support ({min_support}) -- EA prunes heavily, "
+                              f"reducing candidates")
+
+    # Factor 2: Dataset size
+    if n_txn > 100_000:
+        reasons_fa.append(f"Large dataset ({n_txn:,} txn) -- FA scales linearly, "
+                          f"EA candidate explosion risk")
+    elif n_txn < 10_000:
+        reasons_ea.append(f"Small dataset ({n_txn:,} txn) -- EA overhead minimal")
+
+    # Factor 3: Item count
+    if n_items > 5_000:
+        reasons_fa.append(f"Many items ({n_items:,}) -- EA candidate generation "
+                          f"O(items^k) is expensive")
+    elif n_items < 200:
+        reasons_ea.append(f"Few items ({n_items}) -- EA candidate space small")
+
+    # Factor 4: Density
+    if avg_iptn > 15:
+        reasons_fa.append(f"Dense transactions ({avg_iptn:.0f} items/txn) -- "
+                          f"many co-occurrences favor Counter+chain")
+    elif avg_iptn < 5 and n_items < 500:
+        reasons_ea.append(f"Sparse transactions ({avg_iptn:.0f} items/txn, "
+                          f"{n_items} items) -- few candidates for EA")
+
+    # Factor 5: Distribution shape
+    if gini > 0.4:
+        reasons_ea.append(f"Skewed distribution (Gini={gini:.2f}) -- "
+                          f"hot items create prunable candidates in EA")
+    elif gini < 0.15:
+        reasons_fa.append(f"Uniform distribution (Gini={gini:.2f}) -- "
+                          f"EA cannot exploit frequency variance for pruning")
+
+    # Factor 6: k level
+    if k >= 3:
+        if min_support is not None and min_support > 0.01:
+            reasons_ea.append(f"k={k} with moderate support -- EA prunes at "
+                              f"each level, compounding savings")
+        else:
+            reasons_fa.append(f"k={k} with low/no support threshold -- "
+                              f"EA must enumerate all candidates")
+
+    # Verdict
+    fa_score = len(reasons_fa)
+    ea_score = len(reasons_ea)
+
+    if fa_score > ea_score:
+        verdict = "fastapriori (Counter+chain)"
+        marker = ">>>"
+    elif ea_score > fa_score:
+        verdict = "efficient-apriori (Apriori)"
+        marker = ">>>"
+    else:
+        verdict = "Either -- profile is mixed"
+        marker = "---"
+
+    print(f"\n  {marker} Use: {verdict}\n")
+
+    if reasons_fa:
+        print("  Factors favoring fastapriori:")
+        for r in reasons_fa:
+            print(f"    + {r}")
+    if reasons_ea:
+        print("  Factors favoring efficient-apriori:")
+        for r in reasons_ea:
+            print(f"    + {r}")
+
+    if not reasons_fa and not reasons_ea:
+        print("  No strong signal either way -- benchmark on a sample to decide.")
+
+    print("=" * 64)
+
+    # --- Return item frequency table ---
+    freq_df = pd.DataFrame({
+        "item": item_counts.index,
+        "count": item_counts.values,
+        "support": item_supports.values,
+    })
+    freq_df = freq_df.sort_values("count", ascending=False).reset_index(drop=True)
+    freq_df["cumulative_pct"] = 100.0 * freq_df["count"].cumsum() / freq_df["count"].sum()
+    return freq_df
+
+
+def generate_synthetic_dataset(
+    n_transactions: int = 1_416_769,
+    n_items: int = 48_849,
+    avg_items_per_txn: float = 7.8,
+    items_per_txn_std: float = 14.0,
+    item_freq_exponent: float = 0.7,
+    seed: int = 42,
+) -> pd.DataFrame:
+    """Generate a synthetic transactional dataset with realistic properties.
+
+    Produces a DataFrame mimicking the statistical fingerprint of a real
+    parts-bundling dataset: heavy-tailed items-per-transaction distribution
+    (negative binomial) and skewed item frequencies (Zipf-like).
+
+    Default parameters match a ~11M-row industrial parts dataset with
+    ~1.4M transactions and ~49K unique items.
+
+    Parameters
+    ----------
+    n_transactions : int
+        Number of unique transactions.
+    n_items : int
+        Number of unique items (labeled 1 to n_items).
+    avg_items_per_txn : float
+        Target mean items per transaction.
+    items_per_txn_std : float
+        Target standard deviation of items per transaction. When std > sqrt(mean),
+        a negative binomial is used to produce a heavy right tail; otherwise
+        Poisson is used.
+    item_freq_exponent : float
+        Zipf exponent for item selection probabilities. Higher values make the
+        distribution more skewed (0 = uniform, 1 = classic Zipf).
+    seed : int
+        Random seed for reproducibility.
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns ``["txn_id", "item"]`` where both are integers. Each row
+        is one (transaction, item) pair.
+    """
+    rng = np.random.default_rng(seed)
+    mu = avg_items_per_txn
+    sigma = items_per_txn_std
+
+    # --- Items per transaction ---
+    if sigma**2 > mu:
+        # Negative binomial: parameterize from mean and variance.
+        # NB gives 0-based counts; we add 1 so every txn has >= 1 item.
+        # Target mu_nb = mu - 1 to compensate for the +1 shift.
+        mu_nb = max(mu - 1, 0.1)
+        variance_nb = sigma**2  # variance is ~unchanged by +1 shift
+        r = mu_nb**2 / (variance_nb - mu_nb)
+        p = r / (r + mu_nb)
+        sizes = rng.negative_binomial(r, p, size=n_transactions) + 1
+    else:
+        sizes = rng.poisson(mu, size=n_transactions)
+
+    # Clip to [1, n_items]
+    sizes = np.clip(sizes, 1, n_items)
+
+    # --- Item selection probabilities (Zipf-like) ---
+    ranks = np.arange(1, n_items + 1, dtype=np.float64)
+    probs = 1.0 / ranks**item_freq_exponent
+    probs /= probs.sum()
+
+    # --- Build rows (vectorized) ---
+    # Strategy: sample all items at once WITH replacement using Zipf weights,
+    # then deduplicate within each transaction. For typical k << n_items,
+    # collision rate is negligible (~k^2 / 2*n_items).
+    total_rows = int(sizes.sum())
+    all_items = rng.choice(n_items, size=total_rows, replace=True, p=probs) + 1
+    txn_ids = np.repeat(np.arange(n_transactions, dtype=np.int64), sizes)
+
+    df = pd.DataFrame({"txn_id": txn_ids, "item": all_items})
+    # Drop within-transaction duplicates (rare for k << n_items)
+    df = df.drop_duplicates(subset=["txn_id", "item"])
+
+    return df.reset_index(drop=True)
 
 
 def get_top_associations(

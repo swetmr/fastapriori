@@ -1,10 +1,13 @@
-"""Triplet (3-itemset) co-occurrence analysis — backward-compatible wrapper."""
+"""Triplet (3-itemset) co-occurrence analysis — deprecated wrapper.
+
+Use ``find_associations(k=3)`` from ``fastapriori.core`` instead.
+"""
 
 from __future__ import annotations
 
-import pandas as pd
+import warnings
 
-from fastapriori.itemsets import find_itemsets
+import pandas as pd
 
 
 def find_triplets(
@@ -15,46 +18,30 @@ def find_triplets(
     min_confidence: float | None = 0.1,
     frequent_pairs: pd.DataFrame | None = None,
     show_progress: bool = False,
+    backend: str = "auto",
+    n_workers: int | None = None,
 ) -> pd.DataFrame:
-    """Compute 3-itemset co-occurrence associations from transactional data.
+    """Compute 3-itemset co-occurrence associations.
 
-    This is a convenience wrapper around ``find_itemsets(k=3)``.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input data with transaction and item columns.
-    transaction_col : str
-        Name of the transaction ID column.
-    item_col : str
-        Name of the item column.
-    min_support : float or None
-        Minimum support threshold. None disables filtering.
-    min_confidence : float or None
-        Minimum confidence threshold. Default 0.1 (10%).
-    frequent_pairs : pd.DataFrame or None
-        Output from find_associations() used to prune the search space.
-        Must have columns item_A and item_B. If provided, only triplets
-        where all 3 constituent pairs appear in this DataFrame are counted.
-    show_progress : bool
-        Show progress bar during counting.
-
-    Returns
-    -------
-    pd.DataFrame
-        Columns: antecedent_1, antecedent_2, consequent, instances,
-        support, confidence, lift
-
-        Each triplet (A,B,C) produces 3 directional rules:
-        A,B -> C  |  A,C -> B  |  B,C -> A
+    .. deprecated::
+        Use ``find_associations(k=3)`` instead.
     """
-    return find_itemsets(
+    warnings.warn(
+        "find_triplets() is deprecated. Use find_associations(k=3) instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from fastapriori.core import find_associations
+
+    return find_associations(
         df,
-        transaction_col=transaction_col,
-        item_col=item_col,
+        transaction_col,
+        item_col,
         k=3,
         min_support=min_support,
         min_confidence=min_confidence,
         frequent_lower=frequent_pairs,
         show_progress=show_progress,
+        backend=backend,
+        n_workers=n_workers,
     )
