@@ -86,6 +86,8 @@ def compute_pipeline(
     k: int,
     min_support: float,
     min_confidence: float | None = None,
+    max_items_per_txn: int | None = None,
+    item_weights: dict | None = None,
 ) -> pd.DataFrame:
     """Full classic Apriori pipeline: encode once, Rust computes k=1..k_max, decode once.
 
@@ -105,8 +107,22 @@ def compute_pipeline(
     item_ids = clean[item_col].map(item_encoder).to_numpy(dtype=np.int32)
     n_transactions = int(clean[transaction_col].nunique())
 
+    n_unique = len(unique_items)
+    if item_weights is not None:
+        weights_arr = np.zeros(n_unique, dtype=np.float64)
+        for item, weight in item_weights.items():
+            if item in item_encoder:
+                weights_arr[item_encoder[item]] = float(weight)
+    else:
+        weights_arr = np.zeros(n_unique, dtype=np.float64)
+        item_counts_local = clean.groupby(item_col)[transaction_col].nunique()
+        for item, count in item_counts_local.items():
+            if item in item_encoder:
+                weights_arr[item_encoder[item]] = float(count)
+
     result_dict = rust_classic_compute_pipeline(
-        txn_ids, item_ids, k, len(unique_items), n_transactions, min_support,
+        txn_ids, item_ids, k, n_unique, n_transactions, min_support,
+        weights_arr, max_items_per_txn,
     )
 
     # Unpack results
@@ -116,53 +132,10 @@ def compute_pipeline(
     lower_counts_arr = result_dict["lower_counts"]  # 1D int64
     item_counts_arr = result_dict["item_counts"]    # 1D int64 (n_items,)
 
-    # Build output column names
-    ant_cols = [f"antecedent_{i}" for i in range(1, k)]
-    out_cols = ant_cols + ["consequent", "instances", "support", "confidence", "lift"]
+    from fastapriori.backends.rust_backend import decode_pipeline_rules
 
-    if len(counts_arr) == 0:
-        return pd.DataFrame(columns=out_cols)
-
-    # Build lower_support dict: (k-1)-tuple (decoded) -> support
-    lower_support = {}
-    for i in range(len(lower_counts_arr)):
-        key = tuple(item_decoder[int(lower_arr[i, j])] for j in range(k - 1))
-        lower_support[key] = float(lower_counts_arr[i]) / n_transactions
-
-    # Build item_support: item (decoded) -> support
-    item_support = {}
-    for idx in range(len(item_counts_arr)):
-        if item_counts_arr[idx] > 0:
-            item_support[item_decoder[idx]] = float(item_counts_arr[idx]) / n_transactions
-
-    # Generate k directional rules per itemset
-    records = []
-    for i in range(len(counts_arr)):
-        itemset = tuple(item_decoder[int(itemsets_arr[i, j])] for j in range(k))
-        count = int(counts_arr[i])
-        support = count / n_transactions
-
-        for j in range(k):
-            consequent = itemset[j]
-            antecedents = itemset[:j] + itemset[j + 1:]
-            ant_key = tuple(sorted(antecedents))
-            ant_sup = lower_support.get(ant_key, 0)
-            confidence = support / (ant_sup + 1e-10)
-            cons_sup = item_support.get(consequent, 0)
-            lift = confidence / (cons_sup + 1e-10)
-            records.append(
-                (*antecedents, consequent, count, support, confidence, lift)
-            )
-
-    result = pd.DataFrame(records, columns=out_cols)
-
-    if min_support is not None and min_support > 0:
-        result = result[result["support"] >= min_support]
-    if min_confidence is not None:
-        result = result[result["confidence"] >= min_confidence]
-
-    result["support"] = np.round(result["support"], 6)
-    result["confidence"] = np.round(result["confidence"], 6)
-    result["lift"] = np.round(result["lift"], 6)
-
-    return result.reset_index(drop=True)
+    return decode_pipeline_rules(
+        itemsets_arr, counts_arr, lower_arr, lower_counts_arr,
+        item_counts_arr, item_decoder, n_transactions, k,
+        min_support, min_confidence,
+    )

@@ -27,7 +27,9 @@ def find_associations(
     algo: str = "fast",
     n_workers: int | None = None,
     sorted_by: str | None = "support",
-    low_memory: bool = False,
+    low_memory: bool | str = "auto",
+    max_items_per_txn: int | None = None,
+    item_weights: dict | None = None,
     verbose: bool = False,
 ) -> pd.DataFrame:
     """Compute item co-occurrence associations from transactional data.
@@ -92,12 +94,31 @@ def find_associations(
     sorted_by : str or None
         Column name to sort results by in descending order.  Default
         ``"support"``.  Pass None to skip sorting.
-    low_memory : bool
+    low_memory : bool or str
         If True, pre-filters the DataFrame to remove items below
         ``min_support`` before building the inverted index.  This can
         reduce memory usage by 5-10x on large catalogs (e.g. 30GB to
         3GB for Instacart) at the cost of losing "compute all, filter
         later" flexibility.  Requires ``min_support`` to be specified.
+        Default ``"auto"`` enables filtering whenever ``min_support``
+        is provided, and disables it otherwise.
+    max_items_per_txn : int or None
+        Maximum number of items to keep per transaction when k>=3.
+        Transactions exceeding this limit are capped to their top-N
+        items by weight, bounding C(d, k-1) for outlier transactions.
+        Default None (no capping).  Note: capping produces approximate
+        counts — reported counts are lower bounds (never overcounted),
+        but some truly frequent itemsets may be missed if their counts
+        drop below ``min_support`` after capping.  Supported for both
+        ``algo="fast"`` and ``algo="classic"`` when k>=3; ignored at
+        k=2 (pairs are always counted exactly).
+    item_weights : dict or None
+        Item-to-weight mapping used for ranking when ``max_items_per_txn``
+        caps a transaction.  Higher weight = higher priority to keep.
+        Default None uses item frequency (transaction count) as weight,
+        which preserves the items most likely to form frequent itemsets.
+        Accepts any dict-like mapping item labels to numeric values
+        (e.g. revenue, volume, or a composite score).
     verbose : bool
         If True, prints dataset features (n_transactions, n_items, d_avg,
         d_max, etc.), the chosen algorithm, and a density warning when
@@ -131,6 +152,10 @@ def find_associations(
     if algo == "auto":
         algo = "fast"
 
+    # Resolve low_memory="auto": enable when min_support is provided
+    if low_memory == "auto":
+        low_memory = min_support is not None
+
     # Low-memory mode: pre-filter infrequent items before any backend runs
     if low_memory:
         if min_support is None:
@@ -141,6 +166,20 @@ def find_associations(
         n_transactions = df[transaction_col].nunique()
         item_support = item_counts / n_transactions
         frequent_items = item_support[item_support >= min_support].index
+        if len(frequent_items) == 0:
+            # No items meet min_support — return empty result
+            if k == 2:
+                return pd.DataFrame(columns=[
+                    "item_A", "item_B", "instances", "support",
+                    "confidence", "lift", "conviction", "leverage",
+                    "cosine", "jaccard",
+                ])
+            else:
+                ant_cols = [f"antecedent_{i}" for i in range(1, k)]
+                return pd.DataFrame(columns=ant_cols + [
+                    "consequent", "instances", "support",
+                    "confidence", "lift",
+                ])
         original_rows = len(df)
         original_txns = set(df[transaction_col].unique())
         df = df[df[item_col].isin(frequent_items)]
@@ -206,6 +245,8 @@ def find_associations(
             result = _find_classic_k_itemsets(
                 df, transaction_col, item_col, k,
                 min_support, min_confidence,
+                max_items_per_txn=max_items_per_txn,
+                item_weights=item_weights,
             )
 
         if sorted_by is not None:
@@ -248,6 +289,8 @@ def find_associations(
             df, transaction_col, item_col, k,
             min_support, min_confidence,
             frequent_lower, show_progress, backend, n_workers,
+            max_items_per_txn=max_items_per_txn,
+            item_weights=item_weights,
         )
 
     if sorted_by is not None:
@@ -315,6 +358,8 @@ def _find_k_itemsets(
     min_support, min_confidence,
     frequent_lower, show_progress, backend, n_workers,
     _trans_dict=None,
+    max_items_per_txn=None,
+    item_weights=None,
 ) -> pd.DataFrame:
     """k-itemset (k>=3) co-occurrence with support, confidence, lift."""
     df = df.dropna(subset=[transaction_col, item_col])
@@ -326,6 +371,8 @@ def _find_k_itemsets(
             df, transaction_col, item_col, k,
             min_support if min_support is not None else 0.0,
             min_confidence,
+            max_items_per_txn=max_items_per_txn,
+            item_weights=item_weights,
         )
 
     # Build transaction dict ONCE — reuse if passed from a parent call
@@ -529,6 +576,8 @@ def _find_classic_pairs(
 def _find_classic_k_itemsets(
     df, transaction_col, item_col, k,
     min_support, min_confidence,
+    max_items_per_txn=None,
+    item_weights=None,
 ) -> pd.DataFrame:
     """k-itemset (k>=3) via classic Apriori pipeline (Rust port of efficient-apriori)."""
     from fastapriori.backends.rust_classic_backend import compute_pipeline
@@ -537,6 +586,8 @@ def _find_classic_k_itemsets(
         df, transaction_col, item_col, k,
         min_support if min_support is not None else 0.0,
         min_confidence,
+        max_items_per_txn=max_items_per_txn,
+        item_weights=item_weights,
     )
 
 

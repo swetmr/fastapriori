@@ -29,32 +29,66 @@ struct TransactionIndex {
 
 impl TransactionIndex {
     fn build(txn_ids: &[i64], item_ids: &[i32]) -> Self {
-        let mut item_to_txns: HashMap<u32, Vec<i64>> = HashMap::new();
+        Self::build_with_cap(txn_ids, item_ids, None, None)
+    }
 
+    /// Build the inverted index with optional per-transaction capping.
+    ///
+    /// When `max_items_per_txn` and `item_weights` are both provided, each
+    /// transaction with more than N distinct items is truncated to its top-N
+    /// items by weight (descending).  Matches the semantics of the fast
+    /// backend's `max_items_per_txn` optimization: counts derived from a
+    /// capped index are lower bounds on the true counts.
+    fn build_with_cap(
+        txn_ids: &[i64],
+        item_ids: &[i32],
+        item_weights: Option<&[f64]>,
+        max_items_per_txn: Option<usize>,
+    ) -> Self {
+        // Step 1: group (deduped) items by transaction
+        let mut txn_to_items: HashMap<i64, Vec<u32>> = HashMap::new();
         for i in 0..txn_ids.len() {
             let txn = txn_ids[i];
             let item = item_ids[i] as u32;
-            item_to_txns.entry(item).or_default().push(txn);
+            txn_to_items.entry(txn).or_default().push(item);
+        }
+        for items in txn_to_items.values_mut() {
+            items.sort_unstable();
+            items.dedup();
         }
 
-        // Deduplicate and sort
+        // Step 2: optional top-N cap by weight (matches fast backend Opt 2b)
+        if let (Some(max_items), Some(weights)) = (max_items_per_txn, item_weights) {
+            for items in txn_to_items.values_mut() {
+                if items.len() > max_items {
+                    items.sort_by(|a, b| {
+                        let wa = weights.get(*a as usize).copied().unwrap_or(0.0);
+                        let wb = weights.get(*b as usize).copied().unwrap_or(0.0);
+                        wb.partial_cmp(&wa).unwrap_or(std::cmp::Ordering::Equal)
+                    });
+                    items.truncate(max_items);
+                    items.sort_unstable(); // restore ascending order
+                }
+            }
+        }
+
+        // Step 3: invert → item_to_txns
+        let n_transactions = txn_to_items.len() as u32;
+        let mut item_to_txns: HashMap<u32, Vec<i64>> = HashMap::new();
+        for (&txn, items) in &txn_to_items {
+            for &item in items {
+                item_to_txns.entry(item).or_default().push(txn);
+            }
+        }
         for txns in item_to_txns.values_mut() {
             txns.sort_unstable();
-            txns.dedup();
+            // items were already deduped per-txn, so no dup entries per item
         }
 
         let item_counts: HashMap<u32, u32> = item_to_txns
             .iter()
             .map(|(&item, txns)| (item, txns.len() as u32))
             .collect();
-
-        let n_transactions = {
-            let mut all_txns: HashSet<i64> = HashSet::new();
-            for &txn in txn_ids {
-                all_txns.insert(txn);
-            }
-            all_txns.len() as u32
-        };
 
         Self {
             item_to_txns,
@@ -462,6 +496,7 @@ pub fn rust_classic_compute_pairs<'py>(
 /// - "lower_counts": 1D int64 array (n_lower,)
 /// - "item_counts": 1D int64 array (n_items,) — per-item transaction counts
 #[pyfunction]
+#[pyo3(signature = (txn_ids, item_ids, k_max, n_items, _n_transactions, min_support, item_weights, max_items_per_txn=None))]
 pub fn rust_classic_compute_pipeline<'py>(
     py: Python<'py>,
     txn_ids: PyReadonlyArray1<'py, i64>,
@@ -470,11 +505,19 @@ pub fn rust_classic_compute_pipeline<'py>(
     n_items: u32,
     _n_transactions: u32,
     min_support: f64,
+    item_weights: PyReadonlyArray1<'py, f64>,
+    max_items_per_txn: Option<usize>,
 ) -> PyResult<Bound<'py, PyDict>> {
     let txn_slice = txn_ids.as_slice()?;
     let item_slice = item_ids.as_slice()?;
+    let weights_slice = item_weights.as_slice()?;
 
-    let mut index = TransactionIndex::build(txn_slice, item_slice);
+    let mut index = TransactionIndex::build_with_cap(
+        txn_slice,
+        item_slice,
+        Some(weights_slice),
+        max_items_per_txn,
+    );
 
     // Run classic Apriori
     let levels = apriori_itemsets(&mut index, min_support, k_max);
