@@ -113,8 +113,10 @@ Five lines per panel: `efficient_apriori` (Python Apriori), `classic` (compiled 
 |--|--|--|--|
 | `fast` vs `efficient_apriori` | **39 / 39 (100%)** | 61x | **969x** (Retail Belgian, s=10⁻⁴) |
 | `fast` vs compiled Rust Apriori (`classic`) | **40 / 40 (100%)** | 3.9x | **92.8x** (Retail Belgian, s=10⁻⁴) |
+| `fast` vs `pyfim` (native C; median of `apriori`, `eclat`, `fpgrowth`) | **26 / 40 (65%)** | 1.3x | **4.8x** (Kosarak, s=10⁻⁴) |
 
-At k>=3 (same eight real datasets, k=3..9), `fast` beats the like-for-like compiled Apriori on **91–97% of configurations** with peak speedups of 27–36x. Native-C engines hand-tuned for high k (Borgelt's `fpgrowth`, pyfim's `eclat`) generally beat `fast` at k>=3 on these datasets — if you have one of those installed and your workload is k>=4 with tight SLAs, use them. For everyone else, `fast` stays inside one Python `pip install`.
+At k>=3 (same eight real datasets, k=3..9), `fast` beats the like-for-like compiled Apriori on **91–97% of configurations** with peak speedups of 27–36x. 
+fastapriori gives competitive performance wrt pyfim (median) on k>=3 for wide, sparse, big data. For narrow, dense data prefer pyfim. 
 
 ## Decision Rule
 

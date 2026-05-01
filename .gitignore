@@ -49,6 +49,7 @@ opt_plan.md
 
 # IDE / OS / agent caches
 .claude/
+CLAUDE.md
 .idea/
 .vscode/
 .DS_Store
