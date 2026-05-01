@@ -20,29 +20,58 @@ jobs:
           # Linux x86_64
           - os: ubuntu-latest
             target: x86_64
-            pythons: "3.9 3.10 3.11 3.12 3.13"
+            pythons-nl: |-
+              3.9
+              3.10
+              3.11
+              3.12
+              3.13
+            pythons-sp: "3.9 3.10 3.11 3.12 3.13"
           # Linux aarch64 (cross-compiled; manylinux container ships its own pythons)
           - os: ubuntu-latest
             target: aarch64
-            pythons: "3.10 3.11 3.12 3.13"
+            pythons-nl: |-
+              3.10
+              3.11
+              3.12
+              3.13
+            pythons-sp: "3.10 3.11 3.12 3.13"
           # macOS x86_64 (Intel)
           - os: macos-13
             target: x86_64
-            pythons: "3.9 3.10 3.11 3.12 3.13"
+            pythons-nl: |-
+              3.9
+              3.10
+              3.11
+              3.12
+              3.13
+            pythons-sp: "3.9 3.10 3.11 3.12 3.13"
           # macOS Apple Silicon — no arm64 build of CPython 3.9 in actions/setup-python
           - os: macos-14
             target: aarch64
-            pythons: "3.10 3.11 3.12 3.13"
+            pythons-nl: |-
+              3.10
+              3.11
+              3.12
+              3.13
+            pythons-sp: "3.10 3.11 3.12 3.13"
           # Windows x86_64
           - os: windows-latest
             target: x64
-            pythons: "3.9 3.10 3.11 3.12 3.13"
+            pythons-nl: |-
+              3.9
+              3.10
+              3.11
+              3.12
+              3.13
+            pythons-sp: "3.9 3.10 3.11 3.12 3.13"
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.pythons }}
+          # setup-python wants newline-separated
+          python-version: ${{ matrix.pythons-nl }}
 
       - name: Build wheels
         uses: PyO3/maturin-action@v1
@@ -51,7 +80,7 @@ jobs:
           # Explicit --interpreter avoids the runner's pre-installed Python 3.14
           # (newer than PyO3 0.23's max supported 3.13). When PyO3 is bumped to
           # 0.25+, this can switch back to --find-interpreter.
-          args: --release --out dist --interpreter ${{ matrix.pythons }}
+          args: --release --out dist --interpreter ${{ matrix.pythons-sp }}
           manylinux: auto
 
       - uses: actions/upload-artifact@v4
