@@ -167,11 +167,11 @@ result = find_associations(
 - **Counts are lower bounds.** A capped itemset's count is never higher than the true count; some genuinely frequent itemsets may be missed if their count drops below `min_support` after capping. Use it when you *prefer a fast, conservative answer* to a slow, exact one.
 - **Custom weights.** Pass an `item_weights={item: score}` dict to prioritize high-revenue / high-margin / business-critical items regardless of frequency.
 - **Only applies at k>=3.** Pairs are always counted exactly. Supported by both `algo="fast"` and `algo="classic"`.
-- **When it pays off.** Reported impact from runtime data: on Online Retail at k=4 with cap=50, per-anchor enumeration cost drops by ~1,300x; on Kosarak, ~133,000x.
+- **When it pays off.** On Online Retail at k=4 with cap=50, per-anchor enumeration cost drops by ~1,300x; on Kosarak, ~133,000x.
 
 ## Low-Memory Mode
 
-The pair counter scales as O(m^2) in the unique-item count. Instacart (~50k items) uses ~30 GB at `s = 0.0001`. `low_memory=True` pre-filters items below `min_support` before building the index — typically a 5–10x memory reduction on large catalogs:
+The pair counter scales as O(m^2) in the unique-item count. Instacart (~50k items) uses ~1.5 GB at `s = 0.0001`. `low_memory=True` pre-filters items below `min_support` before building the index — typically a 5–10x memory reduction on large catalogs:
 
 ```python
 find_associations(df, "txn_id", "item", min_support=0.001, low_memory=True)
@@ -315,7 +315,7 @@ Requires `networkx` (`pip install fastapriori[graph]`).
 
 ## Limitations
 
-- **Memory at low s, large m**: the pair counter scales; on Instacart (~50k items) expect ~10 GB at `s = 10^-4`. Use `low_memory=True` when you have a `min_support`.
+- **Memory at low s, large m**: the pair counter scales O(m^2); on Instacart (~50k items) expect ~1.5 GB at `s = 10^-4`. Use `low_memory=True` when you have a `min_support`.
 - **Dense data at high k**: the combinatorial C(d_max, k-1) term is fundamental. `max_items_per_txn` bounds it at the cost of lower-bound counts.
 - **Single-machine**: no distributed (Spark / Dask) version is provided.
 
