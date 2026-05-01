@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "fastapriori"
-version = "0.1.0"
+version = "0.1.0.post1"
 description = "Fast association analysis at low support"
 readme = "README_PYPI.md"
 requires-python = ">=3.9"
