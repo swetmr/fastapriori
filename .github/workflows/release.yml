@@ -36,17 +36,10 @@ jobs:
               3.12
               3.13
             pythons-sp: "3.10 3.11 3.12 3.13"
-          # macOS x86_64 (Intel)
-          - os: macos-13
-            target: x86_64
-            pythons-nl: |-
-              3.9
-              3.10
-              3.11
-              3.12
-              3.13
-            pythons-sp: "3.9 3.10 3.11 3.12 3.13"
-          # macOS Apple Silicon — no arm64 build of CPython 3.9 in actions/setup-python
+          # macOS Apple Silicon — no arm64 build of CPython 3.9 in actions/setup-python.
+          # (macOS Intel / macos-13 dropped: GitHub-hosted Intel runners have long queue
+          # times and Apple Silicon has been the default since 2020. Intel users fall
+          # through to the sdist.)
           - os: macos-14
             target: aarch64
             pythons-nl: |-
