@@ -2,6 +2,9 @@
 name = "fastapriori-rs"
 version = "0.1.0"
 edition = "2021"
+description = "Fast association analysis at low support — Rust core for the fastapriori Python package"
+license = "MIT"
+repository = "https://github.com/swetmr/fastapriori"
 
 [lib]
 name = "_fastapriori_rs"
