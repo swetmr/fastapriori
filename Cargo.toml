@@ -1,6 +1,6 @@
 [package]
 name = "fastapriori-rs"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
 description = "Fast association analysis at low support — Rust core for the fastapriori Python package"
 license = "MIT"

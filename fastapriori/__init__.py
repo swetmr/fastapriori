@@ -37,7 +37,13 @@ from fastapriori.utils import (
     to_heatmap,
 )
 
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError as _PNF, version as _pkg_version
+
+try:
+    __version__ = _pkg_version("fastapriori")
+except _PNF:
+    __version__ = "0.0.0+unknown"
+del _PNF, _pkg_version
 __all__ = [
     "find_associations",
     "find_itemsets",
