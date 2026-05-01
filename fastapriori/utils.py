@@ -2,8 +2,33 @@
 
 from __future__ import annotations
 
+import logging
+
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger("fastapriori")
+
+
+def _require_pair_output(df: pd.DataFrame, op: str) -> None:
+    """Validate that `df` is pair-level (k=2) output from find_associations.
+
+    The pair-oriented helpers here only make sense for k=2 results.  A k>=3
+    DataFrame has antecedent_*/consequent columns and would otherwise raise
+    an opaque pandas KeyError.
+    """
+    if "item_A" in df.columns and "item_B" in df.columns:
+        return
+    ant_cols = [c for c in df.columns if c.startswith("antecedent_")]
+    if ant_cols:
+        raise ValueError(
+            f"{op}() only supports k=2 output (item_A/item_B columns); got "
+            f"k>=3 output with columns {list(df.columns)}. "
+            "For k>=3 results, filter the DataFrame directly with pandas."
+        )
+    raise ValueError(
+        f"{op}() expected columns item_A/item_B; got {list(df.columns)}."
+    )
 
 
 def describe_dataset(
@@ -86,7 +111,16 @@ def describe_dataset(
         pair_density = avg_pairs_per_txn / theoretical_pairs if theoretical_pairs > 0 else 0
     else:
         from math import comb
-        avg_ksets_per_txn = comb(int(round(avg_iptn)), k) if avg_iptn >= k else 0
+        # Compute C(d, k) per transaction then average, preserving the
+        # Jensen-gap contribution from heavy-tailed distributions.  Rounding
+        # the mean first (old implementation) under-counts by 1-2 orders of
+        # magnitude on skewed datasets.
+        _d_ints = items_per_txn.astype(int).to_numpy()
+        _ksets_per_txn = np.array(
+            [comb(int(d), k) if d >= k else 0 for d in _d_ints],
+            dtype=np.float64,
+        )
+        avg_ksets_per_txn = float(_ksets_per_txn.mean()) if len(_ksets_per_txn) else 0
         theoretical_ksets = comb(n_items, k) if n_items >= k else 0
         pair_density = avg_ksets_per_txn / theoretical_ksets if theoretical_ksets > 0 else 0
 
@@ -289,12 +323,14 @@ def generate_synthetic_dataset(
     sigma = items_per_txn_std
 
     # --- Items per transaction ---
-    if sigma**2 > mu:
-        # Negative binomial: parameterize from mean and variance.
-        # NB gives 0-based counts; we add 1 so every txn has >= 1 item.
-        # Target mu_nb = mu - 1 to compensate for the +1 shift.
-        mu_nb = max(mu - 1, 0.1)
-        variance_nb = sigma**2  # variance is ~unchanged by +1 shift
+    # NB gives 0-based counts; we add 1 so every txn has >= 1 item.
+    # Target mu_nb = mu - 1 to compensate for the +1 shift.
+    mu_nb = max(mu - 1, 0.1)
+    variance_nb = sigma**2  # variance is ~unchanged by +1 shift
+    if variance_nb > mu_nb:
+        # Gate on mu_nb (not mu) so the NB parameters are valid:
+        # r = mu_nb**2 / (variance - mu_nb) requires variance > mu_nb,
+        # otherwise r goes negative or to +inf.
         r = mu_nb**2 / (variance_nb - mu_nb)
         p = r / (r + mu_nb)
         sizes = rng.negative_binomial(r, p, size=n_transactions) + 1
@@ -352,6 +388,7 @@ def get_top_associations(
     pd.DataFrame
         Top N associations sorted by metric descending.
     """
+    _require_pair_output(result_df, "get_top_associations")
     if role == "antecedent":
         subset = result_df[result_df["item_A"] == item]
     elif role == "consequent":
@@ -385,6 +422,7 @@ def filter_associations(
     pd.DataFrame
         Filtered associations.
     """
+    _require_pair_output(result_df, "filter_associations")
     if isinstance(items, str):
         items = [items]
     items_set = set(items)
@@ -416,6 +454,7 @@ def to_heatmap(
     pd.DataFrame
         Pivot table with item_A as rows, item_B as columns.
     """
+    _require_pair_output(result_df, "to_heatmap")
     return result_df.pivot_table(
         index="item_A", columns="item_B", values=metric, aggfunc="first"
     ).fillna(0)
@@ -540,16 +579,20 @@ def to_graph(
             "Install it with: pip install networkx"
         )
 
+    _require_pair_output(result_df, "to_graph")
     filtered = result_df[result_df[metric] >= min_value]
     G = nx.DiGraph()
-    for _, row in filtered.iterrows():
+    cols = ["item_A", "item_B", metric, "instances",
+            "support", "confidence", "lift"]
+    for row in filtered[cols].itertuples(index=False, name=None):
+        item_a, item_b, weight, instances, support, confidence, lift = row
         G.add_edge(
-            row["item_A"],
-            row["item_B"],
-            weight=row[metric],
-            instances=row["instances"],
-            support=row["support"],
-            confidence=row["confidence"],
-            lift=row["lift"],
+            item_a,
+            item_b,
+            weight=weight,
+            instances=instances,
+            support=support,
+            confidence=confidence,
+            lift=lift,
         )
     return G

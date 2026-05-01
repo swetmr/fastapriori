@@ -11,3 +11,10 @@ crate-type = ["cdylib"]
 pyo3 = { version = "0.23", features = ["extension-module"] }
 numpy = "0.23"
 rayon = "1.10"
+roaring = "0.10"
+# Note: roaring 0.10's default build uses SIMD popcnt on bitmap-mode chunks
+# via stable std::arch intrinsics. The portable_simd-based `simd` feature
+# flag requires nightly Rust and was attempted but abandoned. CRoaring (C
+# binding) was also evaluated as v4_croaring but did not add meaningful
+# speedup over v3_adaptive on the workloads tested, so the croaring crate
+# dependency was removed to simplify the build.

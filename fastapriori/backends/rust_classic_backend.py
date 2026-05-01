@@ -5,6 +5,11 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from fastapriori.backends.rust_backend import (
+    _check_encoder_capacity,
+    _sorted_unique_items,
+)
+
 
 try:
     from fastapriori._fastapriori_rs import (
@@ -45,7 +50,8 @@ def compute_associations(
     clean = df[[transaction_col, item_col]].dropna()
 
     # Encode items to sequential integers
-    unique_items = sorted(clean[item_col].unique())
+    unique_items = _sorted_unique_items(clean[item_col])
+    _check_encoder_capacity(len(unique_items))
     item_encoder = {item: i for i, item in enumerate(unique_items)}
     item_decoder = np.array(unique_items)
 
@@ -112,7 +118,8 @@ def compute_pipeline(
         weights_arr = np.zeros(n_unique, dtype=np.float64)
         for item, weight in item_weights.items():
             if item in item_encoder:
-                weights_arr[item_encoder[item]] = float(weight)
+                w = float(weight)
+                weights_arr[item_encoder[item]] = 0.0 if np.isnan(w) else w
     else:
         weights_arr = np.zeros(n_unique, dtype=np.float64)
         item_counts_local = clean.groupby(item_col)[transaction_col].nunique()

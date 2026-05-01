@@ -1,5 +1,7 @@
 """fastapriori - Fast pairwise co-occurrence and association analysis."""
 
+import logging as _logging
+import os as _os
 import warnings as _warnings
 
 try:
@@ -7,12 +9,20 @@ try:
     RUST_AVAILABLE = True
 except ImportError:
     RUST_AVAILABLE = False
-    _warnings.warn(
-        "Rust extension not found — falling back to Python backends. "
-        "For best performance, install the Rust toolchain "
-        "(https://rustup.rs) and reinstall: pip install -e .",
-        stacklevel=1,
-    )
+    # Set FASTAPRIORI_QUIET=1 to silence this warning in CI / notebook use
+    # where the Python fallback is an intentional choice.
+    if not _os.environ.get("FASTAPRIORI_QUIET"):
+        _warnings.warn(
+            "Rust extension not found — falling back to Python backends. "
+            "For best performance, install the Rust toolchain "
+            "(https://rustup.rs) and reinstall: pip install -e . "
+            "Set FASTAPRIORI_QUIET=1 to silence.",
+            stacklevel=1,
+        )
+    else:
+        _logging.getLogger("fastapriori").debug(
+            "Rust extension not found; using Python backends (quiet mode)."
+        )
 
 from fastapriori.core import find_associations
 from fastapriori.itemsets import find_itemsets

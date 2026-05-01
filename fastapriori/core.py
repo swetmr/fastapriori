@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
+import logging
+import warnings
 from collections import Counter, defaultdict
 from itertools import combinations
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger("fastapriori")
+
+_LOWMEM_SENTINEL_STR = "__fastapriori_lowmem_sentinel__"
 
 
 def find_associations(
@@ -31,6 +37,7 @@ def find_associations(
     max_items_per_txn: int | None = None,
     item_weights: dict | None = None,
     verbose: bool = False,
+    backend_options: dict | None = None,
 ) -> pd.DataFrame:
     """Compute item co-occurrence associations from transactional data.
 
@@ -124,6 +131,11 @@ def find_associations(
         d_max, etc.), the chosen algorithm, and a density warning when
         the estimated combination cost is very high. Useful for
         understanding performance characteristics before long runs.
+    backend_options : dict or None
+        Reserved for internal tuning. Not a stable API — keys may be
+        renamed or removed without deprecation. Currently recognised:
+        ``"fast_variant"`` in {``"apriori"``, ``"eclat"``}, applied only
+        when ``algo="fast"`` and k>=3.
 
     Returns
     -------
@@ -149,12 +161,58 @@ def find_associations(
         raise ValueError(
             "algo='classic' requires min_support (Apriori needs it for pruning)"
         )
+    if min_support is not None and not (0.0 <= float(min_support) <= 1.0):
+        raise ValueError(
+            f"min_support must be in [0.0, 1.0], got {min_support}. "
+            "Did you mean to pass a percentage as a fraction (e.g. 0.05 for 5%)?"
+        )
+    if item_weights is not None:
+        _bad = [k_ for k_, v_ in item_weights.items()
+                if v_ is None or (isinstance(v_, float) and np.isnan(v_))]
+        if _bad:
+            raise ValueError(
+                f"item_weights contains NaN/None for {len(_bad)} item(s) "
+                f"(first: {_bad[:3]}). Replace with finite values (e.g. 0)."
+            )
     if algo == "auto":
         algo = "fast"
 
-    # Resolve low_memory="auto": enable when min_support is provided
+    # backend_options is reserved; "fast_variant" and "impl_variant" are
+    # read today.  impl_variant selects the Rust implementation generation
+    # for ablation studies (v0_baseline = current code, v1_roaring,
+    # v2_memo, v3_simd).  Only applied when backend resolves to rust + algo=fast.
+    _IMPL_VARIANTS = (
+        "v0_baseline", "v1_roaring", "v2_memo",
+        "v3_adaptive", "v5_prefilter", "v6_gating",
+    )
+    if backend_options is not None:
+        _fv = backend_options.get("fast_variant")
+        if _fv is not None and _fv not in ("apriori", "eclat"):
+            raise ValueError(
+                f"backend_options['fast_variant'] must be 'apriori' or "
+                f"'eclat', got {_fv!r}"
+            )
+        _iv = backend_options.get("impl_variant")
+        if _iv is not None and _iv not in _IMPL_VARIANTS:
+            raise ValueError(
+                f"backend_options['impl_variant'] must be one of "
+                f"{_IMPL_VARIANTS}, got {_iv!r}"
+            )
+
+    # Resolve low_memory="auto": enable when min_support is provided.
+    # Skip it when the Rust fast path is available — the pandas
+    # groupby(item).nunique() pre-filter costs ~7s on Instacart and is
+    # redundant with the int32 downward-closure filter inside
+    # count_k_itemsets_internal.  Explicit low_memory=True still wins.
     if low_memory == "auto":
-        low_memory = min_support is not None
+        _rust_fast_path = False
+        if backend in ("auto", "rust") and algo == "fast":
+            try:
+                from fastapriori._fastapriori_rs import rust_compute_pairs  # noqa: F401
+                _rust_fast_path = True
+            except ImportError:
+                pass
+        low_memory = (min_support is not None) and not _rust_fast_path
 
     # Low-memory mode: pre-filter infrequent items before any backend runs
     if low_memory:
@@ -181,34 +239,41 @@ def find_associations(
                     "confidence", "lift",
                 ])
         original_rows = len(df)
-        original_txns = set(df[transaction_col].unique())
+        original_txns = df[transaction_col].unique()  # numpy, no Python set
         df = df[df[item_col].isin(frequent_items)]
-        filtered_txns = set(df[transaction_col].unique())
-
-        # Preserve n_transactions: add dummy rows for transactions that lost
-        # all their items.  The sentinel is the sole item in its transactions
-        # so it never forms pairs — results are exact.
-        lost_txns = original_txns - filtered_txns
-        if lost_txns:
+        kept_txns = df[transaction_col].unique()
+        # pd.Index.difference uses a hash-based diff; np.setdiff1d falls into
+        # an O(n*m) path on object/string arrays (14s on 28K string txn_ids
+        # for Online Retail).  Hash diff is ~1000x faster there and within
+        # ~40ms of setdiff1d on large int arrays.
+        lost_txns = pd.Index(original_txns).difference(kept_txns).to_numpy()
+        sentinel = None
+        if len(lost_txns) > 0:
+            # Preserve n_transactions via one sentinel row per lost transaction.
+            # The sentinel is the sole item in its transaction, so it forms no
+            # pairs/itemsets — results stay exact.  Tracked here so downstream
+            # code can drop it from item_support / lower_support dicts.
             dtype = df[item_col].dtype
             if pd.api.types.is_integer_dtype(dtype):
                 sentinel = int(df[item_col].min()) - 1
             elif pd.api.types.is_float_dtype(dtype):
                 sentinel = float(df[item_col].min()) - 1.0
             else:
-                sentinel = "__fastapriori_lowmem_sentinel__"
+                sentinel = _LOWMEM_SENTINEL_STR
             dummy = pd.DataFrame({
-                transaction_col: list(lost_txns),
+                transaction_col: lost_txns,
                 item_col: sentinel,
             })
             df = pd.concat([df, dummy], ignore_index=True)
 
         if show_progress:
-            print(
-                f"low_memory: kept {len(frequent_items)}/{len(item_counts)} items "
-                f"({len(df)}/{original_rows} rows, "
-                f"{len(lost_txns) if lost_txns else 0} txns preserved via sentinel)"
+            logger.info(
+                "low_memory: kept %d/%d items (%d/%d rows, %d txns preserved via sentinel)",
+                len(frequent_items), len(item_counts),
+                len(df), original_rows, len(lost_txns),
             )
+    else:
+        sentinel = None
 
     # --- Verbose: print dataset features and density warning ---
     if verbose:
@@ -221,16 +286,24 @@ def find_associations(
         _d_max = int(_grp.max())
         _d_median = float(_grp.median())
         _d_std = float(_grp.std()) if _n_txn > 1 else 0.0
-        print(f"[fastapriori] Dataset: {_n_txn:,} txns × {_n_items:,} items | {_n_rows:,} rows")
-        print(f"[fastapriori] d_avg={_d_avg:.1f}  d_max={_d_max}  d_median={_d_median:.1f}  d_std={_d_std:.1f}")
-        print(f"[fastapriori] k={k}  min_support={min_support}  algo={algo}")
+        # verbose=True is an explicit opt-in for stdout output; log at INFO
+        # (users can silence via logging config) but also print so users who
+        # haven't configured logging still see the profile.
+        _msgs = [
+            f"[fastapriori] Dataset: {_n_txn:,} txns x {_n_items:,} items | {_n_rows:,} rows",
+            f"[fastapriori] d_avg={_d_avg:.1f}  d_max={_d_max}  d_median={_d_median:.1f}  d_std={_d_std:.1f}",
+            f"[fastapriori] k={k}  min_support={min_support}  algo={algo}",
+        ]
         if k >= 3 and _d_max >= k:
             _est_combos = comb(_d_max, k - 1) * _n_txn
             if _est_combos > 1e8:
-                print(
-                    f"[fastapriori] WARNING: C({_d_max},{k-1}) × {_n_txn:,} = "
-                    f"{_est_combos:.0e} combinations — may be slow"
+                _msgs.append(
+                    f"[fastapriori] WARNING: C({_d_max},{k-1}) x {_n_txn:,} = "
+                    f"{_est_combos:.0e} combinations - may be slow"
                 )
+        for _m in _msgs:
+            logger.info(_m)
+            print(_m)
 
     # --- Classic Apriori path: bypass normal backend resolution ---
     if algo == "classic":
@@ -249,13 +322,8 @@ def find_associations(
                 item_weights=item_weights,
             )
 
-        if sorted_by is not None:
-            if sorted_by not in result.columns:
-                raise ValueError(
-                    f"sorted_by='{sorted_by}' is not a valid column. "
-                    f"Choose from: {list(result.columns)}"
-                )
-            result = result.sort_values(sorted_by, ascending=False).reset_index(drop=True)
+        result = _drop_sentinel_rows(result, sentinel, k)
+        result = _apply_sort(result, sorted_by)
         return result
 
     # Resolve "auto": try Rust, fall back to "python"
@@ -291,17 +359,53 @@ def find_associations(
             frequent_lower, show_progress, backend, n_workers,
             max_items_per_txn=max_items_per_txn,
             item_weights=item_weights,
+            backend_options=backend_options,
         )
 
-    if sorted_by is not None:
-        if sorted_by not in result.columns:
-            raise ValueError(
-                f"sorted_by='{sorted_by}' is not a valid column. "
-                f"Choose from: {list(result.columns)}"
-            )
-        result = result.sort_values(sorted_by, ascending=False).reset_index(drop=True)
-
+    result = _drop_sentinel_rows(result, sentinel, k)
+    result = _apply_sort(result, sorted_by)
     return result
+
+
+def _apply_sort(result: pd.DataFrame, sorted_by: str | None) -> pd.DataFrame:
+    """Sort by a column if present; warn-and-skip otherwise rather than raise."""
+    if sorted_by is None:
+        return result
+    if sorted_by not in result.columns:
+        warnings.warn(
+            f"sorted_by='{sorted_by}' not in result columns "
+            f"({list(result.columns)}); skipping sort.",
+            UserWarning,
+            stacklevel=3,
+        )
+        return result
+    return result.sort_values(sorted_by, ascending=False).reset_index(drop=True)
+
+
+def _drop_sentinel_rows(
+    result: pd.DataFrame, sentinel, k: int,
+) -> pd.DataFrame:
+    """Drop rows where any item column equals the low_memory sentinel label.
+
+    The sentinel is inserted by the low_memory path to preserve n_transactions;
+    it should never surface in user-facing output.
+    """
+    if sentinel is None or result.empty:
+        return result
+    item_cols: list[str] = []
+    if k == 2:
+        item_cols = [c for c in ("item_A", "item_B") if c in result.columns]
+    else:
+        item_cols = [
+            c for c in result.columns
+            if c.startswith("antecedent_") or c == "consequent"
+        ]
+    if not item_cols:
+        return result
+    mask = np.ones(len(result), dtype=bool)
+    for c in item_cols:
+        mask &= result[c] != sentinel
+    return result[mask].reset_index(drop=True)
 
 
 # ---------------------------------------------------------------------------
@@ -326,6 +430,18 @@ def _find_pairs(
         raise ValueError(
             f"Unknown backend '{backend}'. Use 'auto', 'python', 'pandas', 'polars', or 'rust'."
         )
+
+    # Rust backend applies filters on numeric arrays pre-decode — avoids
+    # materialising millions of object-dtype rows only to drop them.
+    if backend == "rust":
+        result = compute_associations(
+            df, transaction_col, item_col, show_progress, trans_dict=trans_dict,
+            min_support=min_support, min_confidence=min_confidence,
+            min_lift=min_lift, min_conviction=min_conviction,
+            min_leverage=min_leverage, min_cosine=min_cosine,
+            min_jaccard=min_jaccard,
+        )
+        return result
 
     result = compute_associations(
         df, transaction_col, item_col, show_progress, trans_dict=trans_dict,
@@ -360,12 +476,31 @@ def _find_k_itemsets(
     _trans_dict=None,
     max_items_per_txn=None,
     item_weights=None,
+    backend_options=None,
 ) -> pd.DataFrame:
     """k-itemset (k>=3) co-occurrence with support, confidence, lift."""
     df = df.dropna(subset=[transaction_col, item_col])
 
-    # Pipeline short-circuit: Rust handles full k=2→...→k chain in one call
-    if backend == "rust" and frequent_lower is None:
+    fast_variant = (
+        (backend_options or {}).get("fast_variant", "apriori")
+    )
+    # Default impl_variant: v3_adaptive — adaptive Sparse(Vec)/Dense(Roaring)
+    # TID storage with cross-level intersection memoisation. Locally validated
+    # to be the best general-purpose variant on small/medium datasets across
+    # k=3..5 and supports 0.001..0.0001. Override via
+    # backend_options={'impl_variant': 'v0_baseline' | 'v1_roaring' | ...}
+    # for ablation studies.
+    impl_variant = (
+        (backend_options or {}).get("impl_variant", "v3_adaptive")
+    )
+
+    # Pipeline short-circuit: Rust handles full k=2→...→k chain in one call.
+    # Eclat always takes this path (it rebuilds its own lattice from
+    # tid-lists and cannot consume caller-provided frequent_lower, so
+    # chaining via _find_k_itemsets would just do duplicate work).
+    if backend == "rust" and (
+        frequent_lower is None or fast_variant == "eclat"
+    ):
         from fastapriori.backends.rust_backend import compute_pipeline
         return compute_pipeline(
             df, transaction_col, item_col, k,
@@ -373,6 +508,8 @@ def _find_k_itemsets(
             min_confidence,
             max_items_per_txn=max_items_per_txn,
             item_weights=item_weights,
+            fast_variant=fast_variant,
+            impl_variant=impl_variant,
         )
 
     # Build transaction dict ONCE — reuse if passed from a parent call
@@ -416,6 +553,7 @@ def _find_k_itemsets(
                 frequent_lower=frequent_lower,
                 show_progress=show_progress, backend=backend,
                 n_workers=n_workers, _trans_dict=trans_dict,
+                backend_options=backend_options,
             )
 
     # --- Resolve backend ---
@@ -455,6 +593,8 @@ def _find_k_itemsets(
         itemset_counts = compute_itemsets(
             trans_dict, total_transactions, k,
             frequent_lower, n_workers, show_progress,
+            max_items_per_txn=max_items_per_txn,
+            item_weights=item_weights,
         )
     elif backend_resolved == "rust":
         from fastapriori.backends.rust_backend import compute_itemsets_rust
@@ -463,6 +603,7 @@ def _find_k_itemsets(
             trans_dict, total_transactions, k,
             frequent_lower, n_workers, show_progress,
             df=df, transaction_col=transaction_col, item_col=item_col,
+            fast_variant=fast_variant,
         )
     else:
         # Original combinations approach
@@ -616,17 +757,20 @@ def _extract_freq_pairs(frequent_lower: pd.DataFrame, k: int) -> set:
 
     # Try pair-level columns first (output of find_associations k=2)
     if "item_A" in frequent_lower.columns and "item_B" in frequent_lower.columns:
-        for _, row in frequent_lower[["item_A", "item_B"]].iterrows():
-            freq_pairs.add(tuple(sorted([row["item_A"], row["item_B"]])))
+        for a, b in zip(
+            frequent_lower["item_A"].to_numpy(),
+            frequent_lower["item_B"].to_numpy(),
+        ):
+            freq_pairs.add(tuple(sorted([a, b])))
         return freq_pairs
 
     # Otherwise, reconstruct itemsets from antecedent_* + consequent columns
     ant_cols = [c for c in frequent_lower.columns if c.startswith("antecedent_")]
     if ant_cols and "consequent" in frequent_lower.columns:
-        for _, row in frequent_lower[ant_cols + ["consequent"]].iterrows():
-            items = tuple(
-                sorted([row[c] for c in ant_cols] + [row["consequent"]])
-            )
+        cols = ant_cols + ["consequent"]
+        arr = frequent_lower[cols].to_numpy()
+        for row in arr:
+            items = tuple(sorted(row.tolist()))
             for pair in combinations(items, 2):
                 freq_pairs.add(pair)
         return freq_pairs
@@ -642,42 +786,43 @@ def _extract_lower_support(
 
     # Pair-level (from find_associations k=2 output)
     if "item_A" in frequent_lower.columns and "item_B" in frequent_lower.columns:
+        a_arr = frequent_lower["item_A"].to_numpy()
+        b_arr = frequent_lower["item_B"].to_numpy()
         if "support" in frequent_lower.columns:
-            for _, row in frequent_lower[
-                ["item_A", "item_B", "support"]
-            ].iterrows():
-                key = tuple(sorted([row["item_A"], row["item_B"]]))
+            s_arr = frequent_lower["support"].to_numpy()
+            for a, b, s in zip(a_arr, b_arr, s_arr):
+                key = tuple(sorted([a, b]))
                 if key not in support_dict:
-                    support_dict[key] = row["support"]
+                    support_dict[key] = s
         elif "instances" in frequent_lower.columns:
-            for _, row in frequent_lower[
-                ["item_A", "item_B", "instances"]
-            ].iterrows():
-                key = tuple(sorted([row["item_A"], row["item_B"]]))
+            inst_arr = frequent_lower["instances"].to_numpy()
+            for a, b, inst in zip(a_arr, b_arr, inst_arr):
+                key = tuple(sorted([a, b]))
                 if key not in support_dict:
-                    support_dict[key] = row["instances"] / total_transactions
+                    support_dict[key] = inst / total_transactions
         return support_dict
 
     # Higher-level (antecedent_* + consequent)
     ant_cols = [c for c in frequent_lower.columns if c.startswith("antecedent_")]
     if ant_cols and "consequent" in frequent_lower.columns:
-        need_cols = ant_cols + ["consequent"]
+        item_cols = ant_cols + ["consequent"]
+        items_arr = frequent_lower[item_cols].to_numpy()
         has_support = "support" in frequent_lower.columns
         has_instances = "instances" in frequent_lower.columns
+        metric_arr = None
         if has_support:
-            need_cols.append("support")
+            metric_arr = frequent_lower["support"].to_numpy()
         elif has_instances:
-            need_cols.append("instances")
+            metric_arr = frequent_lower["instances"].to_numpy()
 
-        for _, row in frequent_lower[need_cols].iterrows():
-            items = tuple(
-                sorted([row[c] for c in ant_cols] + [row["consequent"]])
-            )
-            if items not in support_dict:
-                if has_support:
-                    support_dict[items] = row["support"]
-                elif has_instances:
-                    support_dict[items] = row["instances"] / total_transactions
+        for i, row in enumerate(items_arr):
+            items = tuple(sorted(row.tolist()))
+            if items in support_dict:
+                continue
+            if has_support:
+                support_dict[items] = metric_arr[i]
+            elif has_instances:
+                support_dict[items] = metric_arr[i] / total_transactions
 
     return support_dict
 

@@ -87,10 +87,29 @@ def compute_associations(
     result["_b_trans_count"] = result["item_B"].map(item_trans_count)
     support_a = result["_trans_count"] / total_transactions
     support_b = result["_b_trans_count"] / total_transactions
-    result["lift"] = np.round(result["confidence"] / support_b, 6)
-    result["conviction"] = np.round(
-        (1 - support_b) / (1 - result["confidence"] + 1e-10), 4
+    # lift: support_b > 0 is guaranteed for emitted pairs (both items appear
+    # in at least one transaction), so no epsilon smoothing needed.  Use
+    # np.inf for the (unreachable) sup_b=0 case to avoid silent artifacts.
+    result["lift"] = np.round(
+        np.where(
+            support_b > 0,
+            result["confidence"] / support_b,
+            np.inf,
+        ),
+        6,
     )
+    # conviction: undefined at confidence==1 (→ +inf) or sup_b==1 (→ NaN),
+    # matching the classic information-theoretic definition.  Epsilon
+    # smoothing would produce large-but-finite values that silently survive
+    # `>= threshold` filters.
+    _conf = result["confidence"].to_numpy()
+    _sup_b = support_b.to_numpy()
+    _conviction = np.full(len(result), np.nan, dtype=np.float64)
+    _finite = (_conf < 1.0) & (_sup_b < 1.0)
+    _conviction[_finite] = (1.0 - _sup_b[_finite]) / (1.0 - _conf[_finite])
+    _inf_mask = (_conf >= 1.0) & (_sup_b < 1.0)
+    _conviction[_inf_mask] = np.inf
+    result["conviction"] = np.round(_conviction, 4)
     result["leverage"] = np.round(
         result["support"] - (support_a * support_b), 6
     )

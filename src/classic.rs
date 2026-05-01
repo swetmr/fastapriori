@@ -378,15 +378,14 @@ pub fn rust_classic_compute_pairs<'py>(
     let mut index = TransactionIndex::build(txn_slice, item_slice);
 
     // Also build inverted index for metric computation
-    let (_, _, item_counts_map) =
-        common::build_inverted_index(txn_slice, item_slice);
+    let idx = common::build_inverted_index(txn_slice, item_slice, n_items);
 
     let n_txn_f64 = n_transactions as f64;
 
-    // Pre-compute item supports
+    // Pre-compute item supports (idx.item_counts is Vec<u32> indexed by item_id)
     let mut item_support = vec![0.0_f64; n_items as usize];
-    for (&item, &count) in &item_counts_map {
-        item_support[item as usize] = count as f64 / n_txn_f64;
+    for i in 0..n_items as usize {
+        item_support[i] = idx.item_counts[i] as f64 / n_txn_f64;
     }
 
     // Run classic Apriori up to k=2
@@ -428,8 +427,8 @@ pub fn rust_classic_compute_pairs<'py>(
     for (pair, &co_count) in freq_pairs {
         let item_a = pair[0];
         let item_b = pair[1];
-        let count_a = item_counts_map.get(&item_a).copied().unwrap_or(1);
-        let count_b = item_counts_map.get(&item_b).copied().unwrap_or(1);
+        let count_a = idx.item_counts.get(item_a as usize).copied().unwrap_or(1);
+        let count_b = idx.item_counts.get(item_b as usize).copied().unwrap_or(1);
 
         let instances = co_count as f64;
         let sup_a = item_support[item_a as usize];
@@ -441,8 +440,14 @@ pub fn rust_classic_compute_pairs<'py>(
 
         // Direction A -> B
         let conf_ab = instances / count_a as f64;
-        let lift_ab = conf_ab / (sup_b + 1e-10);
-        let conviction_ab = (1.0 - sup_b) / (1.0 - conf_ab + 1e-10);
+        let lift_ab = if sup_b > 0.0 { conf_ab / sup_b } else { f64::INFINITY };
+        let conviction_ab = if sup_b >= 1.0 {
+            f64::NAN
+        } else if conf_ab >= 1.0 {
+            f64::INFINITY
+        } else {
+            (1.0 - sup_b) / (1.0 - conf_ab)
+        };
 
         out_item_a.push(item_a as i32);
         out_item_b.push(item_b as i32);
@@ -457,8 +462,14 @@ pub fn rust_classic_compute_pairs<'py>(
 
         // Direction B -> A
         let conf_ba = instances / count_b as f64;
-        let lift_ba = conf_ba / (sup_a + 1e-10);
-        let conviction_ba = (1.0 - sup_a) / (1.0 - conf_ba + 1e-10);
+        let lift_ba = if sup_a > 0.0 { conf_ba / sup_a } else { f64::INFINITY };
+        let conviction_ba = if sup_a >= 1.0 {
+            f64::NAN
+        } else if conf_ba >= 1.0 {
+            f64::INFINITY
+        } else {
+            (1.0 - sup_a) / (1.0 - conf_ba)
+        };
 
         out_item_a.push(item_b as i32);
         out_item_b.push(item_a as i32);
@@ -503,6 +514,8 @@ pub fn rust_classic_compute_pipeline<'py>(
     item_ids: PyReadonlyArray1<'py, i32>,
     k_max: usize,
     n_items: u32,
+    // Kept for signature parity with rust_compute_pipeline; classic derives the
+    // transaction count from the inverted index itself and does not need it here.
     _n_transactions: u32,
     min_support: f64,
     item_weights: PyReadonlyArray1<'py, f64>,
@@ -756,11 +769,9 @@ mod tests {
             levels.get(&2).cloned().unwrap_or_default();
 
         // Fast path (using the pairs module)
-        let (txn_to_items, item_to_txns, _) =
-            common::build_inverted_index(&txn_ids, &item_ids);
+        let idx = common::build_inverted_index(&txn_ids, &item_ids, n_items);
         let (fast_pair_counts, _) = crate::pairs::count_frequent_pairs(
-            &txn_to_items,
-            &item_to_txns,
+            &idx,
             n_items as usize,
             n_transactions,
             min_support,

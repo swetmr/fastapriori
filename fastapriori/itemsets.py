@@ -21,6 +21,8 @@ def find_itemsets(
     show_progress: bool = False,
     backend: str = "auto",
     n_workers: int | None = None,
+    algo: str = "fast",
+    **kwargs,
 ) -> pd.DataFrame:
     """Compute k-itemset co-occurrence associations.
 
@@ -45,4 +47,6 @@ def find_itemsets(
         show_progress=show_progress,
         backend=backend,
         n_workers=n_workers,
+        algo=algo,
+        **kwargs,
     )

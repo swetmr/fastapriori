@@ -89,10 +89,21 @@ def compute_associations(
     support_a = result["_a_count"] / total_transactions
     support_b = result["_b_count"] / total_transactions
 
-    result["lift"] = np.round(result["confidence"] / support_b, 6)
-    result["conviction"] = np.round(
-        (1 - support_b) / (1 - result["confidence"] + 1e-10), 4
+    # lift: use np.inf for the (unreachable) sup_b=0 case instead of
+    # epsilon-smoothing, to avoid silent artifacts downstream.
+    result["lift"] = np.round(
+        np.where(support_b > 0, result["confidence"] / support_b, np.inf),
+        6,
     )
+    # conviction: +inf at confidence==1, NaN at sup_b==1 (classic definition).
+    _conf = result["confidence"].to_numpy()
+    _sup_b = support_b.to_numpy()
+    _conviction = np.full(len(result), np.nan, dtype=np.float64)
+    _finite = (_conf < 1.0) & (_sup_b < 1.0)
+    _conviction[_finite] = (1.0 - _sup_b[_finite]) / (1.0 - _conf[_finite])
+    _inf_mask = (_conf >= 1.0) & (_sup_b < 1.0)
+    _conviction[_inf_mask] = np.inf
+    result["conviction"] = np.round(_conviction, 4)
     result["leverage"] = np.round(
         result["support"] - (support_a * support_b), 6
     )

@@ -17,12 +17,17 @@ Generalises to k=4 (anchor on triplets), k=5 (anchor on quadruplets), etc.
 
 from __future__ import annotations
 
+import logging
 import os
+import warnings
 from collections import Counter, defaultdict
 from itertools import combinations, chain
+from math import comb
 from multiprocessing import Pool
 
 import pandas as pd
+
+logger = logging.getLogger("fastapriori")
 
 
 # ---------------------------------------------------------------------------
@@ -49,6 +54,8 @@ def compute_itemsets(
     frequent_lower: pd.DataFrame | None,
     n_workers: int | None,
     show_progress: bool,
+    max_items_per_txn: int | None = None,
+    item_weights: dict | None = None,
 ) -> Counter:
     """Compute k-itemset counts using Counter+chain anchored on (k-1)-sets.
 
@@ -90,6 +97,45 @@ def compute_itemsets(
     txn_to_int = {txn: i for i, txn in enumerate(trans_dict)}
     int_to_txn = {i: txn for txn, i in txn_to_int.items()}
     int_trans_dict = {txn_to_int[txn]: items for txn, items in trans_dict.items()}
+
+    # Warn on pathologically dense transactions when no cap is set and no
+    # lower-set filter is available: enumerating C(d_max, k-1) per txn can
+    # explode memory on outliers.
+    if max_items_per_txn is None and freq_lower_sets is None and k >= 3:
+        _d_max = max((len(items) for items in int_trans_dict.values()), default=0)
+        if _d_max >= k:
+            _est = comb(_d_max, k - 1)
+            if _est > 5_000_000:
+                warnings.warn(
+                    f"counter_chain backend at k={k}: a transaction with "
+                    f"d={_d_max} items will enumerate C({_d_max}, {k-1})="
+                    f"{_est:,} subsets. Pass max_items_per_txn=<n> to cap, "
+                    "or provide frequent_lower= to prune.",
+                    UserWarning,
+                    stacklevel=2,
+                )
+
+    if max_items_per_txn is not None:
+        # Cap each transaction to its top-N items by weight (higher = keep).
+        # Default weight = item frequency, same as Rust backend.
+        if item_weights is None:
+            _freq: dict = {}
+            for items in int_trans_dict.values():
+                for it in items:
+                    _freq[it] = _freq.get(it, 0) + 1
+            item_weights = _freq
+        _capped = {}
+        for txn, items in int_trans_dict.items():
+            if len(items) <= max_items_per_txn:
+                _capped[txn] = items
+            else:
+                _sorted = sorted(
+                    items,
+                    key=lambda x: item_weights.get(x, 0),
+                    reverse=True,
+                )
+                _capped[txn] = set(_sorted[:max_items_per_txn])
+        int_trans_dict = _capped
 
     lower_to_txns = _build_lower_to_txns(
         int_trans_dict, k, freq_lower_sets
@@ -134,9 +180,9 @@ def _extract_all_freq_pairs(frequent_lower: pd.DataFrame) -> set:
 
     ant_cols = [c for c in frequent_lower.columns if c.startswith("antecedent_")]
     if ant_cols and "consequent" in frequent_lower.columns:
-        for _, row in frequent_lower[ant_cols + ["consequent"]].iterrows():
-            items = [row[c] for c in ant_cols] + [row["consequent"]]
-            for pair in combinations(sorted(items), 2):
+        arr = frequent_lower[ant_cols + ["consequent"]].to_numpy()
+        for row in arr:
+            for pair in combinations(sorted(row.tolist()), 2):
                 result.add(pair)
         return result
 
@@ -149,16 +195,19 @@ def _extract_frequent_lower_sets(frequent_lower: pd.DataFrame, k: int) -> set:
 
     # Pair-level columns (output of find_associations)
     if "item_A" in frequent_lower.columns and "item_B" in frequent_lower.columns:
-        for a, b in zip(frequent_lower["item_A"], frequent_lower["item_B"]):
+        for a, b in zip(
+            frequent_lower["item_A"].to_numpy(),
+            frequent_lower["item_B"].to_numpy(),
+        ):
             result.add(tuple(sorted([a, b])))
         return result
 
     # Higher-level: antecedent_* + consequent columns
     ant_cols = [c for c in frequent_lower.columns if c.startswith("antecedent_")]
     if ant_cols and "consequent" in frequent_lower.columns:
-        for _, row in frequent_lower[ant_cols + ["consequent"]].iterrows():
-            items = tuple(sorted([row[c] for c in ant_cols] + [row["consequent"]]))
-            result.add(items)
+        arr = frequent_lower[ant_cols + ["consequent"]].to_numpy()
+        for row in arr:
+            result.add(tuple(sorted(row.tolist())))
         return result
 
     return result

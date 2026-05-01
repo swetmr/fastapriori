@@ -1,10 +1,55 @@
+# Python build artifacts
 __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
+build/
 dist/
-target/
 .pytest_cache/
+
+# Compiled Rust extension (built locally; published as a wheel from CI)
 *.so
 *.pyd
 *.dll
+*.pdb
+
+# Rust build directories
+target/
+target_local/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Benchmark inputs and outputs (data files are large; do not commit)
+benchmarks/data/
+*.csv
+*.tsv
+*.pkl
+*.parquet
+*.feather
+*.h5
+
+# Notebooks (kept out of the published repo; commit explicitly if needed)
+*.ipynb
+!benchmarks/rigorous_baseline_benchmark_py2_1t.ipynb
+.ipynb_checkpoints/
+
+# Scratch / profiling scripts
+bench_*.py
+prep_*.py
+profile_*.py
+prepare_inputs.py
+
+# Plan / scratch markdown
+*_plan.md
+plan.md
+opt_plan.md
+
+# IDE / OS / agent caches
+.claude/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

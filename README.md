@@ -2,7 +2,7 @@
 
 Fast association rule mining — even at very low support thresholds.
 
-Built on a compiled **Rust engine** with an inverted-index architecture. fastapriori counts pair co-occurrences exhaustively at k=2 and uses an anchor-and-extend strategy with Apriori pruning at k>=3. Across eight real-world datasets and 10 synthetic ones, it wins **100% of k=2 configurations** and **89% at k=3**, with real-world speedups up to **12x at k=3** and **13.2x at k=5** over a like-for-like compiled Apriori baseline (and 352x over the standard Python `efficient-apriori`).
+Built on a compiled **Rust engine** with an inverted-index architecture. fastapriori counts pair co-occurrences exhaustively at k=2 and uses an anchor-and-extend strategy with Apriori pruning at k>=3. Across **eight real-world datasets** (BMS-WebView-1/2, Chainstore, Groceries, Instacart, Kosarak, Online Retail, Retail Belgian — 9.8K to 3.2M transactions, 169 to 49K items), `algo="fast"` wins **100% of k=2 configurations vs `efficient-apriori`** (median 61x, up to **969x** on Retail Belgian) and **100% vs the like-for-like compiled Apriori baseline** at k=2 (median 3.9x, up to **92.8x**). At k>=3 it wins **91–97%** of configurations vs the same compiled-Apriori baseline (best 27–36x).
 
 ## Installation
 
@@ -99,40 +99,53 @@ This "best of both worlds" design applies brute-force counting where pruning can
 
 ## Performance
 
-Benchmarked on eight real-world datasets at k=2, sweeping `min_support` from 0.0001 to 0.01:
+Benchmarked on eight real-world datasets at k=2, sweeping `min_support` from 0.0001 to 0.01. Each method gets three repeats; the line shows the median, the band shows min–max:
 
-![Benchmark: fastapriori vs efficient-apriori (k=2)](benchmarks/k2_all_real_datasets_grid.png)
+![k=2 rigorous benchmark across 8 real-world datasets](benchmarks/k2_rigorous_grid_med_20260430_143754.png)
 
-**fastapriori's runtime is flat at k=2** across all support levels (it computes everything regardless), while `efficient-apriori` slows by 1–2 orders of magnitude as support drops. The `classic` line (compiled Rust Apriori) tracks `fast` at high support but diverges sharply at low support — the same crossover pattern Apriori has always shown, just without the Python tax.
+Five lines per panel: `efficient_apriori` (Python Apriori), `classic` (compiled Rust Apriori — like-for-like control), `fast_1T` (single-threaded fastapriori), `fast` (parallel fastapriori), and `pyfim (median)` (a native-C reference baseline averaged over its three algorithms).
 
-**The risk profile is asymmetric.** When `fast` is suboptimal (very high support on dense data), the penalty is milliseconds. When classic Apriori is suboptimal (low support), the penalty is 5–53 minutes. Choosing `fast` by default costs you nothing in the worst case and saves everything in the common case.
+**fastapriori's runtime is flat at k=2** across all support levels — for every real dataset, the `fast` line varies by under 7% across the full support sweep (Chainstore: 0.82→0.83s; Instacart: 3.65→3.74s; Retail Belgian: 0.07→0.09s). `efficient_apriori` slows by 1–2 orders of magnitude as support drops; the `classic` line tracks `fast` at high support and diverges at low support — the textbook Apriori crossover, without the Python tax.
 
-## Choosing an Algorithm
+**The risk profile is asymmetric.** When `fast` is suboptimal (very high support, small data), the penalty is milliseconds. When Apriori is suboptimal (low support, large data), the penalty is minutes. Choosing `fast` by default costs you nothing in the worst case and saves everything in the common case.
 
-The default (`algo="fast"`) is correct for almost every workflow. If you are working on dense, highly correlated data at high k and want to double-check, use this lightweight heuristic (computed from two one-pass dataset statistics — no benchmarking required):
+| Real-world result (k=2, 8 datasets, 5 supports) | Wins | Median speedup | Best |
+|--|--|--|--|
+| `fast` vs `efficient_apriori` | **39 / 39 (100%)** | 61x | **969x** (Retail Belgian, s=10⁻⁴) |
+| `fast` vs compiled Rust Apriori (`classic`) | **40 / 40 (100%)** | 3.9x | **92.8x** (Retail Belgian, s=10⁻⁴) |
 
-```python
-d_per_txn = df.groupby(transaction_col)[item_col].nunique()
-d_avg, d_max, d_std = d_per_txn.mean(), d_per_txn.max(), d_per_txn.std()
+At k>=3 (same eight real datasets, k=3..9), `fast` beats the like-for-like compiled Apriori on **91–97% of configurations** with peak speedups of 27–36x. Native-C engines hand-tuned for high k (Borgelt's `fpgrowth`, pyfim's `eclat`) generally beat `fast` at k>=3 on these datasets — if you have one of those installed and your workload is k>=4 with tight SLAs, use them. For everyone else, `fast` stays inside one Python `pip install`.
 
-tau  = d_max / d_avg        # tail ratio — how extreme your biggest basket is
-d_cv = d_std  / d_avg       # coefficient of variation of transaction size
+## Decision Rule
 
-if tau < 25 and d_cv < 1.25:
-    algo = "fast"           # safe default across every dataset tested
-else:
-    # Optional: run both at k=2 and k=3 on target min_support, measure
-    # A_obs = speedup_at_k3 / speedup_at_k2.  If A_obs >= 1.3, commit to
-    # fast for every higher k.  Otherwise benchmark both at your target k.
-    ...
+```
+Is k = 2?
+  Yes -> use algo="fast"  (100% real-world win rate; constant runtime in min_support)
+
+Is k >= 3?  Compute two one-pass stats:
+    d_per_txn = df.groupby(transaction_col)[item_col].nunique()
+    tau  = d_per_txn.max() / d_per_txn.mean()      # tail ratio
+    d_cv = d_per_txn.std() / d_per_txn.mean()      # CV of basket size
+    d_avg = d_per_txn.mean()
+
+  Tame data (tau < 25  AND  d_cv < 1.25  AND  d_avg < 15)
+    -> use algo="fast"
+       e.g. Groceries (tau=7.3, cv=0.81, d_avg=4.4),
+            Instacart (tau=14.4, cv=0.75, d_avg=10.1),
+            Retail Belgian (tau=7.4, cv=0.79, d_avg=10.3),
+            Chainstore (tau=23.5, cv=1.23, d_avg=7.2)
+
+  Heavy outlier tail (tau >= 25 or d_cv >= 1.25), e.g. BMS-WebView-1/2, Kosarak
+    -> k = 3:    use algo="fast"
+       k >= 4:   use algo="fast" with max_items_per_txn=50
+                 (caps the C(d_max, k-1) blow-up; counts become lower bounds)
+
+  Dense baskets (d_avg >= 15), e.g. Online Retail (d_avg=18.2)
+    -> consider algo="classic" with a real min_support;
+       or algo="fast" with max_items_per_txn=50
 ```
 
-Three empirical findings back this up:
-1. **k=2**: `fast` wins **100%** of datasets (real + synthetic).
-2. **k=3**: `fast` wins **89%** of datasets with speedups up to 12x.
-3. **k=4–9**: `fast` wins 56–72% of datasets with speedups up to 13.2x.
-
-If the heuristic above flags your data as risky *and* you have k>=4 *and* you have tight runtime SLAs, benchmark both at your target `k` and pick the winner. In every other case, use `fast`.
+If you don't want to think about it, `algo="fast"` is the right answer everywhere except the dense-and-high-k corner — and even there the penalty is bounded by `max_items_per_txn`.
 
 ## Handling Dense / Outlier Transactions: `max_items_per_txn`
 
@@ -241,7 +254,7 @@ find_associations(
 ```
 
 **Algorithm choice:**
-- `"fast"` (default) — inverted-index count-all. Constant runtime at k=2, wins 89% at k=3.
+- `"fast"` (default) — inverted-index count-all. Constant runtime at k=2 (100% real-world wins); 91–97% wins vs the compiled Apriori control across k=3..9 on real datasets.
 - `"classic"` — Rust port of Apriori with join+prune+short-circuit. Requires `min_support`. Potentially useful for dense, correlated data at k>=4 where the transaction-size tail violates the `tau < 25 and d_cv < 1.25` heuristic above.
 - `"auto"` — routes to `"fast"` (the safe default in all but edge cases).
 
