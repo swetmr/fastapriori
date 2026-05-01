@@ -116,7 +116,7 @@ Five lines per panel: `efficient_apriori` (Python Apriori), `classic` (compiled 
 | `fast` vs `pyfim` (native C; median of `apriori`, `eclat`, `fpgrowth`) | **26 / 40 (65%)** | 1.3x | **4.8x** (Kosarak, s=10⁻⁴) |
 
 At k>=3 (same eight real datasets, k=3..9), `fast` beats the like-for-like compiled Apriori on **91–97% of configurations** with peak speedups of 27–36x. 
-fastapriori gives competitive performance wrt pyfim (median) on k>=3 for wide, sparse, big data. For narrow, dense data prefer pyfim. 
+fastapriori gives competitive performance wrt pyfim (median) on k>=3 for wide, sparse, big data. For narrow, dense data at k>=4, prefer pyfim. 
 
 ## Decision Rule
 
@@ -167,7 +167,7 @@ result = find_associations(
 - **Counts are lower bounds.** A capped itemset's count is never higher than the true count; some genuinely frequent itemsets may be missed if their count drops below `min_support` after capping. Use it when you *prefer a fast, conservative answer* to a slow, exact one.
 - **Custom weights.** Pass an `item_weights={item: score}` dict to prioritize high-revenue / high-margin / business-critical items regardless of frequency.
 - **Only applies at k>=3.** Pairs are always counted exactly. Supported by both `algo="fast"` and `algo="classic"`.
-- **When it pays off.** Reported impact from the paper: on Online Retail at k=4 with cap=50, per-anchor enumeration cost drops by ~1,300x; on Kosarak, ~133,000x.
+- **When it pays off.** Reported impact from runtime data: on Online Retail at k=4 with cap=50, per-anchor enumeration cost drops by ~1,300x; on Kosarak, ~133,000x.
 
 ## Low-Memory Mode
 
@@ -315,7 +315,7 @@ Requires `networkx` (`pip install fastapriori[graph]`).
 
 ## Limitations
 
-- **Memory at low s, large m**: the pair counter scales O(m^2); on Instacart (~50k items) expect ~30 GB at `s = 10^-4`. Use `low_memory=True` when you have a `min_support`.
+- **Memory at low s, large m**: the pair counter scales; on Instacart (~50k items) expect ~10 GB at `s = 10^-4`. Use `low_memory=True` when you have a `min_support`.
 - **Dense data at high k**: the combinatorial C(d_max, k-1) term is fundamental. `max_items_per_txn` bounds it at the cost of lower-bound counts.
 - **Single-machine**: no distributed (Spark / Dask) version is provided.
 
