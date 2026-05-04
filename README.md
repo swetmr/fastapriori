@@ -358,7 +358,6 @@ Zenodo record.
 }
 ```
 
-(Update the entry once the paper is accepted at a venue.)
 
 ## Reproducibility
 
