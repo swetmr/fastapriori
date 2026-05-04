@@ -1,6 +1,10 @@
 # fastapriori
 
-Fast association rule mining — even at very low support thresholds.
+[![PyPI](https://img.shields.io/pypi/v/fastapriori.svg)](https://pypi.org/project/fastapriori/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20021781.svg)](https://doi.org/10.5281/zenodo.20021781)
+
+Fast frequent itemset mining (with full association-rule metrics at k=2) — even at very low support thresholds.
 
 A compiled Rust engine with an inverted-index architecture. Counts pair co-occurrences exhaustively at k=2 (constant runtime in `min_support`) and uses anchor-and-extend with Apriori pruning at k>=3. Across eight real-world datasets (9.8K to 3.2M transactions, up to 49K items), `algo="fast"` wins **100% of k=2 configurations vs `efficient-apriori`** (median 61x, up to 969x) and **100% vs the like-for-like compiled Apriori baseline** (median 3.9x, up to 92.8x).
 

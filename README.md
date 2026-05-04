@@ -1,6 +1,11 @@
 # fastapriori
 
-Fast association rule mining — even at very low support thresholds.
+[![PyPI](https://img.shields.io/pypi/v/fastapriori.svg)](https://pypi.org/project/fastapriori/)
+[![Python versions](https://img.shields.io/pypi/pyversions/fastapriori.svg)](https://pypi.org/project/fastapriori/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20021781.svg)](https://doi.org/10.5281/zenodo.20021781)
+
+Fast frequent itemset mining (with full association-rule metrics at k=2) — even at very low support thresholds.
 
 Built on a compiled **Rust engine** with an inverted-index architecture. fastapriori counts pair co-occurrences exhaustively at k=2 and uses an anchor-and-extend strategy with Apriori pruning at k>=3. Across **eight real-world datasets** (BMS-WebView-1/2, Chainstore, Groceries, Instacart, Kosarak, Online Retail, Retail Belgian — 9.8K to 3.2M transactions, 169 to 49K items), `algo="fast"` wins **100% of k=2 configurations vs `efficient-apriori`** (median 61x, up to **969x** on Retail Belgian) and **100% vs the like-for-like compiled Apriori baseline** at k=2 (median 3.9x, up to **92.8x**). At k>=3 it wins **91–97%** of configurations vs the same compiled-Apriori baseline (best 27–36x).
 
@@ -319,6 +324,52 @@ Requires `networkx` (`pip install fastapriori[graph]`).
 - **Dense data at high k**: the combinatorial C(d_max, k-1) term is fundamental. `max_items_per_txn` bounds it at the cost of lower-bound counts.
 - **Single-machine**: no distributed (Spark / Dask) version is provided.
 
+## Citation
+
+If you use *fastapriori* in your research, please cite both the
+software (Zenodo) and the accompanying paper.
+
+**Software (Zenodo):**
+
+```bibtex
+@software{swet2026fastapriori_software,
+  author    = {Mrigank Swet},
+  title     = {fastapriori: A Hybrid Architecture for Fast Frequent Itemset Mining},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.20021781},
+  url       = {https://doi.org/10.5281/zenodo.20021781}
+}
+```
+
+The DOI above is the **Concept DOI** — it always resolves to the
+latest version of the deposit. If you need to pin to a specific
+snapshot, use the version-specific DOI from the corresponding
+Zenodo record.
+
+**Paper:**
+
+```bibtex
+@misc{swet2026fastapriori,
+  author = {Mrigank Swet},
+  title  = {A Hybrid Architecture for Fast Frequent Itemset Mining},
+  year   = {2026},
+  url    = {https://github.com/swetmr/fastapriori}
+}
+```
+
+(Update the entry once the paper is accepted at a venue.)
+
+## Reproducibility
+
+The Zenodo deposit at
+[https://doi.org/10.5281/zenodo.20021781](https://doi.org/10.5281/zenodo.20021781)
+contains the complete reproducibility artifact: source code, raw
+run logs, aggregated benchmark CSVs, dataset-preprocessing scripts,
+and synthetic-data generator parameters. See Appendix F of the
+paper for the full hardware/software environment and reproduction
+instructions.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
