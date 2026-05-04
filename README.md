@@ -244,7 +244,7 @@ find_associations(
     k=2,                     # itemset size (2-50)
     min_support=None,        # minimum pair support (float or None)
     min_confidence=0.0,      # minimum P(B|A)
-    min_lift=0.0,            # minimum lift (k=2 only)
+    min_lift=0.0,            # minimum lift
     min_conviction=0.0,      # minimum conviction (k=2 only)
     min_leverage=None,       # minimum leverage (k=2 only)
     min_cosine=0.0,          # minimum cosine similarity (k=2 only)
