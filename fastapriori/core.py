@@ -23,7 +23,7 @@ def find_associations(
     min_support: float | None = None,
     min_confidence: float | None = 0.0,
     min_lift: float | None = 0.0,
-    min_conviction: float | None = 0.0,
+    min_conviction: float | None = None,
     min_leverage: float | None = None,
     min_cosine: float | None = 0.0,
     min_jaccard: float | None = 0.0,
@@ -65,7 +65,10 @@ def find_associations(
     min_lift : float or None
         Minimum lift threshold. Default 0.0. Only used when k=2.
     min_conviction : float or None
-        Minimum conviction threshold. Default 0.0. Only used when k=2.
+        Minimum conviction threshold. Default None (no filtering). Only
+        used when k=2. Conviction is NaN when the consequent occurs in
+        every transaction, and any threshold (including 0.0) drops those
+        rules.
     min_leverage : float or None
         Minimum leverage threshold. Default None. Only used when k=2.
     min_cosine : float or None
@@ -134,8 +137,11 @@ def find_associations(
     backend_options : dict or None
         Reserved for internal tuning. Not a stable API — keys may be
         renamed or removed without deprecation. Currently recognised:
-        ``"fast_variant"`` in {``"apriori"``, ``"eclat"``}, applied only
-        when ``algo="fast"`` and k>=3.
+        ``"fast_variant"`` in {``"apriori"``, ``"eclat"``,
+        ``"eclat_seeded"``}, applied only when ``algo="fast"`` and k>=3;
+        ``"pair_variant"`` in {``"v0"``, ``"suffix"``, ``"filtered"``,
+        ``"suffix_filtered"``}, applied only when ``algo="fast"``, k=2 and
+        the Rust backend is used.
 
     Returns
     -------
@@ -185,12 +191,20 @@ def find_associations(
         "v0_baseline", "v1_roaring", "v2_memo",
         "v3_adaptive", "v5_prefilter", "v6_gating",
     )
+    _FAST_VARIANTS = ("apriori", "eclat", "eclat_seeded")
+    _PAIR_VARIANTS = ("v0", "suffix", "filtered", "suffix_filtered")
     if backend_options is not None:
         _fv = backend_options.get("fast_variant")
-        if _fv is not None and _fv not in ("apriori", "eclat"):
+        if _fv is not None and _fv not in _FAST_VARIANTS:
             raise ValueError(
-                f"backend_options['fast_variant'] must be 'apriori' or "
-                f"'eclat', got {_fv!r}"
+                f"backend_options['fast_variant'] must be one of "
+                f"{_FAST_VARIANTS}, got {_fv!r}"
+            )
+        _pv = backend_options.get("pair_variant")
+        if _pv is not None and _pv not in _PAIR_VARIANTS:
+            raise ValueError(
+                f"backend_options['pair_variant'] must be one of "
+                f"{_PAIR_VARIANTS}, got {_pv!r}"
             )
         _iv = backend_options.get("impl_variant")
         if _iv is not None and _iv not in _IMPL_VARIANTS:
@@ -351,6 +365,7 @@ def find_associations(
             min_support, min_confidence, min_lift,
             min_conviction, min_leverage, min_cosine, min_jaccard,
             show_progress, backend,
+            pair_variant=(backend_options or {}).get("pair_variant", "v0"),
         )
     else:
         result = _find_k_itemsets(
@@ -379,7 +394,17 @@ def _apply_sort(result: pd.DataFrame, sorted_by: str | None) -> pd.DataFrame:
             stacklevel=3,
         )
         return result
-    return result.sort_values(sorted_by, ascending=False).reset_index(drop=True)
+    # Rows can arrive in hash-map / thread-scheduling order, so break ties on the item columns
+    # (stable sort) to make the output order reproducible across runs and thread counts.
+    item_cols = [c for c in result.columns
+                 if c.startswith(("item_", "antecedent", "consequent"))]
+    keys = {c: (result[c] if pd.api.types.is_numeric_dtype(result[c]) else result[c].astype(str))
+            for c in item_cols}
+    tie = pd.DataFrame({f"__tie{i}": v for i, v in enumerate(keys.values())}, index=result.index)
+    order = (pd.concat([result[[sorted_by]], tie], axis=1)
+             .sort_values([sorted_by, *tie.columns], ascending=[False] + [True] * len(tie.columns),
+                          kind="mergesort").index)
+    return result.loc[order].reset_index(drop=True)
 
 
 def _drop_sentinel_rows(
@@ -413,11 +438,19 @@ def _drop_sentinel_rows(
 # ---------------------------------------------------------------------------
 
 
+def _filter_exact_support(result, df, transaction_col, min_support):
+    """Keep rows with instances / n_transactions >= min_support (unrounded)."""
+    if min_support is None or len(result) == 0:
+        return result
+    n_txns = df[transaction_col].nunique()
+    return result[result["instances"].to_numpy() / n_txns >= min_support]
+
+
 def _find_pairs(
     df, transaction_col, item_col,
     min_support, min_confidence, min_lift,
     min_conviction, min_leverage, min_cosine, min_jaccard,
-    show_progress, backend, trans_dict=None,
+    show_progress, backend, trans_dict=None, pair_variant="v0",
 ) -> pd.DataFrame:
     """Pairwise (k=2) co-occurrence with 7 metrics."""
     if backend == "polars":
@@ -439,7 +472,7 @@ def _find_pairs(
             min_support=min_support, min_confidence=min_confidence,
             min_lift=min_lift, min_conviction=min_conviction,
             min_leverage=min_leverage, min_cosine=min_cosine,
-            min_jaccard=min_jaccard,
+            min_jaccard=min_jaccard, pair_variant=pair_variant,
         )
         return result
 
@@ -447,9 +480,10 @@ def _find_pairs(
         df, transaction_col, item_col, show_progress, trans_dict=trans_dict,
     )
 
-    # Apply all metric filters centrally
+    # Apply all metric filters centrally. Support is tested on exact counts: the backends
+    # round it to 6 decimals, which dropped pairs for thresholds with more decimals.
+    result = _filter_exact_support(result, df, transaction_col, min_support)
     filters = {
-        "support": min_support,
         "confidence": min_confidence,
         "lift": min_lift,
         "conviction": min_conviction,
@@ -499,7 +533,7 @@ def _find_k_itemsets(
     # tid-lists and cannot consume caller-provided frequent_lower, so
     # chaining via _find_k_itemsets would just do duplicate work).
     if backend == "rust" and (
-        frequent_lower is None or fast_variant == "eclat"
+        frequent_lower is None or fast_variant in ("eclat", "eclat_seeded")
     ):
         from fastapriori.backends.rust_backend import compute_pipeline
         return compute_pipeline(
@@ -541,9 +575,14 @@ def _find_k_itemsets(
                 k2_backend = "polars"
             except ImportError:
                 k2_backend = "pandas"
+        # Only min_support may prune here: a NaN metric (e.g. conviction
+        # when the consequent is in every transaction) must not drop a
+        # frequent pair from the lower level.
         frequent_lower = _find_pairs(
             df, transaction_col, item_col,
-            min_support, 0.0, 0.0, 0.0, None, 0.0, 0.0,
+            min_support=min_support, min_confidence=None, min_lift=None,
+            min_conviction=None, min_leverage=None, min_cosine=None,
+            min_jaccard=None,
             show_progress=False, backend=k2_backend, trans_dict=trans_dict,
         )
         for level in range(3, k):
@@ -657,24 +696,25 @@ def _find_k_itemsets(
             consequent = itemset[i]
             antecedents = itemset[:i] + itemset[i + 1:]
             ant_key = tuple(sorted(antecedents))
-            ant_sup = lower_support.get(ant_key, 0)
-            confidence = support / (ant_sup + 1e-10)
+            # confidence from exact counts (no epsilon), so 1.0 stays 1.0
+            ant_cnt = round(lower_support.get(ant_key, 0) * total_transactions)
+            confidence = count / ant_cnt if ant_cnt > 0 else 0.0
             cons_sup = item_support.get(consequent, 0)
-            lift = confidence / (cons_sup + 1e-10)
+            lift = confidence / cons_sup if cons_sup > 0 else 0.0
             records.append(
                 (*antecedents, consequent, count, support, confidence, lift)
             )
 
     result = pd.DataFrame(records, columns=out_cols)
-    result["support"] = np.round(result["support"], 6)
-    result["confidence"] = np.round(result["confidence"], 6)
-    result["lift"] = np.round(result["lift"], 6)
 
-    # Filter
+    # Filter on the unrounded values, then round for display
     if min_support is not None:
         result = result[result["support"] >= min_support]
     if min_confidence is not None:
         result = result[result["confidence"] >= min_confidence]
+    result["support"] = np.round(result["support"], 6)
+    result["confidence"] = np.round(result["confidence"], 6)
+    result["lift"] = np.round(result["lift"], 6)
 
     return result.reset_index(drop=True)
 
@@ -697,9 +737,9 @@ def _find_classic_pairs(
         df, transaction_col, item_col, show_progress, min_support=min_support,
     )
 
-    # Apply metric filters
+    # Apply metric filters (support on exact counts, as in _find_pairs)
+    result = _filter_exact_support(result, df, transaction_col, min_support)
     filters = {
-        "support": min_support,
         "confidence": min_confidence,
         "lift": min_lift,
         "conviction": min_conviction,

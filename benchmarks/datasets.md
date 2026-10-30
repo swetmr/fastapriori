@@ -5,20 +5,21 @@ The benchmark notebook (`benchmarks/rigorous_baseline_benchmark_py2_1t.ipynb`) a
 | Dataset | Source | Download | Place at |
 |---|---|---|---|
 | Groceries | R `arules` package | https://raw.githubusercontent.com/stedy/Machine-Learning-with-R-datasets/master/groceries.csv | `benchmarks/data/groceries.csv` |
-| BMS-WebView-1 | SPMF (KDD Cup 2000) | https://www.philippe-fournier-viger.com/spmf/datasets/BMS1.txt | `benchmarks/data/BMS1.txt` |
-| BMS-WebView-2 | SPMF (KDD Cup 2000) | https://www.philippe-fournier-viger.com/spmf/datasets/BMS2.txt | `benchmarks/data/BMS2.txt` |
-| T10I4D100K | SPMF (IBM synthetic) | https://www.philippe-fournier-viger.com/spmf/datasets/T10I4D100K.txt | `benchmarks/data/T10I4D100K.txt` |
-| Retail (Belgian) | SPMF (Brijs et al., 1999) | https://www.philippe-fournier-viger.com/spmf/datasets/retail.txt | `benchmarks/data/retail.txt` |
-| Online Retail | UCI ML Repository | https://archive.ics.uci.edu/dataset/352/online+retail (export as `online-retail.csv`) | `benchmarks/online-retail.csv` |
-| Kosarak | SPMF (Hungarian news portal) | https://www.philippe-fournier-viger.com/spmf/datasets/kosarak.dat | `benchmarks/data/kosarak.dat` |
-| Chainstore | SPMF (NU-MineBench) | https://www.philippe-fournier-viger.com/spmf/datasets/chainstore.txt | `benchmarks/data/chainstore.txt` |
+| BMS-WebView-1 | SPMF (KDD Cup 2000) | https://www.philippe-fournier-viger.com/spmf/publicdatasets/BMS1_itemset_mining.txt | `benchmarks/data/BMS1.txt` |
+| BMS-WebView-2 | SPMF (KDD Cup 2000) | https://www.philippe-fournier-viger.com/spmf/publicdatasets/BMS2_itemset_mining.txt | `benchmarks/data/BMS2.txt` |
+| T10I4D100K | SPMF (IBM synthetic) | https://www.philippe-fournier-viger.com/spmf/publicdatasets/T10I4D100K.txt | `benchmarks/data/T10I4D100K.txt` |
+| Retail (Belgian) | SPMF (Brijs et al., 1999) | https://www.philippe-fournier-viger.com/spmf/publicdatasets/retail.txt | `benchmarks/data/retail.txt` |
+| Online Retail | UCI ML Repository, **Online Retail II** (dataset 502) | https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip (sheet "Year 2009-2010" of `online_retail_II.xlsx`, exported as `online-retail.csv`) | `benchmarks/online-retail.csv` |
+| Kosarak | SPMF (Hungarian news portal) | https://www.philippe-fournier-viger.com/spmf/publicdatasets/kosarak.dat | `benchmarks/data/kosarak.dat` |
+| Chainstore | SPMF (NU-MineBench) | https://www.philippe-fournier-viger.com/spmf/publicdatasets/chainstoreFIM.txt (save as `chainstore.txt`) | `benchmarks/data/chainstore.txt` |
 | Instacart | Kaggle | https://www.kaggle.com/datasets/psparks/instacart-market-basket-analysis (extract `order_products__prior.csv`) | `benchmarks/data/order_products__prior.csv` |
 
 ## File formats
 
 - **SPMF format** (BMS1, BMS2, T10I4D100K, retail, kosarak, chainstore): one transaction per line, space-separated integer item IDs.
 - **Groceries**: one transaction per line, comma-separated item names.
-- **Online Retail**: standard CSV with `InvoiceNo` and `StockCode` columns.
+- **Online Retail**: standard CSV with `Invoice` and `StockCode` columns (Online Retail II). UCI dataset 352 ("Online Retail", 2010–2011, `InvoiceNo`) is a different release and gives different counts.
+- SPMF's `BMS1.txt`, `BMS2.txt` and `chainstore.txt` under `spmf/datasets/` are sequence or utility formats (and those URLs now return HTTP 300); use the `publicdatasets/` itemset files above.
 - **Instacart**: standard CSV with `order_id` and `product_id` columns.
 
 ## Approximate sizes

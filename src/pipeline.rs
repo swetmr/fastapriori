@@ -46,7 +46,7 @@ pub fn rust_compute_pipeline<'py>(
 
         let n_txn_f64 = n_transactions as f64;
         let min_count = if min_support > 0.0 {
-            (min_support * n_txn_f64).ceil() as u32
+            common::min_count_for(min_support, n_txn_f64) as u32
         } else {
             1
         };
@@ -178,7 +178,7 @@ pub fn rust_compute_pipeline_v1_roaring<'py>(
 
         let n_txn_f64 = n_transactions as f64;
         let min_count = if min_support > 0.0 {
-            (min_support * n_txn_f64).ceil() as u32
+            common::min_count_for(min_support, n_txn_f64) as u32
         } else {
             1
         };
@@ -298,7 +298,7 @@ pub fn rust_compute_pipeline_v2_memo<'py>(
 
         let n_txn_f64 = n_transactions as f64;
         let min_count = if min_support > 0.0 {
-            (min_support * n_txn_f64).ceil() as u32
+            common::min_count_for(min_support, n_txn_f64) as u32
         } else {
             1
         };
@@ -419,7 +419,7 @@ pub fn rust_compute_pipeline_v3_adaptive<'py>(
 
         let n_txn_f64 = n_transactions as f64;
         let min_count = if min_support > 0.0 {
-            (min_support * n_txn_f64).ceil() as u32
+            common::min_count_for(min_support, n_txn_f64) as u32
         } else {
             1
         };
@@ -541,7 +541,7 @@ pub fn rust_compute_pipeline_v5_prefilter<'py>(
 
         let n_txn_f64 = n_transactions as f64;
         let min_count = if min_support > 0.0 {
-            (min_support * n_txn_f64).ceil() as u32
+            common::min_count_for(min_support, n_txn_f64) as u32
         } else {
             1
         };
@@ -664,7 +664,7 @@ pub fn rust_compute_pipeline_v6_gating<'py>(
 
         let n_txn_f64 = n_transactions as f64;
         let min_count = if min_support > 0.0 {
-            (min_support * n_txn_f64).ceil() as u32
+            common::min_count_for(min_support, n_txn_f64) as u32
         } else {
             1
         };

@@ -7,6 +7,7 @@ import pandas as pd
 
 from fastapriori.backends.rust_backend import (
     _check_encoder_capacity,
+    _check_row_capacity,
     _sorted_unique_items,
 )
 
@@ -46,6 +47,7 @@ def compute_associations(
     for candidate pruning.
     """
     _check_rust_classic()
+    _check_row_capacity(len(df))
 
     clean = df[[transaction_col, item_col]].dropna()
 
@@ -102,6 +104,7 @@ def compute_pipeline(
     confidence, lift.
     """
     _check_rust_classic()
+    _check_row_capacity(len(df))
 
     clean = df[[transaction_col, item_col]].dropna()
     unique_items = sorted(clean[item_col].unique())

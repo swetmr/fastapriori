@@ -69,6 +69,18 @@ def _sorted_unique_items(series: pd.Series) -> list:
         ) from e
 
 
+_MAX_ROWS = 2**32 - 1
+
+
+def _check_row_capacity(n_rows: int) -> None:
+    """The Rust inverted index stores offsets and transaction codes as u32."""
+    if n_rows > _MAX_ROWS:
+        raise ValueError(
+            f"{n_rows} (transaction, item) rows exceed the Rust index limit ({_MAX_ROWS}); "
+            "split the data or use backend='python'."
+        )
+
+
 def _check_encoder_capacity(n_unique: int) -> None:
     if n_unique > _MAX_ITEMS:
         raise ValueError(
@@ -95,8 +107,14 @@ def compute_associations(
     min_leverage: float | None = None,
     min_cosine: float | None = None,
     min_jaccard: float | None = None,
+    pair_variant: str = "v0",
 ) -> pd.DataFrame:
     """Compute pairwise associations using the Rust backend.
+
+    ``pair_variant`` selects the counting kernel: ``"v0"`` (all items of
+    each transaction, the published default), ``"suffix"`` (only the sorted
+    B > A suffix, half the increments), ``"filtered"`` (skip items below
+    min_count) or ``"suffix_filtered"`` (both). All return the same rows.
 
     When filter thresholds are provided, they are applied on the numeric
     numpy arrays returned by Rust *before* decoding item IDs back to
@@ -106,6 +124,7 @@ def compute_associations(
     ~4s to <1s because only the surviving rows pay the string-decode cost.
     """
     _check_rust()
+    _check_row_capacity(len(df))
 
     clean = df[[transaction_col, item_col]].dropna()
 
@@ -130,9 +149,23 @@ def compute_associations(
     min_support_arg = 0.0 if min_support is None or min_support <= 0 else float(min_support)
 
     # Call Rust
-    result_dict = rust_compute_pairs(
-        txn_ids, item_ids, len(unique_items), min_support_arg,
-    )
+    if pair_variant == "v0":
+        result_dict = rust_compute_pairs(
+            txn_ids, item_ids, len(unique_items), min_support_arg,
+        )
+    else:
+        import fastapriori._fastapriori_rs as _rs
+        fn = getattr(_rs, "rust_compute_pairs_v2", None)
+        if fn is None:
+            raise NotImplementedError(
+                f"pair_variant={pair_variant!r} needs rust_compute_pairs_v2; "
+                "rebuild with `maturin develop --release`."
+            )
+        result_dict = fn(
+            txn_ids, item_ids, len(unique_items), min_support_arg,
+            suffix=pair_variant in ("suffix", "suffix_filtered"),
+            filter_infrequent=pair_variant in ("filtered", "suffix_filtered"),
+        )
 
     # Build filter mask on numpy arrays (fast — no object cols involved).
     # NaN comparisons evaluate to False, so NaN rows are dropped here
@@ -221,7 +254,7 @@ def compute_itemsets_rust(
     a user explicitly forces the k>=3 intermediate entry point.
     """
     _check_rust()
-    if fast_variant == "eclat":
+    if fast_variant in ("eclat", "eclat_seeded"):
         # Route eclat through compute_pipeline — it runs the vertical
         # recursion from scratch and does not consume frequent_lower.
         if df is None or transaction_col is None or item_col is None:
@@ -234,7 +267,7 @@ def compute_itemsets_rust(
         rules_df = compute_pipeline(
             df=df, transaction_col=transaction_col, item_col=item_col,
             k=k, min_support=0.0, min_confidence=None,
-            fast_variant="eclat",
+            fast_variant=fast_variant,
         )
         # Collapse rules back to Counter<canonical k-tuple, count> so this
         # function's return shape matches the counter_chain backend.
@@ -410,18 +443,20 @@ def decode_pipeline_rules(
     merge_cols = [f"_c{j}" for j in range(k - 1)]
     df_rules = pd.DataFrame(antecedents_sorted, columns=merge_cols)
     df_lower = pd.DataFrame(lower_arr, columns=merge_cols)
-    df_lower["_ant_sup"] = lower_counts_arr.astype(np.float64) / n_transactions
+    df_lower["_ant_cnt"] = lower_counts_arr.astype(np.float64)
     df_rules = df_rules.merge(df_lower, on=merge_cols, how="left")
-    ant_sup = df_rules["_ant_sup"].fillna(0).values
+    ant_cnt = df_rules["_ant_cnt"].fillna(0).values
 
     # 4. Item support — direct array indexing (encoded item ID → count)
     cons_sup = item_counts_arr[consequent_enc].astype(np.float64) / n_transactions
 
-    # 5. Metrics (vectorized)
+    # 5. Metrics (vectorized). Confidence from exact counts, without an epsilon in the
+    # denominator, so a rule with confidence exactly 1.0 passes min_confidence=1.0.
     instances = np.repeat(counts_arr, k)
     support = instances.astype(np.float64) / n_transactions
-    confidence = support / (ant_sup + 1e-10)
-    lift = confidence / (cons_sup + 1e-10)
+    inst_f = instances.astype(np.float64)
+    confidence = np.divide(inst_f, ant_cnt, out=np.zeros_like(inst_f), where=ant_cnt > 0)
+    lift = np.divide(confidence, cons_sup, out=np.zeros_like(confidence), where=cons_sup > 0)
 
     # 6. Decode to original labels and build DataFrame
     decoded_ant = item_decoder[antecedents_enc]
@@ -438,12 +473,15 @@ def decode_pipeline_rules(
 
     result = pd.DataFrame(data)
 
+    # Filter on the unrounded values (as the k=2 path does): rounding first dropped itemsets
+    # whose support/confidence rounded below a threshold with more than 6 decimals.
+    keep = np.ones(len(result), dtype=bool)
     if min_support is not None and min_support > 0:
-        result = result[result["support"] >= min_support]
+        keep &= support >= min_support
     if min_confidence is not None:
-        result = result[result["confidence"] >= min_confidence]
+        keep &= confidence >= min_confidence
 
-    return result.reset_index(drop=True)
+    return result[keep].reset_index(drop=True)
 
 
 # ---------------------------------------------------------------------------
@@ -469,7 +507,8 @@ def compute_pipeline(
     confidence, lift.
     """
     _check_rust()
-    if fast_variant == "eclat" and max_items_per_txn is not None:
+    _check_row_capacity(len(df))
+    if fast_variant in ("eclat", "eclat_seeded") and max_items_per_txn is not None:
         raise ValueError(
             "fast_variant='eclat' does not support max_items_per_txn; "
             "transaction capping is an Apriori-path approximation knob "
@@ -502,6 +541,15 @@ def compute_pipeline(
         result_dict = rust_eclat_pipeline(
             txn_ids, item_ids, k, n_unique, min_support,
         )
+    elif fast_variant == "eclat_seeded":
+        import fastapriori._fastapriori_rs as _rs
+        fn = getattr(_rs, "rust_eclat_pipeline_seeded", None)
+        if fn is None:
+            raise NotImplementedError(
+                "fast_variant='eclat_seeded' needs rust_eclat_pipeline_seeded; "
+                "rebuild with `maturin develop --release`."
+            )
+        result_dict = fn(txn_ids, item_ids, k, n_unique, min_support)
     else:
         # Build item weights array (indexed by encoded item ID).  NaN weights
         # are coerced to 0 because Rust's truncation sort uses partial_cmp,

@@ -13,6 +13,18 @@ use std::collections::HashMap;
 
 use roaring::RoaringBitmap;
 
+/// Smallest count `c` with `c / n_transactions >= min_support`, i.e. the same rule as the
+/// Python-side `support >= min_support` filter. `ceil(min_support * n)` alone can overshoot by
+/// one when the exact product is an integer that floating-point rounding pushes just above it
+/// (e.g. 0.07 * 100), which silently dropped itemsets whose support equals `min_support`.
+pub fn min_count_for(min_support: f64, n_transactions: f64) -> u64 {
+    let mut mc = (min_support * n_transactions).ceil();
+    if mc > 0.0 && (mc - 1.0) / n_transactions >= min_support {
+        mc -= 1.0;
+    }
+    mc as u64
+}
+
 /// CSR inverted index over (txn_code, item_id) edges.
 pub struct InvertedIndex {
     pub n_txns: u32,

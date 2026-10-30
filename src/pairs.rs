@@ -23,7 +23,7 @@ pub fn count_frequent_pairs(
 ) -> (HashMap<(u32, u32), u32>, HashSet<(u32, u32)>) {
     let n_txn_f64 = n_transactions as f64;
     let min_count = if min_support > 0.0 {
-        (min_support * n_txn_f64).ceil() as u64
+        common::min_count_for(min_support, n_txn_f64) as u64
     } else {
         1
     };
@@ -158,7 +158,7 @@ pub fn rust_compute_pairs<'py>(
         let idx = common::build_inverted_index(txn_slice, item_slice, n_items);
         let n_transactions = idx.n_txns;
         let min_count: u64 = if min_support > 0.0 {
-            (min_support * n_transactions as f64).ceil() as u64
+            common::min_count_for(min_support, n_transactions as f64) as u64
         } else {
             0
         };
@@ -268,6 +268,181 @@ pub fn rust_compute_pairs<'py>(
     dict.set_item("jaccard", PyArray1::from_vec(py, out.jac))?;
 
     // Expose the factorised txn count so the caller can skip `.nunique()`.
+    dict.set_item("n_transactions", n_transactions as i64)?;
+
+    Ok(dict)
+}
+
+// ---------------------------------------------------------------------------
+// v2 — suffix-only scatter (0.2.0, opt-in).
+//
+// `rust_compute_pairs` increments a counter for every item of every
+// transaction of anchor A and discards B <= A only at extraction, i.e. it
+// performs sum_t |T_t|^2 increments. Because txn_items rows are sorted, the
+// B > A suffix starts at `partition_point(|x| x <= A)`; counting only that
+// suffix performs the unordered minimum sum_t |T_t|(|T_t|-1)/2 and both rule
+// directions are emitted from the single count. `filter_infrequent`
+// additionally skips anchors and partners below min_count (singleton
+// downward closure), which the v0 path does not apply.
+// ---------------------------------------------------------------------------
+
+#[inline]
+#[allow(clippy::too_many_arguments)]
+fn push_pair_metrics(
+    out: &mut PairOut,
+    item_a: u32,
+    item_b: u32,
+    co_count: u64,
+    count_a: u32,
+    sup_a: f64,
+    sup_b: f64,
+    n_txn_f64: f64,
+) {
+    let instances = co_count as f64;
+    let support = instances / n_txn_f64;
+    let confidence = instances / count_a as f64;
+    let lift = if sup_b > 0.0 {
+        confidence / sup_b
+    } else {
+        f64::INFINITY
+    };
+    let conviction = if sup_b >= 1.0 {
+        f64::NAN
+    } else if confidence >= 1.0 {
+        f64::INFINITY
+    } else {
+        (1.0 - sup_b) / (1.0 - confidence)
+    };
+    let leverage = support - sup_a * sup_b;
+    let cosine = support / (sup_a * sup_b).sqrt();
+    let jaccard = support / (sup_a + sup_b - support);
+
+    out.a.push(item_a as i32);
+    out.b.push(item_b as i32);
+    out.inst.push(co_count as i64);
+    out.sup.push(support);
+    out.conf.push(confidence);
+    out.lift.push(lift);
+    out.conv.push(conviction);
+    out.lev.push(leverage);
+    out.cos.push(cosine);
+    out.jac.push(jaccard);
+}
+
+/// Pairwise associations with suffix-only counting. Same output schema and
+/// row set as `rust_compute_pairs` (row order may differ).
+#[pyfunction]
+#[pyo3(signature = (txn_ids, item_ids, n_items, min_support=0.0, suffix=true, filter_infrequent=true))]
+pub fn rust_compute_pairs_v2<'py>(
+    py: Python<'py>,
+    txn_ids: PyReadonlyArray1<'py, i64>,
+    item_ids: PyReadonlyArray1<'py, i32>,
+    n_items: u32,
+    min_support: f64,
+    suffix: bool,
+    filter_infrequent: bool,
+) -> PyResult<Bound<'py, PyDict>> {
+    let txn_slice = txn_ids.as_slice()?;
+    let item_slice = item_ids.as_slice()?;
+
+    let (out, n_transactions): (PairOut, u32) = py.allow_threads(|| {
+        let idx = common::build_inverted_index(txn_slice, item_slice, n_items);
+        let n_transactions = idx.n_txns;
+        let min_count: u64 = if min_support > 0.0 {
+            common::min_count_for(min_support, n_transactions as f64) as u64
+        } else {
+            0
+        };
+
+        let n_txn_f64 = n_transactions as f64;
+        let n_items_usize = n_items as usize;
+        let mut item_support = vec![0.0_f64; n_items_usize];
+        for i in 0..n_items_usize {
+            item_support[i] = idx.item_counts[i] as f64 / n_txn_f64;
+        }
+        // An item below min_count cannot be part of any pair at or above it.
+        let keep: Vec<bool> = (0..n_items_usize)
+            .map(|i| {
+                let c = idx.item_counts[i] as u64;
+                c > 0 && (!filter_infrequent || c >= min_count)
+            })
+            .collect();
+
+        let idx_ref = &idx;
+        let item_support_ref = &item_support;
+        let keep_ref = &keep;
+
+        let out: PairOut = (0..n_items)
+            .into_par_iter()
+            .fold(
+                || Scratch {
+                    out: PairOut::default(),
+                    counts: vec![0u64; n_items_usize],
+                    dirty: Vec::with_capacity(256),
+                },
+                |mut scratch, item_a| {
+                    if !keep_ref[item_a as usize] {
+                        return scratch;
+                    }
+                    let count_a = idx_ref.item_counts[item_a as usize];
+                    let sup_a = item_support_ref[item_a as usize];
+
+                    for &txn_code in idx_ref.item_txns(item_a) {
+                        let items = idx_ref.txn_items(txn_code);
+                        let start = if suffix {
+                            items.partition_point(|&x| x <= item_a)
+                        } else {
+                            0
+                        };
+                        for &item in &items[start..] {
+                            let i = item as usize;
+                            if filter_infrequent && !keep_ref[i] {
+                                continue;
+                            }
+                            if scratch.counts[i] == 0 {
+                                scratch.dirty.push(item);
+                            }
+                            scratch.counts[i] += 1;
+                        }
+                    }
+
+                    for &item_b in &scratch.dirty {
+                        let co_count = scratch.counts[item_b as usize];
+                        scratch.counts[item_b as usize] = 0;
+                        if item_b == item_a || co_count < min_count {
+                            continue;
+                        }
+                        let count_b = idx_ref.item_counts[item_b as usize];
+                        let sup_b = item_support_ref[item_b as usize];
+                        push_pair_metrics(&mut scratch.out, item_a, item_b, co_count,
+                                          count_a, sup_a, sup_b, n_txn_f64);
+                        if suffix {
+                            // B was only counted from A's side; emit B -> A too.
+                            push_pair_metrics(&mut scratch.out, item_b, item_a, co_count,
+                                              count_b, sup_b, sup_a, n_txn_f64);
+                        }
+                    }
+                    scratch.dirty.clear();
+
+                    scratch
+                },
+            )
+            .map(|scratch| scratch.out)
+            .reduce(PairOut::default, PairOut::merge);
+        (out, n_transactions)
+    });
+
+    let dict = PyDict::new(py);
+    dict.set_item("item_A", PyArray1::from_vec(py, out.a))?;
+    dict.set_item("item_B", PyArray1::from_vec(py, out.b))?;
+    dict.set_item("instances", PyArray1::from_vec(py, out.inst))?;
+    dict.set_item("support", PyArray1::from_vec(py, out.sup))?;
+    dict.set_item("confidence", PyArray1::from_vec(py, out.conf))?;
+    dict.set_item("lift", PyArray1::from_vec(py, out.lift))?;
+    dict.set_item("conviction", PyArray1::from_vec(py, out.conv))?;
+    dict.set_item("leverage", PyArray1::from_vec(py, out.lev))?;
+    dict.set_item("cosine", PyArray1::from_vec(py, out.cos))?;
+    dict.set_item("jaccard", PyArray1::from_vec(py, out.jac))?;
     dict.set_item("n_transactions", n_transactions as i64)?;
 
     Ok(dict)

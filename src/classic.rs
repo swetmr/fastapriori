@@ -293,7 +293,7 @@ fn apriori_itemsets(
 ) -> HashMap<usize, HashMap<Vec<u32>, u32>> {
     let n_txn = index.n_transactions as f64;
     let min_count = if min_support > 0.0 {
-        (min_support * n_txn).ceil() as u32
+        common::min_count_for(min_support, n_txn) as u32
     } else {
         1
     };
