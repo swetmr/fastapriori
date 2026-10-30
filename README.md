@@ -224,7 +224,7 @@ FASTAPRIORI_PROFILE=profile.json python my_script.py
 | `core_s`, `output_rust_s` | the whole Rust computation, and building its output arrays |
 | `threads`, `n_freq_pairs`, `n_rules`, `n_transactions`, ... | context |
 
-Results are identical with and without profiling. The instrumented build can be a few percent slower even with profiling off (up to 3.5% at one thread in our measurements), so time production runs with a default build. The file is overwritten on every call; other code paths (k=2, `classic`, Eclat variants) write nothing. A default build warns if `FASTAPRIORI_PROFILE` is set.
+Results are identical with and without profiling. The instrumented build can be a few percent slower even with profiling off (up to 3.5% at one thread in our measurements), so time production runs with a default build. The file is overwritten on every call; other code paths (k=2, `classic`, Eclat variants) write nothing and do not warn. On the default k>=3 path, a build without the feature warns if `FASTAPRIORI_PROFILE` is set.
 
 ## Metric Interpretation Guide
 

@@ -122,7 +122,7 @@ def compute_associations(
 
     When filter thresholds are provided, they are applied on the numeric
     numpy arrays returned by Rust *before* decoding item IDs back to
-    original labels and constructing the DataFrame.  This avoids
+    item labels and constructing the DataFrame.  This avoids
     materialising an object-dtype DataFrame of millions of rows when the
     item labels are strings — the 7M-row Online Retail case drops from
     ~4s to <1s because only the surviving rows pay the string-decode cost.
@@ -213,7 +213,7 @@ def compute_associations(
         cosine = cosine[mask]
         jaccard = jaccard[mask]
 
-    # Decode item IDs back to original labels — only for survivors
+    # Decode item IDs back to item labels — only for survivors
     result = pd.DataFrame({
         "item_A": item_decoder[a_codes],
         "item_B": item_decoder[b_codes],
@@ -263,7 +263,7 @@ def compute_itemsets_rust(
         # recursion from scratch and does not consume frequent_lower.
         if df is None or transaction_col is None or item_col is None:
             raise ValueError(
-                "fast_variant='eclat' requires the original DataFrame "
+                "fast_variant='eclat' requires the input DataFrame "
                 "(df, transaction_col, item_col) to rebuild tid-lists; "
                 "pass them via compute_itemsets_rust(df=..., "
                 "transaction_col=..., item_col=...)."
@@ -344,7 +344,7 @@ def compute_itemsets_rust(
         weights_arr, None,
     )
 
-    # Decode integer itemsets back to original labels
+    # Decode integer itemsets back to item labels
     itemsets_arr = result_dict["itemsets"]  # 2D numpy array (n_results, k)
     counts_arr = result_dict["counts"]     # 1D numpy array
 
@@ -462,7 +462,7 @@ def decode_pipeline_rules(
     confidence = np.divide(inst_f, ant_cnt, out=np.zeros_like(inst_f), where=ant_cnt > 0)
     lift = np.divide(confidence, cons_sup, out=np.zeros_like(confidence), where=cons_sup > 0)
 
-    # 6. Decode to original labels and build DataFrame
+    # 6. Decode to item labels and build DataFrame
     decoded_ant = item_decoder[antecedents_enc]
     decoded_con = item_decoder[consequent_enc]
 

@@ -234,6 +234,8 @@ def find_associations(
             raise ValueError(
                 "low_memory=True requires min_support to be specified."
             )
+        # Same rows as the backends count: a NaN-only transaction must not reach the denominator
+        df = df.dropna(subset=[transaction_col, item_col])
         item_counts = df.groupby(item_col)[transaction_col].nunique()
         n_transactions = df[transaction_col].nunique()
         item_support = item_counts / n_transactions
@@ -252,15 +254,15 @@ def find_associations(
                     "consequent", "instances", "support",
                     "confidence", "lift",
                 ])
-        original_rows = len(df)
-        original_txns = df[transaction_col].unique()  # numpy, no Python set
+        input_rows = len(df)
+        input_txns = df[transaction_col].unique()  # numpy, no Python set
         df = df[df[item_col].isin(frequent_items)]
         kept_txns = df[transaction_col].unique()
         # pd.Index.difference uses a hash-based diff; np.setdiff1d falls into
         # an O(n*m) path on object/string arrays (14s on 28K string txn_ids
         # for Online Retail).  Hash diff is ~1000x faster there and within
         # ~40ms of setdiff1d on large int arrays.
-        lost_txns = pd.Index(original_txns).difference(kept_txns).to_numpy()
+        lost_txns = pd.Index(input_txns).difference(kept_txns).to_numpy()
         sentinel = None
         if len(lost_txns) > 0:
             # Preserve n_transactions via one sentinel row per lost transaction.
@@ -284,7 +286,7 @@ def find_associations(
             logger.info(
                 "low_memory: kept %d/%d items (%d/%d rows, %d txns preserved via sentinel)",
                 len(frequent_items), len(item_counts),
-                len(df), original_rows, len(lost_txns),
+                len(df), input_rows, len(lost_txns),
             )
     else:
         sentinel = None
@@ -434,15 +436,15 @@ def _drop_sentinel_rows(
 
 
 # ---------------------------------------------------------------------------
-# k=2 path (unchanged from original find_associations)
+# k=2 path
 # ---------------------------------------------------------------------------
 
 
-def _filter_exact_support(result, df, transaction_col, min_support):
+def _filter_exact_support(result, df, transaction_col, item_col, min_support):
     """Keep rows with instances / n_transactions >= min_support (unrounded)."""
     if min_support is None or len(result) == 0:
         return result
-    n_txns = df[transaction_col].nunique()
+    n_txns = df.dropna(subset=[transaction_col, item_col])[transaction_col].nunique()
     return result[result["instances"].to_numpy() / n_txns >= min_support]
 
 
@@ -482,7 +484,7 @@ def _find_pairs(
 
     # Apply all metric filters centrally. Support is tested on exact counts: the backends
     # round it to 6 decimals, which dropped pairs for thresholds with more decimals.
-    result = _filter_exact_support(result, df, transaction_col, min_support)
+    result = _filter_exact_support(result, df, transaction_col, item_col, min_support)
     filters = {
         "confidence": min_confidence,
         "lift": min_lift,
@@ -738,7 +740,7 @@ def _find_classic_pairs(
     )
 
     # Apply metric filters (support on exact counts, as in _find_pairs)
-    result = _filter_exact_support(result, df, transaction_col, min_support)
+    result = _filter_exact_support(result, df, transaction_col, item_col, min_support)
     filters = {
         "confidence": min_confidence,
         "lift": min_lift,
@@ -828,18 +830,19 @@ def _extract_lower_support(
     if "item_A" in frequent_lower.columns and "item_B" in frequent_lower.columns:
         a_arr = frequent_lower["item_A"].to_numpy()
         b_arr = frequent_lower["item_B"].to_numpy()
-        if "support" in frequent_lower.columns:
-            s_arr = frequent_lower["support"].to_numpy()
-            for a, b, s in zip(a_arr, b_arr, s_arr):
-                key = tuple(sorted([a, b]))
-                if key not in support_dict:
-                    support_dict[key] = s
-        elif "instances" in frequent_lower.columns:
+        # Prefer exact counts: "support" is rounded to 6 decimals.
+        if "instances" in frequent_lower.columns:
             inst_arr = frequent_lower["instances"].to_numpy()
             for a, b, inst in zip(a_arr, b_arr, inst_arr):
                 key = tuple(sorted([a, b]))
                 if key not in support_dict:
                     support_dict[key] = inst / total_transactions
+        elif "support" in frequent_lower.columns:
+            s_arr = frequent_lower["support"].to_numpy()
+            for a, b, s in zip(a_arr, b_arr, s_arr):
+                key = tuple(sorted([a, b]))
+                if key not in support_dict:
+                    support_dict[key] = s
         return support_dict
 
     # Higher-level (antecedent_* + consequent)
@@ -850,19 +853,19 @@ def _extract_lower_support(
         has_support = "support" in frequent_lower.columns
         has_instances = "instances" in frequent_lower.columns
         metric_arr = None
-        if has_support:
-            metric_arr = frequent_lower["support"].to_numpy()
-        elif has_instances:
+        if has_instances:
             metric_arr = frequent_lower["instances"].to_numpy()
+        elif has_support:
+            metric_arr = frequent_lower["support"].to_numpy()
 
         for i, row in enumerate(items_arr):
             items = tuple(sorted(row.tolist()))
             if items in support_dict:
                 continue
-            if has_support:
-                support_dict[items] = metric_arr[i]
-            elif has_instances:
+            if has_instances:
                 support_dict[items] = metric_arr[i] / total_transactions
+            elif has_support:
+                support_dict[items] = metric_arr[i]
 
     return support_dict
 

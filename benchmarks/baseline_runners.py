@@ -109,7 +109,7 @@ ALL_METHODS = [
     # spmf-py (pip install spmf): thin Python wrapper that shells out to the
     # SPMF jar. Same Java core as spmf_fpgrowth / spmf_eclat above, just
     # invoked via the spmf-py Python API instead of a direct java command.
-    # Kept separate so a reviewer can compare the two call paths.
+    # Kept separate so the two call paths can be compared.
     "spmf_py_fpgrowth",
     "spmf_py_eclat",
 ]
@@ -271,7 +271,7 @@ def df_to_spmf_file(dataset_name: str, df: pd.DataFrame) -> tuple[Path, dict[Any
 
     if path.exists() and mapping_path.exists():
         mapping = json.loads(mapping_path.read_text())
-        # JSON keys are strings; map back to original type if needed
+        # JSON keys are strings; map back to the source type if needed
         return path, mapping
 
     txn_col, item_col = df.columns[0], df.columns[1]
@@ -669,7 +669,7 @@ sys.path.insert(0, str(BENCH))
 from load_datasets import ALL_DATASETS
 # spmf-py (pip install spmf) shells out to spmf.jar internally. Same Java
 # core as our direct spmf_* subprocess path; kept as a separate method so
-# reviewers can compare the two invocation paths.
+# the two invocation paths can be compared.
 from spmf import Spmf
 from baseline_runners import df_to_spmf_file, SPMF_JAR
 

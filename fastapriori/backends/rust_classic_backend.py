@@ -67,7 +67,7 @@ def compute_associations(
         txn_ids, item_ids, len(unique_items), n_transactions, min_support,
     )
 
-    # Decode item IDs back to original labels
+    # Decode item IDs back to item labels
     result = pd.DataFrame({
         "item_A": item_decoder[result_dict["item_A"]],
         "item_B": item_decoder[result_dict["item_B"]],

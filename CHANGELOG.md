@@ -9,10 +9,21 @@
   Rust phase times (inverted index, pair counting, pair TID-lists, per level projection and
   anchor-extend, output) and per-level work counters. See the README. This is the instrumentation
   used for the phase-profiling experiment of the accompanying paper.
-- A default build warns when `FASTAPRIORI_PROFILE` is set.
+- A default build warns when `FASTAPRIORI_PROFILE` is set on the default k≥3 path.
+
+### Fixed
+- Python backends: `min_support` no longer counts transactions whose rows are all NaN in the
+  denominator (the pandas and polars k=2 paths and the classic k=2 path). The Rust `algo="fast"`
+  path was not affected.
+- Python k≥3 path: antecedent counts come from `instances` when available, not from `support`
+  rounded to 6 decimals, which could be off by one above about 1M transactions.
+
+### Changed
+- `benchmarks/` is no longer included in the source distribution.
 
 ### Unchanged
-- Default builds (including the PyPI wheels) compile the 0.2.0 Rust code unchanged: the extension
+- Default builds (including the PyPI wheels) compile the 0.2.0 Rust code unchanged (the fixes
+  above are Python only): the extension
   built from 0.2.1 without the feature is byte-identical to the one built from 0.2.0 (same
   toolchain and path). The Rust crate version stays 0.2.0 for this reason.
 - Results are identical with and without the feature. The instrumented build can be a few percent

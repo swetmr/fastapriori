@@ -1,5 +1,5 @@
-"""Regression tests for the 0.2.0 review fixes: exact minimum count, unrounded k>=3 filtering,
-deterministic row order, and the Rust row-capacity guard."""
+"""Regression tests: exact minimum count, unrounded k>=3 filtering, deterministic row order,
+the Rust row-capacity guard, NaN-only transactions and exact antecedent counts."""
 import numpy as np
 import pandas as pd
 import pytest
@@ -92,3 +92,31 @@ def test_k3_confidence_exactly_one_kept(backend, bo):
     out = find_associations(df, "txn", "item", k=3, min_support=0.1, min_confidence=1.0,
                             sorted_by=None, backend=backend, backend_options=bo)
     assert len(out) == 3 and (out.confidence == 1.0).all()
+
+
+@pytest.mark.parametrize("backend", ["pandas", "polars", "rust"])
+def test_nan_only_transaction_not_in_support_denominator(backend):
+    """99 real transactions + 1 with only a NaN item; the pair sits exactly at min_support."""
+    if backend == "polars":
+        pytest.importorskip("polars")
+    rows = [(t, f"filler{t}") for t in range(99)]
+    rows += [(t, it) for t in range(7) for it in ("A", "B")]
+    rows.append((999, np.nan))
+    df = pd.DataFrame(rows, columns=["txn", "item"])
+    r = find_associations(df, transaction_col="txn", item_col="item", min_support=7 / 99,
+                          backend=backend, sorted_by=None)
+    assert len(r) == 2
+
+
+def test_lower_support_uses_exact_counts():
+    """Above ~1M transactions a 6-decimal support no longer recovers the count."""
+    from fastapriori.core import _extract_lower_support
+
+    n, count = 3_000_000, 1_234_567
+    pairs = pd.DataFrame({"item_A": ["a"], "item_B": ["b"], "instances": [count],
+                          "support": [round(count / n, 6)]})
+    triples = pd.DataFrame({"antecedent_1": ["a"], "antecedent_2": ["b"], "consequent": ["c"],
+                            "instances": [count], "support": [round(count / n, 6)]})
+    assert round(pairs["support"].iloc[0] * n) != count    # the case being guarded
+    assert round(_extract_lower_support(pairs, 3, n)[("a", "b")] * n) == count
+    assert round(_extract_lower_support(triples, 4, n)[("a", "b", "c")] * n) == count

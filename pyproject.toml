@@ -50,4 +50,4 @@ Issues = "https://github.com/swetmr/fastapriori/issues"
 [tool.maturin]
 features = ["pyo3/extension-module"]
 module-name = "fastapriori._fastapriori_rs"
-exclude = ["**/__pycache__", "**/.ipynb_checkpoints", "**/*.pyc", "**/*~"]
+exclude = ["benchmarks/**", "**/__pycache__", "**/.ipynb_checkpoints", "**/*.pyc", "**/*~"]
