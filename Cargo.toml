@@ -1,6 +1,7 @@
 [package]
 name = "fastapriori-rs"
-version = "0.2.0"
+version = "0.2.0"   # Rust core: kept at 0.2.0 (the crate version enters the build hash), so a default
+                    # build of fastapriori 0.2.1 is byte-identical to 0.2.0; profiling is the opt-in feature below
 edition = "2021"
 description = "Fast association analysis at low support — Rust core for the fastapriori Python package"
 license = "MIT"
@@ -21,3 +22,8 @@ roaring = "0.10"
 # binding) was also evaluated as v4_croaring but did not add meaningful
 # speedup over v3_adaptive on the workloads tested, so the croaring crate
 # dependency was removed to simplify the build.
+
+[features]
+# Phase profiling of the default k>=3 path (FASTAPRIORI_PROFILE). Off by default: default builds
+# compile the 0.2.0 code unchanged. Build with `maturin build --release --features phaseprof`.
+phaseprof = []

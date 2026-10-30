@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import json
+import os
+import time
+import warnings
 from collections import Counter
 
 import numpy as np
@@ -506,6 +510,7 @@ def compute_pipeline(
     antecedent_1, ..., antecedent_{k-1}, consequent, instances, support,
     confidence, lift.
     """
+    t_start = time.perf_counter()   # [phaseprof]
     _check_rust()
     _check_row_capacity(len(df))
     if fast_variant in ("eclat", "eclat_seeded") and max_items_per_txn is not None:
@@ -536,6 +541,7 @@ def compute_pipeline(
 
     n_unique = len(unique_items)
 
+    t_call = time.perf_counter()   # [phaseprof]
     if fast_variant == "eclat":
         # Eclat ignores item_weights / max_items_per_txn (rejected above).
         result_dict = rust_eclat_pipeline(
@@ -576,6 +582,7 @@ def compute_pipeline(
             txn_ids, item_ids, k, n_unique, min_support,
             weights_arr, max_items_per_txn,
         )
+    t_back = time.perf_counter()   # [phaseprof]
 
     # Unpack results
     itemsets_arr = result_dict["itemsets"]       # 2D int32 (n_results, k)
@@ -585,8 +592,34 @@ def compute_pipeline(
     item_counts_arr = result_dict["item_counts"]    # 1D int64 (n_items,)
     n_transactions = int(result_dict["n_transactions"])
 
-    return decode_pipeline_rules(
+    rules = decode_pipeline_rules(
         itemsets_arr, counts_arr, lower_arr, lower_counts_arr,
         item_counts_arr, item_decoder, n_transactions, k,
         min_support, min_confidence,
     )
+    _write_phase_profile(result_dict, t_start, t_call, t_back, time.perf_counter(),
+                         n_transactions=n_transactions, n_rows=len(clean), n_items=n_unique,
+                         k=k, min_support=min_support, n_rules=len(rules),
+                         default_path=fast_variant not in ("eclat", "eclat_seeded") and impl_variant == "v3_adaptive")
+    return rules
+
+
+def _write_phase_profile(result_dict, t_start, t_call, t_back, t_end, default_path=False, **info) -> None:
+    """[phaseprof] If FASTAPRIORI_PROFILE names a file and the Rust kernel returned a
+    "profile" entry (only rust_compute_pipeline_v3_adaptive built with the Cargo feature
+    `phaseprof` does), write one JSON object with the Python-side phases (encode, Rust call,
+    decode) and the Rust phase times."""
+    path = os.environ.get("FASTAPRIORI_PROFILE")
+    if not path:
+        return
+    prof = result_dict.get("profile") if isinstance(result_dict, dict) else None
+    if prof is None:
+        if default_path:
+            warnings.warn("FASTAPRIORI_PROFILE is set, but this fastapriori build has no phase "
+                          "profiling; build it with the Cargo feature `phaseprof` (see README).",
+                          RuntimeWarning, stacklevel=3)
+        return
+    rec = dict(info, encode_s=t_call - t_start, rust_call_s=t_back - t_call,
+               decode_s=t_end - t_back, total_s=t_end - t_start, **prof)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(rec, f)

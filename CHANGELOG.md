@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.1 — 2026-10-30
+
+### Added
+- Opt-in phase profiling for the default k≥3 Rust path (`rust_compute_pipeline_v3_adaptive`),
+  behind the Cargo feature `phaseprof`. In a build with the feature, `FASTAPRIORI_PROFILE=<file>`
+  makes each call write one JSON object with Python-side times (encoding, Rust call, decoding),
+  Rust phase times (inverted index, pair counting, pair TID-lists, per level projection and
+  anchor-extend, output) and per-level work counters. See the README. This is the instrumentation
+  used for the phase-profiling experiment of the accompanying paper.
+- A default build warns when `FASTAPRIORI_PROFILE` is set.
+
+### Unchanged
+- Default builds (including the PyPI wheels) compile the 0.2.0 Rust code unchanged: the extension
+  built from 0.2.1 without the feature is byte-identical to the one built from 0.2.0 (same
+  toolchain and path). The Rust crate version stays 0.2.0 for this reason.
+- Results are identical with and without the feature. The instrumented build can be a few percent
+  slower even with profiling off (measured: up to 3.5% at one thread), a code-layout effect.
+
 ## 0.2.0 — 2026-10-30
 
 ### Added

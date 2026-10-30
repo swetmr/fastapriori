@@ -397,7 +397,7 @@ pub fn rust_compute_pipeline_v2_memo<'py>(
 /// but using the adaptive `TidList` enum (Sparse Vec<u32> / Dense
 /// RoaringBitmap) for level TID-lists. Fixes the small-list iteration
 /// regression v1/v2 paid by always using RoaringBitmap.
-#[pyfunction]
+#[cfg(not(feature = "phaseprof"))] #[pyfunction]
 #[pyo3(signature = (txn_ids, item_ids, k_max, n_items, min_support, item_weights, max_items_per_txn=None))]
 pub fn rust_compute_pipeline_v3_adaptive<'py>(
     py: Python<'py>,
@@ -759,4 +759,220 @@ pub fn rust_compute_pipeline_v6_gating<'py>(
     dict.set_item("n_transactions", n_transactions as i64)?;
 
     Ok(dict)
+}
+
+// ---------------------------------------------------------------------------
+// Phase profiling (fastapriori 0.2.1). Compiled only with `--features phaseprof`;
+// default builds use the 0.2.0 function above unchanged. The instrumented copy below
+// takes coarse phase timers and, when FASTAPRIORI_PROFILE is set, returns a "profile"
+// entry with per-level work counters.
+// ---------------------------------------------------------------------------
+#[cfg(feature = "phaseprof")]
+use std::time::Instant;
+#[cfg(feature = "phaseprof")]
+use pyo3::types::PyList;
+
+#[cfg(feature = "phaseprof")]
+#[pyfunction]
+#[pyo3(signature = (txn_ids, item_ids, k_max, n_items, min_support, item_weights, max_items_per_txn=None))]
+pub fn rust_compute_pipeline_v3_adaptive<'py>(
+    py: Python<'py>,
+    txn_ids: PyReadonlyArray1<'py, i64>,
+    item_ids: PyReadonlyArray1<'py, i32>,
+    k_max: usize,
+    n_items: u32,
+    min_support: f64,
+    item_weights: PyReadonlyArray1<'py, f64>,
+    max_items_per_txn: Option<usize>,
+) -> PyResult<Bound<'py, PyDict>> {
+    let txn_slice = txn_ids.as_slice()?;
+    let item_slice = item_ids.as_slice()?;
+    let weights_slice = item_weights.as_slice()?;
+
+    // [phaseprof] coarse phase timers. They are always taken (about ten clock reads per call);
+    // the per-level work counters and the "profile" entry are produced only when the
+    // FASTAPRIORI_PROFILE environment variable is set.
+    let profile = std::env::var_os("FASTAPRIORI_PROFILE").is_some();
+    let t_call = Instant::now();
+    let (final_counts, lower_counts, item_counts_vec, n_transactions, ph) = py.allow_threads(|| {
+        let mut ph = PhaseTimes::default();
+        let t = Instant::now();
+        let idx = common::build_inverted_index(txn_slice, item_slice, n_items);
+        ph.index_s = t.elapsed().as_secs_f64();
+        let n_transactions = idx.n_txns;
+
+        let n_txn_f64 = n_transactions as f64;
+        let min_count = if min_support > 0.0 {
+            common::min_count_for(min_support, n_txn_f64) as u32
+        } else {
+            1
+        };
+
+        let t = Instant::now();
+        let (pair_counts, freq_pairs) = pairs::count_frequent_pairs(
+            &idx,
+            n_items as usize,
+            n_transactions,
+            min_support,
+        );
+
+        let mut lower_counts: HashMap<Vec<u32>, u32> = pair_counts
+            .iter()
+            .map(|(&(a, b), &c)| (vec![a, b], c))
+            .collect();
+        drop(pair_counts);
+        ph.pairs_s = t.elapsed().as_secs_f64();
+        ph.n_freq_pairs = freq_pairs.len();
+
+        let mut final_counts: HashMap<Vec<u32>, u32> = HashMap::new();
+
+        if k_max >= 3 {
+            let t = Instant::now();
+            let item_roar = ItemTxnsRoaring::from_index(&idx);
+            let mut lower_to_txns: HashMap<Vec<u32>, TidList> =
+                itemsets::build_pair_tid_map_adaptive(&freq_pairs, &item_roar);
+            ph.pair_tids_s = t.elapsed().as_secs_f64();
+
+            for k in 3..=k_max {
+                let n_anchors = lower_to_txns.len();
+                let anchor_tids: u64 = if profile {
+                    lower_to_txns.values().map(|tids| tids.len()).sum()
+                } else {
+                    0
+                };
+                let t = Instant::now();
+                let (kset_counts, new_lower, project_s, n_projected) =
+                    itemsets::count_k_itemsets_v3_adaptive(
+                        &idx,
+                        &lower_to_txns,
+                        &item_roar,
+                        &freq_pairs,
+                        k,
+                        n_items as usize,
+                        min_count,
+                        weights_slice,
+                        max_items_per_txn,
+                    );
+                let level_s = t.elapsed().as_secs_f64();
+                ph.levels.push(LevelTimes {
+                    k,
+                    project_s,
+                    extend_s: level_s - project_s,
+                    n_anchors,
+                    anchor_tids,
+                    n_projected,
+                    n_frequent: kset_counts.len(),
+                });
+
+                if k < k_max {
+                    lower_counts = kset_counts;
+                    lower_to_txns = new_lower;
+                } else {
+                    final_counts = kset_counts;
+                    drop(new_lower);
+                }
+            }
+            drop(lower_to_txns);
+        }
+
+        let item_counts_vec = idx.item_counts.clone();
+        (final_counts, lower_counts, item_counts_vec, n_transactions, ph)
+    });
+    let core_s = t_call.elapsed().as_secs_f64();
+
+    let t_out = Instant::now();
+    let dict = PyDict::new(py);
+
+    let results: Vec<(&Vec<u32>, &u32)> = final_counts.iter().collect();
+    let itemsets_vecs: Vec<Vec<i32>> = results
+        .iter()
+        .map(|(kset, _)| kset.iter().map(|&x| x as i32).collect())
+        .collect();
+    let counts_vec: Vec<i64> = results.iter().map(|(_, &count)| count as i64).collect();
+
+    dict.set_item("itemsets", PyArray2::from_vec2(py, &itemsets_vecs)?)?;
+    dict.set_item("counts", PyArray1::from_vec(py, counts_vec))?;
+
+    let lower_results: Vec<(&Vec<u32>, &u32)> = lower_counts.iter().collect();
+    let lower_itemsets_vecs: Vec<Vec<i32>> = lower_results
+        .iter()
+        .map(|(kset, _)| kset.iter().map(|&x| x as i32).collect())
+        .collect();
+    let lower_counts_vec: Vec<i64> = lower_results
+        .iter()
+        .map(|(_, &count)| count as i64)
+        .collect();
+
+    dict.set_item(
+        "lower_itemsets",
+        PyArray2::from_vec2(py, &lower_itemsets_vecs)?,
+    )?;
+    dict.set_item(
+        "lower_counts",
+        PyArray1::from_vec(py, lower_counts_vec),
+    )?;
+
+    let item_counts_arr: Vec<i64> = item_counts_vec.into_iter().map(|c| c as i64).collect();
+    dict.set_item(
+        "item_counts",
+        PyArray1::from_vec(py, item_counts_arr),
+    )?;
+
+    dict.set_item("n_transactions", n_transactions as i64)?;
+
+    if profile {
+        let output_rust_s = t_out.elapsed().as_secs_f64();
+        let p = PyDict::new(py);
+        p.set_item("threads", rayon::current_num_threads())?;
+        p.set_item("index_s", ph.index_s)?;
+        p.set_item("pairs_s", ph.pairs_s)?;
+        p.set_item("pair_tids_s", ph.pair_tids_s)?;
+        p.set_item("core_s", core_s)?;
+        p.set_item("output_rust_s", output_rust_s)?;
+        p.set_item("n_freq_pairs", ph.n_freq_pairs)?;
+        p.set_item("n_final", final_counts.len())?;
+        p.set_item("n_lower", lower_counts.len())?;
+        let levels = PyList::empty(py);
+        for lv in &ph.levels {
+            let d = PyDict::new(py);
+            d.set_item("k", lv.k)?;
+            d.set_item("project_s", lv.project_s)?;
+            d.set_item("extend_s", lv.extend_s)?;
+            d.set_item("n_anchors", lv.n_anchors)?;
+            d.set_item("anchor_tids", lv.anchor_tids)?;
+            d.set_item("n_projected", lv.n_projected)?;
+            d.set_item("n_frequent", lv.n_frequent)?;
+            levels.append(d)?;
+        }
+        p.set_item("levels", levels)?;
+        dict.set_item("profile", p)?;
+    }
+
+    Ok(dict)
+}
+
+/// [phaseprof] Per-call phase times of `rust_compute_pipeline_v3_adaptive`.
+#[cfg(feature = "phaseprof")]
+#[derive(Default)]
+struct PhaseTimes {
+    index_s: f64,
+    pairs_s: f64,
+    pair_tids_s: f64,
+    n_freq_pairs: usize,
+    levels: Vec<LevelTimes>,
+}
+
+/// [phaseprof] One extension level: projection (filtering transactions to frequent items),
+/// extension (anchor-and-extend counting, intersections and merge) and work counters.
+/// `anchor_tids` is the summed TID-list length of the anchors, i.e. the transactions scanned.
+#[cfg(feature = "phaseprof")]
+#[derive(Default)]
+struct LevelTimes {
+    k: usize,
+    project_s: f64,
+    extend_s: f64,
+    n_anchors: usize,
+    anchor_tids: u64,
+    n_projected: usize,
+    n_frequent: usize,
 }

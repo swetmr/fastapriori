@@ -980,7 +980,7 @@ fn run_anchor_extend_v3_adaptive(
     }
 }
 
-pub fn count_k_itemsets_v3_adaptive(
+#[cfg(not(feature = "phaseprof"))] pub fn count_k_itemsets_v3_adaptive(
     idx: &InvertedIndex,
     lower_to_txns_prev: &HashMap<Vec<u32>, TidList>,
     item_roar: &common::ItemTxnsRoaring,
@@ -1590,4 +1590,72 @@ mod tests {
         let count = CombinationIter::new(&items, 4).count();
         assert_eq!(count, 3060);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Phase profiling (fastapriori 0.2.1). Compiled only with `--features phaseprof`;
+// default builds use the 0.2.0 function above unchanged. The instrumented copy below
+// takes coarse phase timers and, when FASTAPRIORI_PROFILE is set, returns a "profile"
+// entry with per-level work counters.
+// ---------------------------------------------------------------------------
+#[cfg(feature = "phaseprof")]
+pub fn count_k_itemsets_v3_adaptive(
+    idx: &InvertedIndex,
+    lower_to_txns_prev: &HashMap<Vec<u32>, TidList>,
+    item_roar: &common::ItemTxnsRoaring,
+    freq_pairs: &HashSet<(u32, u32)>,
+    k: usize,
+    n_items: usize,
+    min_count: u32,
+    item_weights: &[f64],
+    max_items_per_txn: Option<usize>,
+) -> (HashMap<Vec<u32>, u32>, HashMap<Vec<u32>, TidList>, f64, usize) {
+    // [phaseprof] also returns the projection time (s) and the number of projected transactions.
+    let t_project = std::time::Instant::now();
+    let freq_items: HashSet<u32> = lower_to_txns_prev.keys()
+        .flat_map(|s| s.iter().copied())
+        .collect();
+
+    let mut txn_to_items_filtered: HashMap<u32, Vec<u32>> =
+        HashMap::with_capacity(idx.n_txns as usize);
+    for txn_code in 0..idx.n_txns {
+        let items = idx.txn_items(txn_code);
+        let filtered: Vec<u32> = items.iter()
+            .copied()
+            .filter(|item| freq_items.contains(item))
+            .collect();
+        if filtered.len() >= k {
+            txn_to_items_filtered.insert(txn_code, filtered);
+        }
+    }
+
+    if let Some(max_items) = max_items_per_txn {
+        for items in txn_to_items_filtered.values_mut() {
+            if items.len() > max_items {
+                items.sort_by(|a, b| {
+                    let wa = item_weights.get(*a as usize).copied().unwrap_or(0.0);
+                    let wb = item_weights.get(*b as usize).copied().unwrap_or(0.0);
+                    wb.partial_cmp(&wa).unwrap_or(std::cmp::Ordering::Equal)
+                });
+                items.truncate(max_items);
+                items.sort_unstable();
+            }
+        }
+    }
+
+    let anchor_keys: Vec<Vec<u32>> = lower_to_txns_prev.keys().cloned().collect();
+    let project_s = t_project.elapsed().as_secs_f64();
+    let n_projected = txn_to_items_filtered.len();
+
+    let (counts, new_lower) = run_anchor_extend_v3_adaptive(
+        &anchor_keys,
+        lower_to_txns_prev,
+        item_roar,
+        &txn_to_items_filtered,
+        freq_pairs,
+        n_items,
+        min_count,
+        k,
+    );
+    (counts, new_lower, project_s, n_projected)
 }

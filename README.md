@@ -201,6 +201,31 @@ find_associations(df, "txn_id", "item", k=4, min_support=0.001, verbose=True)
 
 A warning fires when `C(d_max, k-1) * n_transactions` exceeds 10^8 — a good cue to consider `max_items_per_txn`.
 
+## Phase Profiling (diagnostic)
+
+Profiling needs a build with the Cargo feature `phaseprof` (the PyPI wheels are built without it, so they run exactly the 0.2.0 kernels):
+
+```bash
+MATURIN_PEP517_ARGS="--features phaseprof" pip install --no-binary fastapriori fastapriori==0.2.1
+# or, from a checkout: maturin develop --release --features phaseprof
+```
+
+Then set `FASTAPRIORI_PROFILE` to a file path. The default k>=3 path (`algo="fast"` on the Rust backend, no `fast_variant`) writes one JSON object per call:
+
+```bash
+FASTAPRIORI_PROFILE=profile.json python my_script.py
+```
+
+| Field | Meaning |
+|---|---|
+| `encode_s`, `rust_call_s`, `decode_s`, `total_s` | Python side: input encoding, the Rust call, rule decoding, and their sum |
+| `index_s`, `pairs_s`, `pair_tids_s` | Rust: inverted index, pair counting, TID-lists of the frequent pairs |
+| `levels` | one entry per level k=3..K: `project_s`, `extend_s`, `n_anchors`, `anchor_tids` (transactions scanned), `n_projected`, `n_frequent` |
+| `core_s`, `output_rust_s` | the whole Rust computation, and building its output arrays |
+| `threads`, `n_freq_pairs`, `n_rules`, `n_transactions`, ... | context |
+
+Results are identical with and without profiling. The instrumented build can be a few percent slower even with profiling off (up to 3.5% at one thread in our measurements), so time production runs with a default build. The file is overwritten on every call; other code paths (k=2, `classic`, Eclat variants) write nothing. A default build warns if `FASTAPRIORI_PROFILE` is set.
+
 ## Metric Interpretation Guide
 
 | Metric | Range | What it tells you | When to use |
