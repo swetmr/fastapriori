@@ -448,6 +448,35 @@ def _filter_exact_support(result, df, transaction_col, item_col, min_support):
     return result[result["instances"].to_numpy() / n_txns >= min_support]
 
 
+def _filter_exact_metrics(result, df, transaction_col, item_col, thresholds):
+    """Filter pairs on metrics computed from exact counts (the output columns are rounded)."""
+    thresholds = {c: v for c, v in thresholds.items() if v is not None}
+    if not thresholds or len(result) == 0:
+        return result
+    clean = df.dropna(subset=[transaction_col, item_col])[[transaction_col, item_col]].drop_duplicates()
+    n_txns = clean[transaction_col].nunique()
+    item_counts = clean[item_col].value_counts()
+    ab = result["instances"].to_numpy(dtype=float)
+    a = result["item_A"].map(item_counts).to_numpy(dtype=float)
+    b = result["item_B"].map(item_counts).to_numpy(dtype=float)
+    sup_ab, sup_a, sup_b = ab / n_txns, a / n_txns, b / n_txns
+    conf = ab / a
+    with np.errstate(divide="ignore", invalid="ignore"):
+        conviction = np.where(sup_b < 1.0, (1.0 - sup_b) / (1.0 - conf), np.nan)
+    exact = {
+        "confidence": conf,
+        "lift": conf / sup_b,
+        "conviction": conviction,
+        "leverage": sup_ab - sup_a * sup_b,
+        "cosine": sup_ab / np.sqrt(sup_a * sup_b),
+        "jaccard": sup_ab / (sup_a + sup_b - sup_ab),
+    }
+    keep = np.ones(len(result), dtype=bool)
+    for col, threshold in thresholds.items():
+        keep &= exact[col] >= threshold
+    return result[keep]
+
+
 def _find_pairs(
     df, transaction_col, item_col,
     min_support, min_confidence, min_lift,
@@ -482,20 +511,17 @@ def _find_pairs(
         df, transaction_col, item_col, show_progress, trans_dict=trans_dict,
     )
 
-    # Apply all metric filters centrally. Support is tested on exact counts: the backends
-    # round it to 6 decimals, which dropped pairs for thresholds with more decimals.
+    # Apply all metric filters centrally, on exact counts: the backends round their
+    # output, which dropped pairs sitting on a threshold with more decimals.
     result = _filter_exact_support(result, df, transaction_col, item_col, min_support)
-    filters = {
+    result = _filter_exact_metrics(result, df, transaction_col, item_col, {
         "confidence": min_confidence,
         "lift": min_lift,
         "conviction": min_conviction,
         "leverage": min_leverage,
         "cosine": min_cosine,
         "jaccard": min_jaccard,
-    }
-    for col, threshold in filters.items():
-        if threshold is not None:
-            result = result[result[col] >= threshold]
+    })
 
     return result.reset_index(drop=True)
 
@@ -587,10 +613,12 @@ def _find_k_itemsets(
             min_jaccard=None,
             show_progress=False, backend=k2_backend, trans_dict=trans_dict,
         )
+        # Confidence is not anti-monotone: it applies to the final rules only, so an
+        # intermediate level is filtered on support alone.
         for level in range(3, k):
             frequent_lower = _find_k_itemsets(
                 df, transaction_col, item_col, k=level,
-                min_support=min_support, min_confidence=min_confidence,
+                min_support=min_support, min_confidence=None,
                 frequent_lower=frequent_lower,
                 show_progress=show_progress, backend=backend,
                 n_workers=n_workers, _trans_dict=trans_dict,
@@ -739,19 +767,16 @@ def _find_classic_pairs(
         df, transaction_col, item_col, show_progress, min_support=min_support,
     )
 
-    # Apply metric filters (support on exact counts, as in _find_pairs)
+    # Apply metric filters on exact counts, as in _find_pairs
     result = _filter_exact_support(result, df, transaction_col, item_col, min_support)
-    filters = {
+    result = _filter_exact_metrics(result, df, transaction_col, item_col, {
         "confidence": min_confidence,
         "lift": min_lift,
         "conviction": min_conviction,
         "leverage": min_leverage,
         "cosine": min_cosine,
         "jaccard": min_jaccard,
-    }
-    for col, threshold in filters.items():
-        if threshold is not None:
-            result = result[result[col] >= threshold]
+    })
 
     return result.reset_index(drop=True)
 

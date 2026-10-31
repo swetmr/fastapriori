@@ -206,7 +206,7 @@ A warning fires when `C(d_max, k-1) * n_transactions` exceeds 10^8 — a good cu
 Profiling needs a build with the Cargo feature `phaseprof` (the PyPI wheels are built without it, so they run exactly the 0.2.0 kernels):
 
 ```bash
-MATURIN_PEP517_ARGS="--features phaseprof" pip install --no-binary fastapriori fastapriori==0.2.1
+MATURIN_PEP517_ARGS="--features phaseprof" pip install --force-reinstall --no-cache-dir --no-binary fastapriori fastapriori==0.2.1
 # or, from a checkout: maturin develop --release --features phaseprof
 ```
 

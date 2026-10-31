@@ -17,9 +17,16 @@
   path was not affected.
 - Python k≥3 path: antecedent counts come from `instances` when available, not from `support`
   rounded to 6 decimals, which could be off by one above about 1M transactions.
+- Python k>=4 path: `min_confidence` was also applied to the intermediate levels, which dropped
+  valid rules because confidence is not anti-monotone. It now applies to the final rules only.
+  The Rust `algo="fast"` path was not affected.
+- Python k=2 paths and the classic k=2 path: metric thresholds are tested on exact counts, not on
+  the rounded output columns, so a pair sitting on a threshold such as 1/3 is kept.
 
 ### Changed
 - `benchmarks/` is no longer included in the source distribution.
+- `requires-python` is now `>=3.9,<3.14`: PyO3 0.23 does not build on CPython 3.14 and no wheels
+  exist for it.
 
 ### Unchanged
 - Default builds (including the PyPI wheels) compile the 0.2.0 Rust code unchanged (the fixes

@@ -1,5 +1,6 @@
 """Regression tests: exact minimum count, unrounded k>=3 filtering, deterministic row order,
-the Rust row-capacity guard, NaN-only transactions and exact antecedent counts."""
+the Rust row-capacity guard, NaN-only transactions, exact antecedent counts, and metric
+thresholds on exact counts and final rules only."""
 import numpy as np
 import pandas as pd
 import pytest
@@ -120,3 +121,37 @@ def test_lower_support_uses_exact_counts():
     assert round(pairs["support"].iloc[0] * n) != count    # the case being guarded
     assert round(_extract_lower_support(pairs, 3, n)[("a", "b")] * n) == count
     assert round(_extract_lower_support(triples, 4, n)[("a", "b", "c")] * n) == count
+
+
+def _baskets(*baskets):
+    return pd.DataFrame([(t, it) for t, b in enumerate(baskets) for it in b], columns=["txn", "item"])
+
+
+@pytest.mark.parametrize("backend", ["rust", "counter_chain", "pandas"])
+def test_confidence_applies_to_final_rules_only(backend):
+    """The triples have confidence 0.5, the four 4-itemset rules have confidence 1.0."""
+    df = _baskets("ABCD", "AB", "AC", "AD", "BC", "BD", "CD")
+    r = find_associations(df, transaction_col="txn", item_col="item", k=4, min_support=0.1,
+                          min_confidence=0.75, backend=backend, sorted_by=None)
+    assert len(r) == 4 and (r.confidence == 1.0).all()
+
+
+@pytest.mark.parametrize("backend", ["rust", "pandas", "polars"])
+def test_pair_confidence_threshold_on_exact_counts(backend):
+    """A -> B has confidence exactly 1/3; the rounded column holds 0.333333."""
+    if backend == "polars":
+        pytest.importorskip("polars")
+    df = _baskets("AB", "A", "A", "C")
+    r = find_associations(df, transaction_col="txn", item_col="item", min_confidence=1 / 3,
+                          backend=backend, sorted_by=None)
+    assert ((r.item_A == "A") & (r.item_B == "B")).sum() == 1
+
+
+def test_exact_metric_filter_matches_rounded_columns():
+    """Away from a threshold the exact filter keeps what the rounded columns would keep."""
+    df = _baskets("ABC", "ABD", "AC", "BCD", "ABCD", "D")
+    base = find_associations(df, transaction_col="txn", item_col="item", backend="pandas", sorted_by=None)
+    for col, t in [("confidence", 0.55), ("lift", 0.9), ("leverage", 0.0), ("cosine", 0.6), ("jaccard", 0.4)]:
+        r = find_associations(df, transaction_col="txn", item_col="item", backend="pandas", sorted_by=None,
+                              **{f"min_{col}": t})
+        assert len(r) == (base[col] >= t).sum(), col

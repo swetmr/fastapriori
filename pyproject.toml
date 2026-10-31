@@ -7,7 +7,7 @@ name = "fastapriori"
 version = "0.2.1"
 description = "Fast association analysis at low support"
 readme = "README_PYPI.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9,<3.14"
 license = {text = "MIT"}
 keywords = ["association-rules", "apriori", "frequent-itemsets", "data-mining", "market-basket"]
 classifiers = [
