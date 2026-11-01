@@ -3,7 +3,7 @@
 Data, saved results, library source, comparator sources, measurement harness and the notebooks that
 regenerate every computed table and figure of the paper from the saved results. All paths are
 relative to this folder. The public repository carries this folder without `data/` (only
-`data/SOURCES.md`); the complete archive (with `data/`) is distributed separately.
+`data/SOURCES.md`); the complete archive, with `data/` except Instacart, is at https://doi.org/10.5281/zenodo.23855457.
 
 ```
 README.md            this file

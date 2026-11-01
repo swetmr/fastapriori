@@ -391,6 +391,8 @@ The [`artifacts/`](artifacts/) folder holds the reproducibility artifacts: libra
 sources, comparator sources, the measurement harness, saved results, and the
 notebooks that regenerate every table and figure from those results. See
 [`artifacts/README.md`](artifacts/README.md) for the environment and the steps.
+The complete archive with the data, except Instacart, is at
+[https://doi.org/10.5281/zenodo.23855457](https://doi.org/10.5281/zenodo.23855457).
 
 ## License
 
