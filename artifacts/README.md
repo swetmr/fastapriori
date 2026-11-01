@@ -100,7 +100,7 @@ the classic call path unchanged since the tree that ran the classic/baseline row
 build fingerprint (empty `git_sha`); the identity rests on the archived source, not on a recorded hash.
 
 **0.2.0 campaign** (`results/runs/vm_20261029/`): GCE c3-highmem-8 (`us-central1-a`), the same CPU model,
-memory and software as in May (recorded in `manifest.jsonl`). Reanalyse with `FA_MODE=replay` (section 2).
+memory and software as in the 0.1.0.post1 campaign (recorded in `manifest.jsonl`). Reanalyse with `FA_MODE=replay` (section 2).
 
 | experiment (CSV) | notebook | rows | build id | notes |
 |---|---|---|---|---|
@@ -137,12 +137,12 @@ The per-level timings behind the anchor-and-extend lead over the best external a
 * **Synthetic data** was generated with `bench/agrawal_generator.py`, `L = 2N` (the `L…` field in the
   names repeats N), `seed = 42 + i` (table in notebook 01). The shipped files are the ones used in the experiments.
 * **Comparators.** Borgelt binaries are built from the shipped sources (apriori 6.31, eclat 5.24,
-  fpgrowth 6.21); the binaries used in May are in `tools/bin_2026-05/` (GCC 13.3). pyfim and
+  fpgrowth 6.21); the binaries used in the 0.1.0.post1 grid are in `tools/bin_2026-05/` (GCC 13.3). pyfim and
   efficient-apriori versions of the 0.1.0.post1 runs were not recorded. Borgelt's tools mine during their
   "writing" step; the harness column `borgelt_mine_s` is total − reading (in the 0.2.0 rows,
   recorded before this was fixed, it is total − reading − writing: add `borgelt_write_s`).
 * **Failures are kept.** The aggregated table drops configurations whose warm-up probe failed;
-  notebook 03 writes `coverage_<campaign>.csv` with every attempted cell (42 OOM, 22 timeout in May).
+  notebook 03 writes `coverage_<campaign>.csv` with every attempted cell (42 OOM, 22 timeout in the 0.1.0.post1 grid).
   T25.D5M classic at support ≤ 5e-4 timed out (1,500 s, eight threads) at every k. Kosarak, Online
   Retail and BMS-WebView-1 were not run at k ≥ 3 with support 1e-4; at 5e-4 HybridFIM runs out of
   memory there from k = 4–7 while all external miners finish.
