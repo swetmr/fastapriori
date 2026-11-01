@@ -1,6 +1,6 @@
-"""Measurement layer for the October 2026 experiment notebooks (10-19; Linux).
+"""Measurement layer for the v0.2.0 experiment notebooks (10-19; Linux).
 
-Protocol (same as bench/baseline_runners.py, which produced the May 2026
+Protocol (same as bench/baseline_runners.py, which produced the v0.1.0.post1
 grid): every run is a fresh process under `ulimit -v` + `timeout` +
 `/usr/bin/time -v`; peak RSS comes from /usr/bin/time; in-process Python
 methods report the library-call wall time (perf_counter inside the driver),
@@ -51,7 +51,7 @@ TOOLS_BIN = br.TOOLS_BIN
 DEFAULT_TIMEOUT_S = 1500
 DEFAULT_MEMOUT_KB = int(float(os.environ.get("FA_MEMOUT_GB", "60")) * 1024 * 1024)  # [patch] ulimit -v; GiB via env
 
-# LCM (Uno v5.3). The LCM driver of the May 2026 runs was not archived;
+# LCM (Uno v5.3). The LCM driver of the v0.1.0.post1 runs was not archived;
 # notebook 00 prints LCM's usage so this template can be checked against it.
 # The bundled build, unless LCM_BIN explicitly names another: never whatever is first on PATH.
 LCM_BIN = os.environ.get("LCM_BIN") or str(TOOLS_BIN / "lcm")

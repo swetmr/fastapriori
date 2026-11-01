@@ -15,7 +15,7 @@ BUNDLE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LIB=source
 VENV="$HOME/.venvs/fastapriori"
 APT=1
-RUST_TOOLCHAIN=1.95.0          # rustc recorded in the May 2026 raw results
+RUST_TOOLCHAIN=1.95.0          # rustc recorded in the v0.1.0.post1 raw results
 while [ $# -gt 0 ]; do
   case "$1" in
     --lib) LIB="$2"; shift 2 ;;

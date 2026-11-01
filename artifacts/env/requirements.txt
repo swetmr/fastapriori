@@ -19,7 +19,7 @@ nbconvert==7.17.0
 nbformat==5.10.4
 nbclient==0.10.4
 ipykernel==7.2.0
-# comparators (the May runs installed pyfim unpinned; 6.28 is the current release)
+# comparators (the v0.1.0.post1 runs installed pyfim unpinned; 6.28 is the current release)
 pyfim==6.28
 efficient-apriori==2.0.6
 # library tests

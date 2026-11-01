@@ -1,4 +1,4 @@
-"""Datasets for the October 2026 experiments (notebooks 10-19).
+"""Datasets for the v0.2.0 experiments (notebooks 10-19).
 
 * `register_parquet` / `load_df` -- a name -> parquet registry layered on top
   of `bench/load_datasets.ALL_DATASETS`, persisted in

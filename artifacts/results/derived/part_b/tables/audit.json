@@ -7,5 +7,5 @@
   "measured_repetitions": 14673,
   "spearman_p1": 0.946078431372549,
   "correlation_n": 17,
-  "note": "Dataset statistics recomputed with the current loader, joined to the May 2026 timings."
+  "note": "Dataset statistics recomputed with the current loader, joined to the v0.1.0.post1 timings."
 }
