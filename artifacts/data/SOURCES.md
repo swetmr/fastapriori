@@ -2,7 +2,7 @@
 
 All inputs used by the paper except Instacart are in this folder in the archive at https://doi.org/10.5281/zenodo.23855457. `env/fetch_real_data.sh` rebuilds the eight
 real datasets from their public sources. Each rebuilt file is **byte-identical** to the shipped one and
-is verified against `SHA256SUMS` (checked 29 Oct 2026). Cite the primary sources, not this artifact.
+is verified against `SHA256SUMS`. Cite the primary sources, not this artifact.
 
 ## Real datasets (`data/real/`)
 
