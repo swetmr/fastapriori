@@ -44,7 +44,7 @@ Wrong or outdated sources seen elsewhere, so don't use these:
 
 ## Synthetic datasets (`data/synthetic/`)
 
-These are the parquet files written in March–April 2026 by `bench/agrawal_generator.py`. Their
+These are the parquet files written for the v0.1.0.post1 grid by `bench/agrawal_generator.py`. Their
 parameters and seeds are documented in `notebooks/01_synthetic_data.ipynb`, which regenerates the eight
 smaller ones identically. The files are shipped because regenerating T25.D5M took about 10 hours.
 
