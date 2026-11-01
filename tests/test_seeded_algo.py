@@ -71,6 +71,30 @@ def test_default_is_seeded_above_pairs(k, monkeypatch):
     assert calls == [True]
 
 
+def test_auto_honours_caller_frequent_lower():
+    df = _df()
+    kw = dict(transaction_col="t", item_col="i", min_support=0.01)
+    pairs = find_associations(df, k=2, min_confidence=0.5, **kw)
+    pd.testing.assert_frame_equal(find_associations(df, k=3, frequent_lower=pairs, **kw),
+                                  find_associations(df, k=3, frequent_lower=pairs, algo="fast", **kw))
+
+
+def test_seeded_warns_when_it_ignores_frequent_lower():
+    df = _df()
+    kw = dict(transaction_col="t", item_col="i", min_support=0.01)
+    pairs = find_associations(df, k=2, **kw)
+    with pytest.warns(UserWarning, match="ignores frequent_lower"):
+        got = find_associations(df, k=3, frequent_lower=pairs, algo="seeded", **kw)
+    pd.testing.assert_frame_equal(got, find_associations(df, k=3, algo="seeded", **kw))
+
+
+@pytest.mark.parametrize("algo", ["auto", "seeded"])
+def test_seeded_warns_about_profiling(algo, monkeypatch, tmp_path):
+    monkeypatch.setenv("FASTAPRIORI_PROFILE", str(tmp_path / "p.json"))
+    with pytest.warns(RuntimeWarning, match="anchor path only"):
+        find_associations(_df(), transaction_col="t", item_col="i", k=3, min_support=0.01, algo=algo)
+
+
 def test_auto_stays_fast_when_seeded_is_unavailable():
     df = pd.DataFrame({"t": [1, 1, 1, 2, 2, 2], "i": list("abcabd")})
     kw = dict(transaction_col="t", item_col="i", k=3, min_support=0.5)

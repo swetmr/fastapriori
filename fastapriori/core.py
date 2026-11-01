@@ -16,9 +16,10 @@ logger = logging.getLogger("fastapriori")
 _LOWMEM_SENTINEL_STR = "__fastapriori_lowmem_sentinel__"
 
 
-def _seeded_usable(k, backend, max_items_per_txn, backend_options):
-    """Whether algo="auto" can take the seeded path: k>=3, Rust, no capping or tuning."""
-    if k < 3 or backend not in ("auto", "rust") or max_items_per_txn is not None or backend_options:
+def _seeded_usable(k, backend, max_items_per_txn, backend_options, frequent_lower):
+    """Whether algo="auto" can take the seeded path: k>=3, Rust, no capping, tuning or supplied lower level."""
+    if (k < 3 or backend not in ("auto", "rust") or max_items_per_txn is not None or backend_options
+            or frequent_lower is not None):
         return False
     try:
         from fastapriori._fastapriori_rs import rust_eclat_pipeline_seeded  # noqa: F401
@@ -92,7 +93,8 @@ def find_associations(
         computation when k>=3.  When k=3, this should be the output of
         ``find_associations(k=2)``.  When k=4, this should be the output of
         ``find_associations(k=3)``, and so on.  If None and k>=3, the lower
-        levels are auto-computed. Ignored when k=2.
+        levels are auto-computed. Ignored when k=2.  ``algo="seeded"`` rebuilds
+        its own lattice and ignores it with a warning.
     show_progress : bool
         If True, show a progress bar during counting. Requires tqdm.
     backend : str
@@ -106,8 +108,8 @@ def find_associations(
     algo : str
         Algorithm selection.  ``"auto"`` (default) is ``"seeded"`` at k>=3 and
         ``"fast"`` otherwise, including whenever the seeded path is unavailable
-        (no Rust engine, a non-Rust ``backend``, ``max_items_per_txn`` or
-        ``backend_options`` set).  ``"fast"`` uses the inverted-index count-all
+        (no Rust engine, a non-Rust ``backend``, or ``max_items_per_txn``,
+        ``backend_options`` or ``frequent_lower`` set).  ``"fast"`` uses the inverted-index count-all
         algorithm: pair counting at k=2, anchor-and-extend at k>=3.  ``"seeded"``
         runs Eclat seeded from scatter-counted pairs at k>=3: same rules as
         ``"fast"``, Rust backend only, without ``max_items_per_txn``; at k=2 it
@@ -198,10 +200,7 @@ def find_associations(
                 f"(first: {_bad[:3]}). Replace with finite values (e.g. 0)."
             )
     if algo == "auto":
-        algo = "seeded" if _seeded_usable(k, backend, max_items_per_txn, backend_options) else "fast"
-        if algo == "seeded" and os.environ.get("FASTAPRIORI_PROFILE"):
-            warnings.warn("FASTAPRIORI_PROFILE profiles the anchor path only; pass algo='fast' to use it.",
-                          RuntimeWarning, stacklevel=2)
+        algo = "seeded" if _seeded_usable(k, backend, max_items_per_txn, backend_options, frequent_lower) else "fast"
     algo_label = algo
     if algo == "seeded":
         if backend not in ("auto", "rust"):
@@ -222,6 +221,12 @@ def find_associations(
         if k >= 3:
             backend = "rust"
             backend_options = {**(backend_options or {}), "fast_variant": "eclat_seeded"}
+            if os.environ.get("FASTAPRIORI_PROFILE"):
+                warnings.warn("FASTAPRIORI_PROFILE profiles the anchor path only; pass algo='fast' to use it.",
+                              RuntimeWarning, stacklevel=2)
+            if frequent_lower is not None:
+                warnings.warn("algo='seeded' rebuilds its own lattice and ignores frequent_lower; pass algo='fast' to use it.",
+                              UserWarning, stacklevel=2)
 
     # backend_options is reserved; "fast_variant" and "impl_variant" are
     # read today.  impl_variant selects the Rust implementation generation

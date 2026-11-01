@@ -8,8 +8,8 @@
   returns the same rules as `algo="fast"`, needs the Rust backend and does not support
   `max_items_per_txn`. At k=2 it is `algo="fast"`.
 - The default is now `algo="auto"`, which takes `algo="seeded"` at k>=3 and `algo="fast"` at k=2, or
-  whenever the seeded path is unavailable (no Rust engine, a non-Rust `backend`, `max_items_per_txn`
-  or `backend_options` set). Rules are unchanged. Pass `algo="fast"` to keep anchor-and-extend at k>=3.
+  whenever the seeded path is unavailable (no Rust engine, a non-Rust `backend`, or `max_items_per_txn`,
+  `backend_options` or `frequent_lower` set). Rules are unchanged. Pass `algo="fast"` to keep anchor-and-extend at k>=3.
 - Opt-in phase profiling for the default k≥3 Rust path (`rust_compute_pipeline_v3_adaptive`),
   behind the Cargo feature `phaseprof`. In a build with the feature, `FASTAPRIORI_PROFILE=<file>`
   makes each call write one JSON object with Python-side times (encoding, Rust call, decoding),

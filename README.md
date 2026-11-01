@@ -225,7 +225,7 @@ FASTAPRIORI_PROFILE=profile.json python my_script.py
 | `core_s`, `output_rust_s` | the whole Rust computation, and building its output arrays |
 | `threads`, `n_freq_pairs`, `n_rules`, `n_transactions`, ... | context |
 
-Results are identical with and without profiling. The instrumented build can be a few percent slower even with profiling off (up to 3.5% at one thread in our measurements), so time production runs with a default build. The file is overwritten on every call; other code paths (k=2, `classic`, Eclat variants) write nothing and do not warn. On the default k>=3 path, a build without the feature warns if `FASTAPRIORI_PROFILE` is set.
+Results are identical with and without profiling. The instrumented build can be a few percent slower even with profiling off (up to 3.5% at one thread in our measurements), so time production runs with a default build. The file is overwritten on every call; other code paths (k=2, `classic`, the `eclat` variant) write nothing and do not warn. The seeded path warns that profiling covers the anchor path only. On the `algo="fast"` k>=3 path, a build without the feature warns if `FASTAPRIORI_PROFILE` is set.
 
 ## Metric Interpretation Guide
 
@@ -387,13 +387,10 @@ Zenodo record.
 
 ## Reproducibility
 
-The Zenodo deposit at
-[https://doi.org/10.5281/zenodo.20021781](https://doi.org/10.5281/zenodo.20021781)
-contains the complete reproducibility artifact: source code, raw
-run logs, aggregated benchmark CSVs, dataset-preprocessing scripts,
-and synthetic-data generator parameters. See Appendix F of the
-paper for the full hardware/software environment and reproduction
-instructions.
+The [`artifacts/`](artifacts/) folder holds the reproducibility artifacts: library
+sources, comparator sources, the measurement harness, saved results, and the
+notebooks that regenerate every table and figure from those results. See
+[`artifacts/README.md`](artifacts/README.md) for the environment and the steps.
 
 ## License
 
