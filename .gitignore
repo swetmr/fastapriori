@@ -54,3 +54,11 @@ CLAUDE.md
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Reproducibility artifacts: tracked in full, except data and build output
+!artifacts/**
+artifacts/data/*
+!artifacts/data/SOURCES.md
+artifacts/tools/bin/
+artifacts/**/__pycache__/
+artifacts/**/.ipynb_checkpoints/

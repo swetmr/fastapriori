@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\caption{Large workloads at $s=10^{-4}$: median runtime (s) / peak RSS (GiB). The $k\ge3$ column is the median across k=3\ldots9 (LCM: k=3,4); Table~\ref{tab:perlevel} and Figure~\ref{fig:vsk} resolve individual levels. In-process RSS includes interpreter/input/conversion allocations; native CLI input/output boundaries differ. LCM is a separate restricted-coverage comparison.}\label{tab:bigdata}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc@{}}
+\toprule
+& \multicolumn{2}{c}{T20.D1M (20\,M rows)} & \multicolumn{2}{c}{T30.D2M (60\,M rows)} & \multicolumn{2}{c}{T25.D5M (125\,M rows)}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Method & $k=2$ & $k\ge3$ & $k=2$ & $k\ge3$ & $k=2$ & $k\ge3$\\
+\midrule
+\fast{} (8T)            & \textbf{2.3} / 0.91 & \textbf{4.5} / 0.91 & \textbf{6.4} / 2.7 & 37.7 / 6.0 & \textbf{16.6} / 5.4 & \textbf{30.4} / 5.4\\
+\fastoneT{}             & 6.6 / 0.91 & --- & 19.8 / 2.7 & --- & 58.9 / 5.4 & ---\\
+\classic{}              & 955 / 50.8 & 959 / 50.6 & 613 / 5.7 & 633 / 5.6 & --- & ---\\
+\pyfim{} Apriori        & 14.2 / 4.9 & 17.2 / 5.1 & 12.6 / 4.7 & 53.3 / 4.7 & 40.1 / 11.0 & 51.2 / 11.2\\
+\pyfim{} Eclat          & 6.5 / 1.6 & 6.8 / 1.6 & 20.2 / 4.7 & \textbf{20.6} / 4.7 & 39.5 / 9.7 & 40.2 / 9.7\\
+\pyfim{} FP-Growth      & 10.1 / 1.7 & 10.1 / 1.7 & 54.8 / 6.0 & 57.4 / 5.9 & 98.3 / 10.3 & 98.5 / 10.3\\
+\borgelt{} Apriori      & 14.5 / 3.8 & 17.6 / 3.9 & 12.9 / 0.77 & 53.3 / 1.1 & 41.1 / 4.1 & 52.7 / 4.4\\
+\borgelt{} Eclat        & 6.9 / 0.38 & 7.1 / 0.38 & 20.8 / 1.0 & 21.2 / 1.0 & 41.4 / 2.2 & 42.2 / 2.2\\
+\borgelt{} FP-Growth    & 11.3 / 0.81 & 11.3 / 0.81 & 69.5 / 2.6 & 69.4 / 2.6 & 101.0 / 5.0 & 101.4 / 5.0\\
+\lcm{} v5.3             & 9.0 / \textbf{0.22} & 9.0 / \textbf{0.22} & 41.0 / \textbf{0.59} & 41.9 / \textbf{0.59} & 71.5 / \textbf{1.3} & 71.2 / \textbf{1.3}\\
+\bottomrule
+\end{tabular*}
+\end{table*}

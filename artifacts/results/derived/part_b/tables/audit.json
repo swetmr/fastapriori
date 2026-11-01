@@ -1,0 +1,11 @@
+{
+  "source_sha256": {
+    "results/campaign_2026-05/results_rigorous_20260523_115442.csv": "0f76d3232341a0b8d3670e752da58dc10efa9bbdd0c50f5972fdcf048720a03e",
+    "results/campaign_2026-05/cost_stats_20261022.csv": "5aa8c28db2814c67a07cd9c81a81007b93f055115a340d83c24414386e21fa9e"
+  },
+  "completed_configurations": 4891,
+  "measured_repetitions": 14673,
+  "spearman_p1": 0.946078431372549,
+  "correlation_n": 17,
+  "note": "Dataset statistics recomputed with the current loader, joined to the May 2026 timings."
+}

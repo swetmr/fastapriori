@@ -1,0 +1,166 @@
+experiment,dataset,method,k,min_support,run_id,warmup,status,wall_s,inner_wall_s,process_wall_s,user_cpu_s,sys_cpu_s,peak_rss_kb,max_vsize_kb,n_itemsets,threads,borgelt_read_s,borgelt_mine_s,borgelt_write_s,lcm_counts,stderr_tail,build_id,host,timestamp_utc
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,3,0.0001,0,True,ok,0.647460272999524,0.647460272999524,1.25,2.13,0.28,764956.0,,839655,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:46.224134+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,3,0.0001,1,False,ok,0.6466861909993895,0.6466861909993895,1.24,2.15,0.26,767936.0,,839655,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:47.475907+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,3,0.0001,2,False,ok,0.6520594480007276,0.6520594480007276,1.25,2.13,0.29,768140.0,,839655,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:48.735392+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,3,0.0001,3,False,ok,0.6467466060003062,0.6467466060003062,1.25,2.11,0.28,766396.0,,839655,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:49.996292+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,4,0.0001,0,True,ok,26.134512822000033,26.134512822000033,39.33,36.51,8.95,27593052.0,,24599626,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:55:29.332455+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,4,0.0001,1,False,ok,26.208990836999874,26.208990836999874,39.54,35.7,10.06,27583332.0,,24599626,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:56:08.882510+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,4,0.0001,2,False,ok,26.49317169800088,26.49317169800088,40.03,37.09,9.19,27674268.0,,24599626,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:56:48.924367+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,4,0.0001,3,False,ok,26.33053678000033,26.33053678000033,39.91,36.35,9.65,27532040.0,,24599626,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:57:28.845391+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,5,0.0001,0,True,oom,,,88.55,120.1,70.72,53788852.0,,,8,,,,,"memory allocation of 2961362256 bytes failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+timeout: the monitored command dumped core
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:58:57.402296+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:58:57.404934+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:58:57.406657+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:58:57.408336+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:58:57.410015+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,3,0.0001,0,True,ok,0.9514829199997621,0.9514829199997621,1.55,2.01,0.23,749088.0,,839655,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:58:58.967141+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,3,0.0001,1,False,ok,0.9550955439990503,0.9550955439990503,1.55,1.97,0.27,748908.0,,839655,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:59:00.529737+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,3,0.0001,2,False,ok,0.9561392520008667,0.9561392520008667,1.55,2.01,0.24,749240.0,,839655,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:59:02.092223+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,3,0.0001,3,False,ok,0.9526994259995263,0.9526994259995263,1.55,2.01,0.23,749076.0,,839655,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:59:03.649344+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,4,0.0001,0,True,ok,29.732106891999138,29.732106891999138,43.62,35.24,9.06,27184796.0,,24599626,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:59:47.283337+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,4,0.0001,1,False,ok,29.806540264000432,29.806540264000432,43.58,34.57,9.7,27184680.0,,24599626,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:00:30.873698+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,4,0.0001,2,False,ok,30.921663074999742,30.921663074999742,45.08,36.75,9.01,27184700.0,,24599626,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:01:15.959135+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,4,0.0001,3,False,ok,31.13661273999969,31.13661273999969,44.88,36.91,8.66,27184892.0,,24599626,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:02:00.853319+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,5,0.0001,0,True,oom,,,112.17,68.14,44.6,55947608.0,,,1,,,,,"memory allocation of 28325447952 bytes failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+timeout: the monitored command dumped core
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:53.029941+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:53.032490+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:53.034207+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:53.035844+00:00
+seeded_gaps_1e4,BMS-WebView-1,hyb_seeded_1t,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:53.037444+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,3,0.0001,0,True,ok,0.36,,0.36,0.35,0.0,7408.0,,839655,,0.01,0.0,0.35,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:54.876620+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,3,0.0001,1,False,ok,0.35,,0.35,0.35,0.0,7324.0,,839655,,0.01,0.0,0.34,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:55.241881+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,3,0.0001,2,False,ok,0.35,,0.35,0.35,0.0,7368.0,,839655,,0.01,0.0,0.34,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:55.606609+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,3,0.0001,3,False,ok,0.35,,0.35,0.35,0.0,7412.0,,839655,,0.01,0.0,0.34,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:03:55.971403+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,4,0.0001,0,True,ok,5.55,,5.55,5.54,0.0,7012.0,,24599626,,0.01,0.0,5.54,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:04:01.530230+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,4,0.0001,1,False,ok,5.55,,5.55,5.54,0.0,6916.0,,24599626,,0.01,0.0,5.53,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:04:07.086364+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,4,0.0001,2,False,ok,5.55,,5.55,5.55,0.0,6988.0,,24599626,,0.01,0.0,5.54,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:04:12.648434+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,4,0.0001,3,False,ok,5.62,,5.62,5.61,0.0,6884.0,,24599626,,0.01,0.0,5.6,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:04:18.274005+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,5,0.0001,0,True,ok,132.95,,132.95,132.83,0.11,6784.0,,687743797,,0.01,0.0,132.93,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:06:31.230360+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,5,0.0001,1,False,ok,132.9,,132.9,132.79,0.1,6748.0,,687743797,,0.01,0.0,132.88,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:08:44.136294+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,5,0.0001,2,False,ok,133.56,,133.56,133.48,0.08,6692.0,,687743797,,0.01,0.0,133.55,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:10:57.710925+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,5,0.0001,3,False,ok,133.56,,133.56,133.44,0.1,6676.0,,687743797,,0.01,0.0,133.54,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:13:11.278084+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,6,0.0001,0,True,timeout,1500.0,,1500.0,1498.86,1.09,6420.0,,,,,,,,"t algorithm
+version 5.24 (2022.11.22)        (c) 2002-2022   Christian Borgelt
+reading /home/user/artifacts/_work/spmf_cache/BMS-WebView-1_8200d2101ac395ae.spmf ... [497 item(s), 59602 transaction(s)] done [0.01s].
+filtering, sorting and recoding items ... [451 item(s)] done [0.00s].
+sorting and reducing transactions ... [4768/59602 transaction(s)] done [0.00s].
+writing /dev/null ... ",cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:38:11.285081+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:38:11.287661+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:38:11.289383+00:00
+seeded_gaps_1e4,BMS-WebView-1,borgelt_eclat,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:38:11.291015+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,3,0.0001,0,True,ok,29.32983871200122,29.32983871200122,37.62,126.24,5.79,16002992.0,,20898401,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:38:48.918100+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,3,0.0001,1,False,ok,29.144545416000255,29.144545416000255,37.49,125.77,5.8,15915392.0,,20898401,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:39:26.421499+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,3,0.0001,2,False,ok,29.261946357999477,29.261946357999477,37.62,126.08,5.98,15907256.0,,20898401,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:40:04.049379+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,3,0.0001,3,False,ok,29.12791377299982,29.12791377299982,37.52,126.08,5.67,15955508.0,,20898401,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:40:41.577776+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,4,0.0001,0,True,oom,,,92.2,631.65,70.45,53858556.0,,,8,,,,,"memory allocation of 28206744 bytes failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+timeout: the monitored command dumped core
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:42:13.787485+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,5,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:42:13.790050+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:42:13.791735+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:42:13.793393+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:42:13.795046+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:42:13.796641+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,3,0.0001,0,True,ok,96.05578817999776,96.05578817999776,104.4,99.68,5.55,15515048.0,,20898401,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:43:58.207510+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,3,0.0001,1,False,ok,96.0708746579985,96.0708746579985,104.47,99.5,5.79,15508664.0,,20898401,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:45:42.684047+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,3,0.0001,2,False,ok,95.57192031900195,95.57192031900195,103.9,99.0,5.74,15514400.0,,20898401,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:47:26.591628+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,3,0.0001,3,False,ok,94.76059678200181,94.76059678200181,103.05,98.68,5.21,15514000.0,,20898401,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:49:09.652172+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,4,0.0001,0,True,oom,,,301.32,281.25,20.77,41044236.0,,,1,,,,,"memory allocation of 15032967264 bytes failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+timeout: the monitored command dumped core
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:54:10.978248+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,5,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:54:10.980808+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:54:10.982570+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:54:10.984224+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:54:10.985863+00:00
+seeded_gaps_1e4,Kosarak,hyb_seeded_1t,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:54:10.987565+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,3,0.0001,0,True,ok,70.65,,70.65,70.55,0.08,178692.0,,20898401,,0.43,0.3299999999999983,69.84,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:55:25.690319+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,3,0.0001,1,False,ok,70.99,,70.99,70.89,0.09,178564.0,,20898401,,0.43,0.3399999999999892,70.17,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:56:36.701534+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,3,0.0001,2,False,ok,70.6,,70.6,70.49,0.1,178560.0,,20898401,,0.42,0.3299999999999983,69.8,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:57:47.315940+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,3,0.0001,3,False,ok,70.58,,70.58,70.49,0.08,178608.0,,20898401,,0.42,0.3299999999999983,69.79,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T22:58:57.910684+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,4,0.0001,0,True,ok,1017.38,,1017.38,1017.01,0.32,174520.0,,1074140651,,0.42,0.3100000000000591,1016.58,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T23:15:55.311450+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,4,0.0001,1,False,ok,1022.86,,1022.86,1022.5,0.3,174516.0,,1074140651,,0.43,0.3100000000000591,1022.03,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T23:32:58.186839+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,4,0.0001,2,False,ok,1016.82,,1016.82,1016.47,0.3,174644.0,,1074140651,,0.42,0.3100000000000591,1016.01,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T23:49:55.022964+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,4,0.0001,3,False,ok,1016.21,,1016.21,1015.88,0.28,174648.0,,1074140651,,0.42,0.3000000000000682,1015.42,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:06:51.246048+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,5,0.0001,0,True,timeout,1500.01,,1500.01,1499.45,0.49,165556.0,,,,,,,," algorithm
+version 5.24 (2022.11.22)        (c) 2002-2022   Christian Borgelt
+reading /home/user/artifacts/_work/spmf_cache/Kosarak_3809e78fd6edb020.spmf ... [41270 item(s), 990002 transaction(s)] done [0.42s].
+filtering, sorting and recoding items ... [6494 item(s)] done [0.03s].
+sorting and reducing transactions ... [304363/990002 transaction(s)] done [0.25s].
+writing /dev/null ... ",cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:31:51.270650+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:31:51.273267+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:31:51.274991+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:31:51.276644+00:00
+seeded_gaps_1e4,Kosarak,borgelt_eclat,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:31:51.278320+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded,3,0.0001,0,True,oom,,,87.22,145.01,27.38,59209356.0,,,8,,,,,"ter_join(lkey, rkey, count, sort=sort)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""pandas/_libs/join.pyx"", line 102, in pandas._libs.join.left_outer_join
+  File ""pandas/_libs/algos.pyx"", line 234, in pandas._libs.algos.groupsort_indexer
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 3.83 GiB for an array with shape (513613785,) and data type int64
+",cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:33:18.503928+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded,4,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:33:18.506540+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded,5,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:33:18.508335+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:33:18.509992+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:33:18.511641+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:33:18.513377+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:33:18.514979+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded_1t,3,0.0001,0,True,oom,,,141.6,120.27,22.02,58525608.0,,,1,,,,,"ter_join(lkey, rkey, count, sort=sort)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""pandas/_libs/join.pyx"", line 102, in pandas._libs.join.left_outer_join
+  File ""pandas/_libs/algos.pyx"", line 234, in pandas._libs.algos.groupsort_indexer
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 3.83 GiB for an array with shape (513613785,) and data type int64
+",cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:35:40.123479+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded_1t,4,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:35:40.126120+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded_1t,5,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:35:40.128109+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded_1t,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:35:40.129930+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded_1t,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:35:40.131629+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded_1t,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:35:40.133331+00:00
+seeded_gaps_1e4,Online Retail,hyb_seeded_1t,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:35:40.135026+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,3,0.0001,0,True,ok,69.55,,69.55,69.51,0.03,13372.0,,171204595,,0.02,0.020000000000010232,69.51,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:36:52.087954+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,3,0.0001,1,False,ok,69.47,,69.47,69.44,0.02,13368.0,,171204595,,0.03,0.01999999999999602,69.43,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:38:01.571695+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,3,0.0001,2,False,ok,69.58,,69.58,69.54,0.03,13396.0,,171204595,,0.02,0.020000000000010232,69.53,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:39:11.162275+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,3,0.0001,3,False,ok,69.42,,69.42,69.39,0.03,13380.0,,171204595,,0.03,0.01999999999999602,69.38,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T00:40:20.596922+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,4,0.0001,0,True,timeout,1500.0,,1500.0,1499.18,0.74,13264.0,,,,,,,,"lgorithm
+version 5.24 (2022.11.22)        (c) 2002-2022   Christian Borgelt
+reading /home/user/artifacts/_work/spmf_cache/Online_Retail_1ec275615f570539.spmf ... [4632 item(s), 28816 transaction(s)] done [0.02s].
+filtering, sorting and recoding items ... [4062 item(s)] done [0.00s].
+sorting and reducing transactions ... [17571/28816 transaction(s)] done [0.02s].
+writing /dev/null ... ",cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:05:20.605063+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,5,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:05:20.607732+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,6,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:05:20.609496+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,7,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:05:20.611140+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:05:20.612747+00:00
+seeded_gaps_1e4,Online Retail,borgelt_eclat,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after timeout at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:05:20.614398+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,hyb_seeded,7,0.0001,0,True,oom,,,46.1,47.12,13.47,59182712.0,,,8,,,,," tuple(shape), sort)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/user/.venvs/fastapriori/lib/python3.12/site-packages/pandas/core/reshape/merge.py"", line 3029, in _get_join_keys
+    lkey += llab[i] * stride
+            ~~~~~~~~^~~~~~~~
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 1.81 GiB for an array with shape (243528019,) and data type int64
+",cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:06:06.754055+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,hyb_seeded,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:06:06.758794+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,hyb_seeded,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:06:06.762346+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,7,0.0001,0,True,oom,,,69.12,56.21,13.6,60926188.0,,,1,,,,,"Int64Factorizer.factorize
+  File ""pandas/_libs/hashtable_class_helper.pxi"", line 3182, in pandas._libs.hashtable.Int64HashTable.get_labels
+  File ""pandas/_libs/hashtable_class_helper.pxi"", line 3086, in pandas._libs.hashtable.Int64HashTable._unique
+  File ""pandas/_libs/hashtable_class_helper.pxi"", line 662, in pandas._libs.hashtable.Int64Vector.resize
+MemoryError: cannot allocate memory for array
+",cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:15.894982+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,8,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:15.899553+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,9,0.0001,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:15.903087+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,7,0.0001,0,True,ok,5.58,,5.58,5.57,0.0,4308.0,,34789717,,0.0,0.0,5.58,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:21.630582+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,7,0.0001,1,False,ok,5.58,,5.58,5.57,0.0,4304.0,,34789717,,0.0,0.0,5.58,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:27.217710+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,7,0.0001,2,False,ok,5.58,,5.58,5.57,0.0,4308.0,,34789717,,0.0,0.0,5.57,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:32.803906+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,7,0.0001,3,False,ok,5.58,,5.58,5.57,0.0,4308.0,,34789717,,0.0,0.0,5.58,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:38.392590+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,8,0.0001,0,True,ok,8.25,,8.25,8.24,0.01,4308.0,,52414583,,0.0,0.0,8.25,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:46.657526+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,8,0.0001,1,False,ok,8.25,,8.25,8.24,0.01,4296.0,,52414583,,0.0,0.0,8.25,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:07:54.916190+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,8,0.0001,2,False,ok,8.25,,8.25,8.24,0.01,4308.0,,52414583,,0.0,0.0,8.25,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:08:03.175585+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,8,0.0001,3,False,ok,8.26,,8.26,8.25,0.0,4300.0,,52414583,,0.0,0.0,8.26,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:08:11.446246+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,9,0.0001,0,True,ok,11.03,,11.03,11.02,0.01,4248.0,,70215754,,0.0,0.0,11.03,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:08:22.491380+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,9,0.0001,1,False,ok,11.02,,11.02,11.01,0.01,4352.0,,70215754,,0.0,0.0,11.02,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:08:33.521691+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,9,0.0001,2,False,ok,11.03,,11.03,11.03,0.0,4292.0,,70215754,,0.0,0.0,11.03,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:08:44.566768+00:00
+seeded_gaps_1e4,T12.I4.D5k.N1k.L1k,borgelt_eclat,9,0.0001,3,False,ok,11.04,,11.04,11.03,0.01,4304.0,,70215754,,0.0,0.0,11.04,,,cc508b6408f4,gce-c3-highmem-8,2026-11-01T01:08:55.615333+00:00

@@ -1,0 +1,33 @@
+dataset,k,min_support,fast_time,classic_time,kind,fast_status,classic_status
+BMS-WebView-1,7,0.0005,1500.0,500.0,placeholder,oom,oom
+BMS-WebView-1,8,0.0005,1500.0,500.0,placeholder,oom,
+BMS-WebView-1,9,0.0005,1500.0,500.0,placeholder,oom,
+Groceries,7,0.0001,1500.0,1500.0,limit,oom,oom
+Groceries,8,0.0001,1500.0,1500.0,limit,oom,oom
+Groceries,9,0.0001,1500.0,1500.0,limit,oom,oom
+Kosarak,5,0.0005,1500.0,589.9087694,measured,oom,ok
+Kosarak,6,0.0005,1500.0,500.0,placeholder,oom,timeout
+Kosarak,7,0.0005,1500.0,500.0,placeholder,oom,timeout
+Kosarak,8,0.0005,1500.0,500.0,placeholder,oom,
+Kosarak,9,0.0005,1500.0,500.0,placeholder,oom,
+Online Retail,4,0.0005,1500.0,500.0,placeholder,oom,oom
+Online Retail,5,0.0005,1500.0,500.0,placeholder,oom,oom
+Online Retail,6,0.0005,1500.0,500.0,placeholder,oom,oom
+Online Retail,7,0.0005,1500.0,500.0,placeholder,oom,oom
+Online Retail,7,0.001,1500.0,500.0,placeholder,oom,oom
+Online Retail,8,0.0005,1500.0,500.0,placeholder,oom,oom
+Online Retail,8,0.001,1500.0,500.0,placeholder,oom,oom
+Online Retail,9,0.0005,1500.0,500.0,placeholder,oom,
+Online Retail,9,0.001,1500.0,500.0,placeholder,oom,oom
+T25.I8.D5000k.N40k.L40k,2,0.0001,16.60769243999675,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,2,0.0005,16.54954772699784,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,3,0.0001,28.25572495799861,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,3,0.0005,18.63539206199857,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,4,0.0001,29.95434061899869,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,4,0.0005,18.89827093599888,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,5,0.0001,30.19526865400257,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,5,0.0005,19.06181953200212,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,6,0.0001,30.4109021760014,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,7,0.0001,30.6799394050031,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,8,0.0001,31.06808060299954,1500.0,limit,ok,timeout
+T25.I8.D5000k.N40k.L40k,9,0.0001,31.12481772200408,1500.0,limit,ok,timeout

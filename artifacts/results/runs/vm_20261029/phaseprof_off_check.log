@@ -1,0 +1,59 @@
+prod_0.2.0 -> 0.2.0 /home/user/.venvs/fastapriori/lib/python3.12/site-packages/fastapriori/__init__.py
+phaseprof_off -> 0.2.0+phaseprof /home/user/artifacts/_work/phaseprof_site/fastapriori/__init__.py
+     13s Chainstore k=3 pair 0 prod_0.2.0: ok wall=5.926807466996252
+     20s Chainstore k=3 pair 0 phaseprof_off: ok wall=5.980483810999431
+     26s Chainstore k=3 pair 1 phaseprof_off: ok wall=6.0426793430015096
+     33s Chainstore k=3 pair 1 prod_0.2.0: ok wall=5.7861494480021065
+     39s Chainstore k=3 pair 2 prod_0.2.0: ok wall=5.8562214900011895
+     46s Chainstore k=3 pair 2 phaseprof_off: ok wall=6.068369404994883
+     52s Chainstore k=3 pair 3 phaseprof_off: ok wall=6.00275837299705
+     58s Chainstore k=3 pair 3 prod_0.2.0: ok wall=5.812401356000919
+     65s Chainstore k=4 pair 0 prod_0.2.0: ok wall=6.182623056003649
+     72s Chainstore k=4 pair 0 phaseprof_off: ok wall=6.386939979995077
+     79s Chainstore k=4 pair 1 phaseprof_off: ok wall=6.347156385003473
+     86s Chainstore k=4 pair 1 prod_0.2.0: ok wall=6.16076015499857
+     92s Chainstore k=4 pair 2 prod_0.2.0: ok wall=6.172460713998589
+     99s Chainstore k=4 pair 2 phaseprof_off: ok wall=6.35419358699437
+    106s Chainstore k=4 pair 3 phaseprof_off: ok wall=6.341688531996624
+    113s Chainstore k=4 pair 3 prod_0.2.0: ok wall=6.1697269229989615
+    120s Chainstore k=5 pair 0 prod_0.2.0: ok wall=6.298615455998515
+    127s Chainstore k=5 pair 0 phaseprof_off: ok wall=6.4802190359987435
+    134s Chainstore k=5 pair 1 phaseprof_off: ok wall=6.517256573999475
+    141s Chainstore k=5 pair 1 prod_0.2.0: ok wall=6.578645322995726
+    148s Chainstore k=5 pair 2 prod_0.2.0: ok wall=6.246548214003269
+    155s Chainstore k=5 pair 2 phaseprof_off: ok wall=6.540008730997215
+    162s Chainstore k=5 pair 3 phaseprof_off: ok wall=6.452951730003406
+    169s Chainstore k=5 pair 3 prod_0.2.0: ok wall=6.280256926002039
+    279s Instacart k=3 pair 0 prod_0.2.0: ok wall=55.05711906400393
+    335s Instacart k=3 pair 0 phaseprof_off: ok wall=55.50373933199444
+    390s Instacart k=3 pair 1 phaseprof_off: ok wall=53.923428113004775
+    445s Instacart k=3 pair 1 prod_0.2.0: ok wall=53.69971933600027
+    498s Instacart k=3 pair 2 prod_0.2.0: ok wall=52.335940480996214
+    554s Instacart k=3 pair 2 phaseprof_off: ok wall=54.832353356003296
+    608s Instacart k=3 pair 3 phaseprof_off: ok wall=53.26922933100286
+    663s Instacart k=3 pair 3 prod_0.2.0: ok wall=54.37783989000309
+    843s T25.I8.D5000k.N40k.L40k k=4 pair 0 prod_0.2.0: ok wall=87.95037071200204
+    933s T25.I8.D5000k.N40k.L40k k=4 pair 0 phaseprof_off: ok wall=88.57589342799474
+   1023s T25.I8.D5000k.N40k.L40k k=4 pair 1 phaseprof_off: ok wall=87.74305755700334
+   1112s T25.I8.D5000k.N40k.L40k k=4 pair 1 prod_0.2.0: ok wall=87.57484784600092
+   1202s T25.I8.D5000k.N40k.L40k k=4 pair 2 prod_0.2.0: ok wall=87.52796934099752
+   1292s T25.I8.D5000k.N40k.L40k k=4 pair 2 phaseprof_off: ok wall=88.1723350520042
+   1382s T25.I8.D5000k.N40k.L40k k=4 pair 3 phaseprof_off: ok wall=87.81452978500602
+   1471s T25.I8.D5000k.N40k.L40k k=4 pair 3 prod_0.2.0: ok wall=87.78074611200282
+   1743s T30.I8.D2000k.N10k.L10k k=4 pair 0 prod_0.2.0: ok wall=134.3303043880005
+   1881s T30.I8.D2000k.N10k.L10k k=4 pair 0 phaseprof_off: ok wall=137.04839663900202
+   2019s T30.I8.D2000k.N10k.L10k k=4 pair 1 phaseprof_off: ok wall=137.3410088669989
+   2155s T30.I8.D2000k.N10k.L10k k=4 pair 1 prod_0.2.0: ok wall=134.61922710000363
+   2291s T30.I8.D2000k.N10k.L10k k=4 pair 2 prod_0.2.0: ok wall=134.55678223199357
+   2429s T30.I8.D2000k.N10k.L10k k=4 pair 2 phaseprof_off: ok wall=136.28996203599672
+   2567s T30.I8.D2000k.N10k.L10k k=4 pair 3 phaseprof_off: ok wall=137.2423224660015
+   2705s T30.I8.D2000k.N10k.L10k k=4 pair 3 prod_0.2.0: ok wall=136.39484577400435
+                           prod_median_s  off_median_s  paired_ratio_median  ratio_min  ratio_max
+dataset                 k                                                                        
+Chainstore              3         5.8343        6.0227               1.0345     1.0091     1.0443
+                        4         6.1711        6.3507               1.0298     1.0279     1.0330
+                        5         6.2894        6.4987               1.0282     0.9907     1.0470
+Instacart               3        54.0388       54.3779               1.0061     0.9796     1.0477
+T25.I8.D5000k.N40k.L40k 4        87.6778       87.9934               1.0045     1.0004     1.0074
+T30.I8.D2000k.N10k.L10k 4       134.5880      137.1454               1.0165     1.0062     1.0202
+CHECK DONE

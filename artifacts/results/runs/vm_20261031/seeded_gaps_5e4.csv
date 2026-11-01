@@ -1,0 +1,145 @@
+experiment,dataset,method,k,min_support,run_id,warmup,status,wall_s,inner_wall_s,process_wall_s,user_cpu_s,sys_cpu_s,peak_rss_kb,max_vsize_kb,n_itemsets,threads,borgelt_read_s,borgelt_mine_s,borgelt_write_s,lcm_counts,stderr_tail,build_id,host,timestamp_utc
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,3,0.0005,0,True,ok,0.09485184400000435,0.09485184400000435,0.5,1.21,0.09,185032.0,,72879,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:30.178470+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,3,0.0005,1,False,ok,0.09353493600065121,0.09353493600065121,0.5,1.21,0.09,185168.0,,72879,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:30.683789+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,3,0.0005,2,False,ok,0.09408214399991266,0.09408214399991266,0.5,1.23,0.08,185540.0,,72879,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:31.192581+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,3,0.0005,3,False,ok,0.09369576999961282,0.09369576999961282,0.5,1.22,0.08,185136.0,,72879,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:31.697769+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,4,0.0005,0,True,ok,0.6604711090003548,0.6604711090003548,1.28,2.02,0.3,839468.0,,601397,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:32.985672+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,4,0.0005,1,False,ok,0.662083420998897,0.662083420998897,1.29,2.04,0.31,827492.0,,601397,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:34.282954+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,4,0.0005,2,False,ok,0.6618724159998237,0.6618724159998237,1.29,2.03,0.31,830140.0,,601397,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:35.580087+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,4,0.0005,3,False,ok,0.6657471360013005,0.6657471360013005,1.28,2.07,0.27,830860.0,,601397,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:36.870491+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,5,0.0005,0,True,ok,5.6508782760010945,5.6508782760010945,8.51,9.04,1.93,6337112.0,,3809674,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:45.394964+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,5,0.0005,1,False,ok,5.671293743000206,5.671293743000206,8.56,9.03,1.97,6359352.0,,3809674,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:21:53.960930+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,5,0.0005,2,False,ok,5.67433393400097,5.67433393400097,8.62,9.0,2.04,6425088.0,,3809674,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:22:02.591764+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,5,0.0005,3,False,ok,5.6542662079991715,5.6542662079991715,8.6,8.98,2.06,6373632.0,,3809674,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:22:11.203774+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,6,0.0005,0,True,ok,41.56543991000035,41.56543991000035,60.15,56.09,13.18,42486708.0,,19685772,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:23:11.367266+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,6,0.0005,1,False,ok,41.032861060999494,41.032861060999494,59.54,55.67,12.9,42528008.0,,19685772,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:24:10.921148+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,6,0.0005,2,False,ok,42.09871887200097,42.09871887200097,61.21,56.09,13.93,42601136.0,,19685772,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:25:12.140203+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,6,0.0005,3,False,ok,42.044514915000036,42.044514915000036,60.86,55.16,14.85,42468464.0,,19685772,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:13.007087+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,7,0.0005,0,True,oom,,,30.1,48.02,19.31,37084168.0,,,8,,,,,"^^^^^^^^^
+  File ""/home/user/.venvs/fastapriori/lib/python3.12/site-packages/fastapriori/backends/rust_backend.py"", line 437, in decode_pipeline_rules
+    ant_indices = ant_col_indices[rule_j]                 # (n_rules, k-1)
+                  ~~~~~~~~~~~~~~~^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 27.5 GiB for an array with shape (615198283, 6) and data type int64
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:43.117607+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,8,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:43.120229+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded,9,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:43.121956+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,3,0.0005,0,True,ok,0.1721015549992444,0.1721015549992444,0.58,1.2,0.07,180008.0,,72879,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:43.707442+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,3,0.0005,1,False,ok,0.17432137800096825,0.17432137800096825,0.58,1.2,0.08,180164.0,,72879,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:44.300230+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,3,0.0005,2,False,ok,0.17362801600029343,0.17362801600029343,0.58,1.2,0.07,180196.0,,72879,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:44.888598+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,3,0.0005,3,False,ok,0.17233788799967442,0.17233788799967442,0.58,1.19,0.08,180248.0,,72879,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:45.479632+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,4,0.0005,0,True,ok,0.9000750259983761,0.9000750259983761,1.53,1.95,0.28,809212.0,,601397,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:47.021157+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,4,0.0005,1,False,ok,0.8896021100008511,0.8896021100008511,1.51,1.95,0.25,809488.0,,601397,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:48.541726+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,4,0.0005,2,False,ok,0.8929232219998084,0.8929232219998084,1.51,1.96,0.24,809532.0,,601397,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:50.061803+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,4,0.0005,3,False,ok,0.8944513609985734,0.8944513609985734,1.52,1.96,0.25,809548.0,,601397,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:26:51.591448+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,5,0.0005,0,True,ok,6.728848963000928,6.728848963000928,9.68,8.24,2.13,6283528.0,,3809674,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:27:01.278813+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,5,0.0005,1,False,ok,6.8596516310008155,6.8596516310008155,9.84,8.65,1.89,6283732.0,,3809674,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:27:11.131423+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,5,0.0005,2,False,ok,6.857435433001228,6.857435433001228,9.8,8.6,1.89,6283688.0,,3809674,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:27:20.945207+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,5,0.0005,3,False,ok,6.817061771998851,6.817061771998851,9.75,8.37,2.07,6283940.0,,3809674,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:27:30.701598+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,6,0.0005,0,True,ok,45.8876644439988,45.8876644439988,64.34,51.87,13.09,42012932.0,,19685772,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:28:35.050308+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,6,0.0005,1,False,ok,45.74373629399997,45.74373629399997,64.23,52.42,12.5,42013404.0,,19685772,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:29:39.290022+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,6,0.0005,2,False,ok,45.978725869999835,45.978725869999835,64.77,53.32,12.13,42013152.0,,19685772,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:30:44.068820+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,6,0.0005,3,False,ok,45.78545701099938,45.78545701099938,64.2,51.51,13.37,42013108.0,,19685772,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:31:48.276905+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,7,0.0005,0,True,oom,,,46.55,33.67,13.56,36380528.0,,,1,,,,,"^^^^^^^^^
+  File ""/home/user/.venvs/fastapriori/lib/python3.12/site-packages/fastapriori/backends/rust_backend.py"", line 437, in decode_pipeline_rules
+    ant_indices = ant_col_indices[rule_j]                 # (n_rules, k-1)
+                  ~~~~~~~~~~~~~~~^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 27.5 GiB for an array with shape (615198283, 6) and data type int64
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:34.835601+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,8,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:34.838280+00:00
+seeded_gaps_5e4,BMS-WebView-1,hyb_seeded_1t,9,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:34.840264+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,3,0.0005,0,True,ok,2.0302595590001147,2.0302595590001147,2.57,11.95,0.38,676348.0,,187727,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:41.746524+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,3,0.0005,1,False,ok,2.022965457999817,2.022965457999817,2.56,11.9,0.35,675924.0,,187727,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:44.313717+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,3,0.0005,2,False,ok,2.0157764469986432,2.0157764469986432,2.56,11.9,0.36,677752.0,,187727,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:46.879775+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,3,0.0005,3,False,ok,2.05296875500062,2.05296875500062,2.59,12.07,0.38,676992.0,,187727,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:49.482749+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,4,0.0005,0,True,ok,4.5482252150013665,4.5482252150013665,5.67,22.26,0.96,2316016.0,,1525630,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:32:55.165732+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,4,0.0005,1,False,ok,4.564250545001414,4.564250545001414,5.69,22.36,0.89,2263944.0,,1525630,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:33:00.862247+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,4,0.0005,2,False,ok,4.55931209299888,4.55931209299888,5.67,22.38,0.85,2265268.0,,1525630,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:33:06.546191+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,4,0.0005,3,False,ok,4.577536363998661,4.577536363998661,5.7,22.4,0.91,2306596.0,,1525630,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:33:12.259504+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,5,0.0005,0,True,ok,31.418258881998554,31.418258881998554,43.2,85.94,8.75,25293764.0,,15499367,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:33:55.472320+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,5,0.0005,1,False,ok,31.753049588000067,31.753049588000067,43.58,86.44,9.01,25409104.0,,15499367,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:34:39.063064+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,5,0.0005,2,False,ok,31.242547967000064,31.242547967000064,43.0,86.01,7.99,25370132.0,,15499367,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:35:22.077305+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,5,0.0005,3,False,ok,31.410559297999498,31.410559297999498,43.06,86.57,8.0,25480244.0,,15499367,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:36:05.146603+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,6,0.0005,0,True,oom,,,81.74,361.19,23.98,42704900.0,,,8,,,,,"^^^^^^^^^
+  File ""/home/user/.venvs/fastapriori/lib/python3.12/site-packages/fastapriori/backends/rust_backend.py"", line 437, in decode_pipeline_rules
+    ant_indices = ant_col_indices[rule_j]                 # (n_rules, k-1)
+                  ~~~~~~~~~~~~~~~^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 30.3 GiB for an array with shape (814026498, 5) and data type int64
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:37:26.896519+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,7,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:37:26.899133+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,8,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:37:26.900921+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded,9,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:37:26.902573+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,3,0.0005,0,True,ok,8.913885563000804,8.913885563000804,9.45,9.92,0.36,674924.0,,187727,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:37:36.365344+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,3,0.0005,1,False,ok,8.888276113000757,8.888276113000757,9.43,9.9,0.36,669840.0,,187727,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:37:45.803315+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,3,0.0005,2,False,ok,8.912218407998807,8.912218407998807,9.45,9.94,0.35,675464.0,,187727,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:37:55.264038+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,3,0.0005,3,False,ok,8.929350324000552,8.929350324000552,9.47,9.94,0.35,674240.0,,187727,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:38:04.742216+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,4,0.0005,0,True,ok,17.0455725289994,17.0455725289994,18.15,18.17,0.83,2211996.0,,1525630,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:38:22.906140+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,4,0.0005,1,False,ok,17.066559236000103,17.066559236000103,18.17,18.17,0.83,2205132.0,,1525630,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:38:41.086356+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,4,0.0005,2,False,ok,17.029492001000108,17.029492001000108,18.13,18.16,0.81,2213056.0,,1525630,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:38:59.230950+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,4,0.0005,3,False,ok,17.052344293000715,17.052344293000715,18.16,18.15,0.85,2209868.0,,1525630,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:39:17.401309+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,5,0.0005,0,True,ok,63.70531154499986,63.70531154499986,75.5,68.9,7.44,24992264.0,,15499367,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:40:32.915698+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,5,0.0005,1,False,ok,63.70735385700027,63.70735385700027,75.41,68.25,7.99,24991908.0,,15499367,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:41:48.337022+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,5,0.0005,2,False,ok,63.69593485399855,63.69593485399855,75.37,68.41,7.79,24985176.0,,15499367,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:43:03.720313+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,5,0.0005,3,False,ok,63.763572137000665,63.763572137000665,75.51,68.74,7.6,24984196.0,,15499367,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:44:19.245677+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,6,0.0005,0,True,oom,,,260.64,245.18,16.28,42192968.0,,,1,,,,,"^^^^^^^^^
+  File ""/home/user/.venvs/fastapriori/lib/python3.12/site-packages/fastapriori/backends/rust_backend.py"", line 437, in decode_pipeline_rules
+    ant_indices = ant_col_indices[rule_j]                 # (n_rules, k-1)
+                  ~~~~~~~~~~~~~~~^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 30.3 GiB for an array with shape (814026498, 5) and data type int64
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:48:39.890983+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,7,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:48:39.893552+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,8,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:48:39.895312+00:00
+seeded_gaps_5e4,Kosarak,hyb_seeded_1t,9,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:48:39.896969+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,3,0.0005,0,True,ok,9.937642295999467,9.937642295999467,21.35,27.44,4.52,6268796.0,,4874470,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:49:01.762143+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,3,0.0005,1,False,ok,9.92232945700016,9.92232945700016,21.31,27.64,4.26,6260340.0,,4874470,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:49:23.086712+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,3,0.0005,2,False,ok,10.003031339001609,10.003031339001609,21.5,27.69,4.4,6232100.0,,4874470,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:49:44.592280+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,3,0.0005,3,False,ok,9.90115030800007,9.90115030800007,21.29,27.49,4.41,6264412.0,,4874470,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:50:05.891257+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,4,0.0005,0,True,oom,,,60.47,97.86,14.03,42200716.0,,,8,,,,,"         ^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/user/.venvs/fastapriori/lib/python3.12/site-packages/fastapriori/backends/rust_backend.py"", line 462, in decode_pipeline_rules
+    decoded_ant = item_decoder[antecedents_enc]
+                  ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 29.0 GiB for an array with shape (215875104, 3) and data type <U12
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:51:06.368468+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,5,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:51:06.371031+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,6,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:51:06.372726+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,7,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:51:06.374374+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,8,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:51:06.375992+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded,9,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:51:06.377622+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,3,0.0005,0,True,ok,16.893078633000187,16.893078633000187,28.27,24.71,4.26,6120060.0,,4874470,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:51:34.654369+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,3,0.0005,1,False,ok,16.717027110000345,16.717027110000345,28.06,24.53,4.22,6119812.0,,4874470,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:52:02.728635+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,3,0.0005,2,False,ok,16.798808875999384,16.798808875999384,28.36,24.86,4.2,6120060.0,,4874470,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:52:31.100396+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,3,0.0005,3,False,ok,16.722107570001754,16.722107570001754,28.1,24.66,4.15,6120004.0,,4874470,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:52:59.211752+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,4,0.0005,0,True,oom,,,94.83,83.03,12.49,41002120.0,,,1,,,,,"         ^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/user/.venvs/fastapriori/lib/python3.12/site-packages/fastapriori/backends/rust_backend.py"", line 462, in decode_pipeline_rules
+    decoded_ant = item_decoder[antecedents_enc]
+                  ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 29.0 GiB for an array with shape (215875104, 3) and data type <U12
+",cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.048019+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,5,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.050575+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,6,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.052355+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,7,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.053998+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,8,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.055630+00:00
+seeded_gaps_5e4,Online Retail,hyb_seeded_1t,9,0.0005,0,True,skipped,,,,,,,,,,,,,,after oom at smaller k,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.057330+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,7,0.0005,0,True,ok,0.027872774000570644,0.027872774000570644,0.4,1.15,0.06,122328.0,,2,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.491779+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,7,0.0005,1,False,ok,0.028006823000396253,0.028006823000396253,0.4,1.17,0.04,122268.0,,2,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:34.904829+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,7,0.0005,2,False,ok,0.027905934999580495,0.027905934999580495,0.4,1.16,0.04,122528.0,,2,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:35.312971+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,7,0.0005,3,False,ok,0.027967213000010815,0.027967213000010815,0.4,1.09,0.05,122208.0,,2,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:35.724654+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,8,0.0005,0,True,ok,0.025017703999765217,0.025017703999765217,0.4,1.15,0.05,121384.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:36.134975+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,8,0.0005,1,False,ok,0.02660482000101183,0.02660482000101183,0.4,1.15,0.05,121276.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:36.545028+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,8,0.0005,2,False,ok,0.02482382400012284,0.02482382400012284,0.41,1.17,0.04,121104.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:36.964767+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,8,0.0005,3,False,ok,0.02532392699868069,0.02532392699868069,0.41,1.17,0.05,121068.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:37.380093+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,9,0.0005,0,True,ok,0.027934867001022212,0.027934867001022212,0.4,1.15,0.05,121488.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:37.793518+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,9,0.0005,1,False,ok,0.025701189999381313,0.025701189999381313,0.41,1.17,0.04,121332.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:38.209917+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,9,0.0005,2,False,ok,0.02554781499929959,0.02554781499929959,0.42,1.16,0.07,121028.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:38.639012+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded,9,0.0005,3,False,ok,0.025141236001218203,0.025141236001218203,0.4,1.17,0.04,121060.0,,0,8,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:39.051252+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,7,0.0005,0,True,ok,0.10860252899874467,0.10860252899874467,0.49,1.13,0.04,120196.0,,2,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:39.548310+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,7,0.0005,1,False,ok,0.10939470800076379,0.10939470800076379,0.49,1.14,0.04,120264.0,,2,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:40.046514+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,7,0.0005,2,False,ok,0.10873312599869678,0.10873312599869678,0.48,1.14,0.04,120052.0,,2,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:40.538731+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,7,0.0005,3,False,ok,0.1089030350012763,0.1089030350012763,0.48,1.14,0.04,120028.0,,2,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:41.033204+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,8,0.0005,0,True,ok,0.10578001599969866,0.10578001599969866,0.48,1.12,0.05,118840.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:41.521770+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,8,0.0005,1,False,ok,0.1051470820002578,0.1051470820002578,0.48,1.13,0.05,119064.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:42.011341+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,8,0.0005,2,False,ok,0.10586336200140067,0.10586336200140067,0.48,1.12,0.05,118948.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:42.502765+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,8,0.0005,3,False,ok,0.10553464699842152,0.10553464699842152,0.48,1.13,0.05,119176.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:42.991503+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,9,0.0005,0,True,ok,0.10536998499992478,0.10536998499992478,0.48,1.13,0.04,119120.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:43.480383+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,9,0.0005,1,False,ok,0.10548263599957863,0.10548263599957863,0.48,1.13,0.04,119064.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:43.969543+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,9,0.0005,2,False,ok,0.1054003700010071,0.1054003700010071,0.48,1.13,0.04,118864.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:44.456792+00:00
+seeded_gaps_5e4,T12.I4.D5k.N1k.L1k,hyb_seeded_1t,9,0.0005,3,False,ok,0.10552487799941446,0.10552487799941446,0.48,1.13,0.04,119064.0,,0,1,,,,,,cc508b6408f4,gce-c3-highmem-8,2026-10-31T21:54:44.944721+00:00

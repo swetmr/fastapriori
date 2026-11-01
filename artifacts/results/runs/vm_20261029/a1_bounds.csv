@@ -1,0 +1,145 @@
+experiment,dataset,method,k,min_support,run_id,warmup,status,wall_s,inner_wall_s,process_wall_s,user_cpu_s,sys_cpu_s,peak_rss_kb,max_vsize_kb,n_itemsets,threads,borgelt_read_s,borgelt_mine_s,borgelt_write_s,lcm_counts,stderr_tail,build_id,host,timestamp_utc
+a1_bounds,BMS-WebView-2,borgelt_apriori,2,0.0001,0,True,ok,0.08,,0.08,0.07,0.0,26980.0,,38618,,0.02,0.010000000000000002,0.02,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:23.688262+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori,2,0.0001,1,False,ok,0.08,,0.08,0.07,0.01,27036.0,,38618,,0.02,0.010000000000000002,0.02,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:23.783324+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori,2,0.0001,2,False,ok,0.08,,0.08,0.07,0.01,26868.0,,38618,,0.02,0.010000000000000002,0.02,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:23.878787+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori,2,0.0001,3,False,ok,0.08,,0.08,0.08,0.0,26932.0,,38618,,0.02,0.010000000000000002,0.02,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:23.973534+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori,3,0.0001,0,True,ok,0.2,,0.2,0.18,0.01,41112.0,,80500,,0.02,0.009999999999999995,0.03,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:24.182207+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori,3,0.0001,1,False,ok,0.2,,0.2,0.18,0.01,41164.0,,80500,,0.02,0.009999999999999995,0.03,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:24.394327+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori,3,0.0001,2,False,ok,0.2,,0.2,0.19,0.01,41172.0,,80500,,0.02,0.009999999999999995,0.03,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:24.606270+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori,3,0.0001,3,False,ok,0.2,,0.2,0.19,0.01,41244.0,,80500,,0.02,0.009999999999999995,0.03,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:24.818678+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,2,0.0001,0,True,ok,2.38,,2.38,2.33,0.04,93140.0,,7310377,,0.02,0.010000000000000009,1.16,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:27.205428+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,2,0.0001,1,False,ok,2.5,,2.5,2.46,0.03,93408.0,,7310377,,0.02,0.010000000000000009,1.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:29.715946+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,2,0.0001,2,False,ok,2.38,,2.38,2.35,0.03,93168.0,,7310377,,0.02,0.010000000000000009,1.16,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:32.111722+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,2,0.0001,3,False,ok,2.41,,2.41,2.36,0.04,93280.0,,7310377,,0.02,0.010000000000000009,1.16,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:34.528806+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,3,0.0001,0,True,ok,2.37,,2.37,2.33,0.04,93100.0,,7271759,,0.02,0.010000000000000009,1.16,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:36.912904+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,3,0.0001,1,False,ok,2.38,,2.38,2.33,0.05,93156.0,,7271759,,0.02,0.010000000000000009,1.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:39.301391+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,3,0.0001,2,False,ok,2.38,,2.38,2.34,0.03,93012.0,,7271759,,0.02,0.010000000000000009,1.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:41.692571+00:00
+a1_bounds,BMS-WebView-2,borgelt_apriori_nobound,3,0.0001,3,False,ok,2.38,,2.38,2.34,0.04,93080.0,,7271759,,0.02,0.010000000000000009,1.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:44.087335+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,2,0.0001,0,True,ok,0.1,,0.1,0.1,0.0,13556.0,,38618,,0.02,0.009999999999999995,0.07,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:44.198935+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,2,0.0001,1,False,ok,0.1,,0.1,0.09,0.0,13468.0,,38618,,0.02,0.009999999999999995,0.07,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:44.309422+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,2,0.0001,2,False,ok,0.1,,0.1,0.09,0.0,13552.0,,38618,,0.02,0.009999999999999995,0.07,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:44.419806+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,2,0.0001,3,False,ok,0.1,,0.1,0.1,0.0,13492.0,,38618,,0.02,0.009999999999999995,0.07,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:44.530456+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,3,0.0001,0,True,ok,0.15,,0.15,0.14,0.0,12664.0,,80500,,0.02,0.010000000000000009,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:44.690243+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,3,0.0001,1,False,ok,0.15,,0.15,0.14,0.0,12624.0,,80500,,0.02,0.010000000000000009,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:44.850032+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,3,0.0001,2,False,ok,0.15,,0.15,0.14,0.0,12648.0,,80500,,0.02,0.010000000000000009,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:45.011374+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat,3,0.0001,3,False,ok,0.15,,0.15,0.14,0.0,12744.0,,80500,,0.02,0.010000000000000009,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:45.172720+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,2,0.0001,0,True,ok,1.41,,1.41,1.4,0.0,13676.0,,7310377,,0.02,0.010000000000000009,1.38,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:46.594838+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,2,0.0001,1,False,ok,1.41,,1.41,1.4,0.0,13724.0,,7310377,,0.02,0.010000000000000009,1.38,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:48.015596+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,2,0.0001,2,False,ok,1.41,,1.41,1.4,0.01,13620.0,,7310377,,0.02,0.010000000000000009,1.38,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:49.437994+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,2,0.0001,3,False,ok,1.41,,1.41,1.4,0.0,13732.0,,7310377,,0.02,0.010000000000000009,1.38,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:50.862891+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,3,0.0001,0,True,ok,1.4,,1.4,1.39,0.01,12644.0,,7271759,,0.02,0.010000000000000009,1.37,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:52.277678+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,3,0.0001,1,False,ok,1.4,,1.4,1.39,0.0,12708.0,,7271759,,0.02,0.010000000000000009,1.37,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:53.689089+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,3,0.0001,2,False,ok,1.4,,1.4,1.39,0.0,12600.0,,7271759,,0.02,0.010000000000000009,1.37,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:55.099700+00:00
+a1_bounds,BMS-WebView-2,borgelt_eclat_nobound,3,0.0001,3,False,ok,1.4,,1.4,1.39,0.0,12552.0,,7271759,,0.02,0.010000000000000009,1.37,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:56.512584+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,2,0.0001,0,True,ok,0.11,,0.11,0.09,0.01,30764.0,,38618,,0.02,0.009999999999999995,0.08,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:56.630696+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,2,0.0001,1,False,ok,0.1,,0.1,0.1,0.0,30820.0,,38618,,0.02,0.009999999999999995,0.07,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:56.744293+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,2,0.0001,2,False,ok,0.11,,0.11,0.09,0.01,30636.0,,38618,,0.02,0.009999999999999995,0.08,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:56.864744+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,2,0.0001,3,False,ok,0.11,,0.11,0.09,0.01,30780.0,,38618,,0.02,0.009999999999999995,0.08,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:56.982001+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,3,0.0001,0,True,ok,0.17,,0.17,0.16,0.01,30440.0,,80500,,0.02,0.010000000000000009,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:57.165905+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,3,0.0001,1,False,ok,0.17,,0.17,0.16,0.01,30420.0,,80500,,0.02,0.010000000000000009,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:57.350750+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,3,0.0001,2,False,ok,0.17,,0.17,0.16,0.0,30392.0,,80500,,0.02,0.010000000000000009,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:57.534428+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth,3,0.0001,3,False,ok,0.17,,0.17,0.16,0.01,30464.0,,80500,,0.02,0.010000000000000009,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:57.717085+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,2,0.0001,0,True,ok,1.3,,1.3,1.29,0.01,30832.0,,7310377,,0.02,0.010000000000000009,1.27,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:36:59.024791+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,2,0.0001,1,False,ok,1.29,,1.29,1.28,0.01,30876.0,,7310377,,0.02,0.010000000000000009,1.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:00.331577+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,2,0.0001,2,False,ok,1.29,,1.29,1.28,0.01,30772.0,,7310377,,0.02,0.010000000000000009,1.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:01.635477+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,2,0.0001,3,False,ok,1.3,,1.3,1.28,0.01,30820.0,,7310377,,0.02,0.010000000000000009,1.27,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:02.946083+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,3,0.0001,0,True,ok,1.29,,1.29,1.27,0.01,30364.0,,7271759,,0.02,0.010000000000000009,1.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:04.246168+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,3,0.0001,1,False,ok,1.29,,1.29,1.27,0.01,30448.0,,7271759,,0.02,0.010000000000000009,1.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:05.547557+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,3,0.0001,2,False,ok,1.29,,1.29,1.27,0.01,30332.0,,7271759,,0.02,0.010000000000000009,1.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:06.844525+00:00
+a1_bounds,BMS-WebView-2,borgelt_fpgrowth_nobound,3,0.0001,3,False,ok,1.29,,1.29,1.27,0.01,30544.0,,7271759,,0.02,0.010000000000000009,1.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:08.143921+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,2,0.0001,0,True,ok,0.43,,0.43,0.36,0.07,173716.0,,67992,,0.05,0.04000000000000001,0.09,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:11.470963+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,2,0.0001,1,False,ok,0.43,,0.43,0.35,0.08,173768.0,,67992,,0.06,0.04000000000000001,0.09,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:11.912801+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,2,0.0001,2,False,ok,0.43,,0.43,0.36,0.06,173716.0,,67992,,0.06,0.04000000000000001,0.09,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:12.353452+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,2,0.0001,3,False,ok,0.42,,0.42,0.36,0.06,173736.0,,67992,,0.05,0.04000000000000001,0.09,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:12.792062+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,3,0.0001,0,True,ok,0.65,,0.65,0.57,0.07,201844.0,,83417,,0.05,0.04000000000000001,0.1,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:13.452097+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,3,0.0001,1,False,ok,0.65,,0.65,0.58,0.07,201748.0,,83417,,0.06,0.04000000000000001,0.1,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:14.115251+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,3,0.0001,2,False,ok,0.65,,0.65,0.58,0.06,201764.0,,83417,,0.06,0.04000000000000001,0.1,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:14.777053+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori,3,0.0001,3,False,ok,0.65,,0.65,0.57,0.07,201840.0,,83417,,0.05,0.04000000000000001,0.1,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:15.438027+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,2,0.0001,0,True,ok,0.88,,0.88,0.8,0.07,206016.0,,231933,,0.06,0.03999999999999998,0.13,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:16.328045+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,2,0.0001,1,False,ok,0.88,,0.88,0.8,0.07,206060.0,,231933,,0.06,0.03999999999999998,0.13,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:17.217796+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,2,0.0001,2,False,ok,0.88,,0.88,0.8,0.07,205948.0,,231933,,0.05,0.03999999999999998,0.13,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:18.107237+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,2,0.0001,3,False,ok,0.87,,0.87,0.79,0.08,206016.0,,231933,,0.05,0.03999999999999998,0.13,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:18.995365+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,3,0.0001,0,True,ok,0.86,,0.86,0.78,0.08,205612.0,,163941,,0.05,0.03999999999999998,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:19.872545+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,3,0.0001,1,False,ok,0.86,,0.86,0.78,0.08,205668.0,,163941,,0.05,0.03999999999999998,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:20.749267+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,3,0.0001,2,False,ok,0.86,,0.86,0.78,0.08,205388.0,,163941,,0.06,0.03999999999999998,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:21.622777+00:00
+a1_bounds,Retail (Belgian),borgelt_apriori_nobound,3,0.0001,3,False,ok,0.86,,0.86,0.77,0.09,205752.0,,163941,,0.06,0.03999999999999998,0.12,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:22.498230+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,2,0.0001,0,True,ok,0.24,,0.24,0.23,0.0,26056.0,,67992,,0.05,0.03,0.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:22.747384+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,2,0.0001,1,False,ok,0.24,,0.24,0.23,0.0,26164.0,,67992,,0.06,0.03,0.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:22.997041+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,2,0.0001,2,False,ok,0.23,,0.23,0.22,0.01,26060.0,,67992,,0.05,0.03,0.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:23.242637+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,2,0.0001,3,False,ok,0.23,,0.23,0.22,0.01,26056.0,,67992,,0.05,0.03,0.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:23.487340+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,3,0.0001,0,True,ok,0.26,,0.26,0.25,0.0,25980.0,,83417,,0.05,0.030000000000000027,0.18,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:23.762123+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,3,0.0001,1,False,ok,0.26,,0.26,0.25,0.01,25776.0,,83417,,0.06,0.030000000000000027,0.18,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:24.040414+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,3,0.0001,2,False,ok,0.27,,0.27,0.26,0.0,25996.0,,83417,,0.05,0.030000000000000027,0.18,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:24.319544+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat,3,0.0001,3,False,ok,0.26,,0.26,0.26,0.0,25904.0,,83417,,0.05,0.030000000000000027,0.18,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:24.594403+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,2,0.0001,0,True,ok,0.3,,0.3,0.29,0.01,26124.0,,231933,,0.05,0.03,0.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:24.910180+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,2,0.0001,1,False,ok,0.3,,0.3,0.29,0.0,26048.0,,231933,,0.05,0.03,0.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:25.224769+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,2,0.0001,2,False,ok,0.3,,0.3,0.29,0.0,26076.0,,231933,,0.05,0.03,0.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:25.537722+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,2,0.0001,3,False,ok,0.3,,0.3,0.28,0.01,25976.0,,231933,,0.05,0.03,0.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:25.853256+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,3,0.0001,0,True,ok,0.29,,0.29,0.27,0.01,25944.0,,163941,,0.05,0.03,0.21,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:26.155441+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,3,0.0001,1,False,ok,0.29,,0.29,0.28,0.0,25880.0,,163941,,0.05,0.030000000000000027,0.2,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:26.457127+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,3,0.0001,2,False,ok,0.29,,0.29,0.28,0.0,25956.0,,163941,,0.05,0.030000000000000027,0.2,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:26.758404+00:00
+a1_bounds,Retail (Belgian),borgelt_eclat_nobound,3,0.0001,3,False,ok,0.29,,0.29,0.28,0.01,25828.0,,163941,,0.06,0.030000000000000027,0.2,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:27.062149+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,2,0.0001,0,True,ok,0.3,,0.3,0.28,0.02,56032.0,,67992,,0.06,0.03,0.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:27.378710+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,2,0.0001,1,False,ok,0.3,,0.3,0.28,0.02,56224.0,,67992,,0.06,0.03,0.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:27.694831+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,2,0.0001,2,False,ok,0.3,,0.3,0.28,0.02,56212.0,,67992,,0.05,0.03,0.22,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:28.011552+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,2,0.0001,3,False,ok,0.32,,0.32,0.3,0.01,56168.0,,67992,,0.06,0.03,0.23,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:28.341271+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,3,0.0001,0,True,ok,0.33,,0.33,0.3,0.02,56112.0,,83417,,0.05,0.030000000000000027,0.24,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:28.685817+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,3,0.0001,1,False,ok,0.34,,0.34,0.32,0.02,56244.0,,83417,,0.06,0.02999999999999997,0.25,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:29.040513+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,3,0.0001,2,False,ok,0.33,,0.33,0.3,0.02,56184.0,,83417,,0.05,0.030000000000000027,0.24,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:29.382553+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth,3,0.0001,3,False,ok,0.32,,0.32,0.3,0.02,56104.0,,83417,,0.06,0.02999999999999997,0.24,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:29.721005+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,2,0.0001,0,True,ok,0.35,,0.35,0.32,0.02,56220.0,,231933,,0.05,0.030000000000000027,0.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:30.080404+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,2,0.0001,1,False,ok,0.34,,0.34,0.31,0.03,56260.0,,231933,,0.05,0.030000000000000027,0.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:30.437009+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,2,0.0001,2,False,ok,0.35,,0.35,0.32,0.02,56256.0,,231933,,0.05,0.030000000000000027,0.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:30.798874+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,2,0.0001,3,False,ok,0.35,,0.35,0.33,0.01,56264.0,,231933,,0.06,0.02999999999999997,0.26,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:31.162313+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,3,0.0001,0,True,ok,0.33,,0.33,0.31,0.02,56140.0,,163941,,0.05,0.030000000000000027,0.25,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:31.510774+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,3,0.0001,1,False,ok,0.33,,0.33,0.31,0.02,56164.0,,163941,,0.05,0.030000000000000027,0.25,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:31.854360+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,3,0.0001,2,False,ok,0.33,,0.33,0.31,0.02,56160.0,,163941,,0.05,0.030000000000000027,0.25,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:32.198009+00:00
+a1_bounds,Retail (Belgian),borgelt_fpgrowth_nobound,3,0.0001,3,False,ok,0.34,,0.34,0.31,0.02,56168.0,,163941,,0.05,0.030000000000000027,0.25,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:32.548994+00:00
+a1_bounds,Chainstore,borgelt_apriori,2,0.0001,0,True,ok,2.05,,2.05,1.86,0.19,411772.0,,19945,,0.6,0.42999999999999994,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:38.739436+00:00
+a1_bounds,Chainstore,borgelt_apriori,2,0.0001,1,False,ok,2.04,,2.04,1.87,0.16,411704.0,,19945,,0.61,0.43000000000000016,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:40.800913+00:00
+a1_bounds,Chainstore,borgelt_apriori,2,0.0001,2,False,ok,2.03,,2.03,1.87,0.16,411832.0,,19945,,0.6,0.42999999999999994,0.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:42.853243+00:00
+a1_bounds,Chainstore,borgelt_apriori,2,0.0001,3,False,ok,2.04,,2.04,1.89,0.14,411764.0,,19945,,0.6,0.42999999999999994,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:44.912706+00:00
+a1_bounds,Chainstore,borgelt_apriori,3,0.0001,0,True,ok,2.44,,2.44,2.26,0.17,406812.0,,3139,,0.6,0.4099999999999999,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:47.373152+00:00
+a1_bounds,Chainstore,borgelt_apriori,3,0.0001,1,False,ok,2.42,,2.42,2.24,0.18,406876.0,,3139,,0.61,0.4099999999999999,0.13,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:49.815095+00:00
+a1_bounds,Chainstore,borgelt_apriori,3,0.0001,2,False,ok,2.43,,2.43,2.26,0.16,406968.0,,3139,,0.6,0.42000000000000015,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:52.265935+00:00
+a1_bounds,Chainstore,borgelt_apriori,3,0.0001,3,False,ok,2.43,,2.43,2.25,0.17,406976.0,,3139,,0.6,0.4099999999999999,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:54.716086+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,2,0.0001,0,True,ok,2.79,,2.79,2.61,0.17,423028.0,,23267,,0.6,0.43000000000000005,0.21,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:37:57.526097+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,2,0.0001,1,False,ok,2.79,,2.79,2.59,0.19,422976.0,,23267,,0.61,0.42999999999999994,0.15,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:00.335804+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,2,0.0001,2,False,ok,2.77,,2.77,2.61,0.16,423036.0,,23267,,0.6,0.43,0.2,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:03.131065+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,2,0.0001,3,False,ok,2.76,,2.76,2.59,0.17,423040.0,,23267,,0.6,0.42999999999999994,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:05.916834+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,3,0.0001,0,True,ok,2.73,,2.73,2.55,0.18,407004.0,,3322,,0.61,0.41999999999999993,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:08.664862+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,3,0.0001,1,False,ok,2.73,,2.73,2.54,0.18,407052.0,,3322,,0.61,0.41000000000000014,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:11.411072+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,3,0.0001,2,False,ok,2.82,,2.82,2.64,0.17,407036.0,,3322,,0.63,0.42,0.19,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:14.247719+00:00
+a1_bounds,Chainstore,borgelt_apriori_nobound,3,0.0001,3,False,ok,2.73,,2.73,2.56,0.16,406928.0,,3322,,0.6,0.4099999999999999,0.14,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:16.993996+00:00
+a1_bounds,Chainstore,borgelt_eclat,2,0.0001,0,True,ok,1.92,,1.92,1.81,0.1,197964.0,,19945,,0.6,0.33999999999999986,0.96,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:18.930287+00:00
+a1_bounds,Chainstore,borgelt_eclat,2,0.0001,1,False,ok,1.91,,1.91,1.82,0.09,197960.0,,19945,,0.6,0.33999999999999986,0.96,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:20.863695+00:00
+a1_bounds,Chainstore,borgelt_eclat,2,0.0001,2,False,ok,1.9,,1.9,1.81,0.09,197956.0,,19945,,0.6,0.32999999999999985,0.95,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:22.788238+00:00
+a1_bounds,Chainstore,borgelt_eclat,2,0.0001,3,False,ok,1.91,,1.91,1.81,0.09,197912.0,,19945,,0.6,0.33000000000000007,0.96,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:24.717462+00:00
+a1_bounds,Chainstore,borgelt_eclat,3,0.0001,0,True,ok,1.89,,1.89,1.81,0.07,183640.0,,3139,,0.6,0.32000000000000006,0.95,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:26.630051+00:00
+a1_bounds,Chainstore,borgelt_eclat,3,0.0001,1,False,ok,1.89,,1.89,1.79,0.09,183536.0,,3139,,0.6,0.32000000000000006,0.95,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:28.536981+00:00
+a1_bounds,Chainstore,borgelt_eclat,3,0.0001,2,False,ok,1.9,,1.9,1.79,0.1,183556.0,,3139,,0.6,0.31999999999999984,0.96,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:30.456305+00:00
+a1_bounds,Chainstore,borgelt_eclat,3,0.0001,3,False,ok,1.89,,1.89,1.79,0.09,183552.0,,3139,,0.6,0.32000000000000006,0.95,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:32.364035+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,2,0.0001,0,True,ok,1.95,,1.95,1.85,0.09,197856.0,,23267,,0.6,0.33000000000000007,1.0,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:34.339423+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,2,0.0001,1,False,ok,1.96,,1.96,1.85,0.1,197884.0,,23267,,0.6,0.33999999999999986,1.0,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:36.317053+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,2,0.0001,2,False,ok,1.95,,1.95,1.85,0.1,197960.0,,23267,,0.6,0.33000000000000007,1.0,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:38.292664+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,2,0.0001,3,False,ok,1.94,,1.94,1.84,0.1,197792.0,,23267,,0.6,0.33999999999999986,1.0,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:40.256796+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,3,0.0001,0,True,ok,1.9,,1.9,1.82,0.08,183492.0,,3322,,0.61,0.3200000000000003,0.96,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:42.180407+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,3,0.0001,1,False,ok,1.9,,1.9,1.81,0.09,183572.0,,3322,,0.6,0.31999999999999984,0.96,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:44.099031+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,3,0.0001,2,False,ok,1.89,,1.89,1.79,0.09,183564.0,,3322,,0.59,0.32000000000000006,0.95,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:46.007708+00:00
+a1_bounds,Chainstore,borgelt_eclat_nobound,3,0.0001,3,False,ok,1.89,,1.89,1.8,0.08,183640.0,,3322,,0.59,0.32000000000000006,0.95,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:47.918117+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,2,0.0001,0,True,ok,3.66,,3.66,3.51,0.14,338080.0,,19945,,0.6,0.33999999999999986,2.7,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:51.599451+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,2,0.0001,1,False,ok,3.65,,3.65,3.5,0.14,338104.0,,19945,,0.61,0.33999999999999986,2.69,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:55.271165+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,2,0.0001,2,False,ok,3.84,,3.84,3.7,0.14,338008.0,,19945,,0.6,0.33999999999999986,2.88,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:38:59.136068+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,2,0.0001,3,False,ok,3.71,,3.71,3.55,0.15,338076.0,,19945,,0.6,0.33999999999999986,2.74,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:02.868900+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,3,0.0001,0,True,ok,3.66,,3.66,3.5,0.16,332040.0,,3139,,0.61,0.33000000000000007,2.71,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:06.550296+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,3,0.0001,1,False,ok,3.65,,3.65,3.48,0.16,332188.0,,3139,,0.6,0.3299999999999996,2.7,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:10.220524+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,3,0.0001,2,False,ok,3.68,,3.68,3.53,0.14,332016.0,,3139,,0.61,0.33000000000000007,2.72,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:13.919849+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth,3,0.0001,3,False,ok,3.67,,3.67,3.52,0.14,332176.0,,3139,,0.61,0.33000000000000007,2.71,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:17.609047+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,2,0.0001,0,True,ok,3.75,,3.75,3.6,0.15,338076.0,,23267,,0.6,0.33999999999999986,2.79,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:21.378889+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,2,0.0001,1,False,ok,3.76,,3.76,3.61,0.15,337928.0,,23267,,0.61,0.3400000000000003,2.8,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:25.163892+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,2,0.0001,2,False,ok,3.75,,3.75,3.59,0.16,338156.0,,23267,,0.62,0.33999999999999986,2.78,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:28.934257+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,2,0.0001,3,False,ok,3.76,,3.76,3.6,0.16,338004.0,,23267,,0.62,0.3500000000000001,2.77,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:32.718473+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,3,0.0001,0,True,ok,3.67,,3.67,3.54,0.13,332148.0,,3322,,0.61,0.33000000000000007,2.72,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:36.412984+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,3,0.0001,1,False,ok,3.89,,3.89,3.75,0.14,332192.0,,3322,,0.63,0.3400000000000003,2.9,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:40.324080+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,3,0.0001,2,False,ok,3.62,,3.62,3.47,0.15,331968.0,,3322,,0.61,0.33000000000000007,2.67,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:43.967326+00:00
+a1_bounds,Chainstore,borgelt_fpgrowth_nobound,3,0.0001,3,False,ok,3.67,,3.67,3.5,0.16,332104.0,,3322,,0.6,0.31999999999999984,2.73,,,4a21a5f2440d,gce-c3-highmem-8,2026-10-29T10:39:47.658262+00:00

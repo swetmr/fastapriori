@@ -1,0 +1,61 @@
+START grid at 1e-4 18:18:21
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+END grid at 1e-4 after 162.8 min
+START dense at k=3 21:01:10
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+END dense at k=3 after 20.3 min
+START gap cells at 5e-4 21:21:29
+preflight ok: 2 methods, build cc508b6408f4
+preflight ok: 2 methods, build cc508b6408f4
+END gap cells at 5e-4 after 33.3 min
+START gap cells at 1e-4 21:54:44
+preflight ok: 3 methods, build cc508b6408f4
+preflight ok: 3 methods, build cc508b6408f4
+END gap cells at 1e-4 after 194.2 min
+START Groceries k=7..9 01:08:55
+preflight ok: 2 methods, build cc508b6408f4
+END Groceries k=7..9 after 1.4 min
+ALL DONE

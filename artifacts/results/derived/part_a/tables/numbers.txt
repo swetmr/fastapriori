@@ -1,0 +1,35 @@
+valid_configurations = 4891
+spearman(rho, borgeltApriori/1T), all 18 = 0.734
+spearman(rho, borgeltApriori/1T), cells >=0.1s = 0.829
+spearman(predicted isect ratio, classic/1T) = 0.949
+measured/predicted classic ratio: median, min, max = (np.float64(0.079), np.float64(0.009), np.float64(0.166))
+rho>=0.9: 1T beats Borgelt Apriori = 5/5
+rho<=0.3: Borgelt Apriori beats 1T = 10/10
+perlevel k==2 = {'k': '=2', 'pyfim': (np.float64(0.8333333333333334), np.float64(1.4197167923107514), 18), 'ext': (np.float64(0.5555555555555556), np.float64(1.3981720405229425), 18), 'eclat': (np.float64(0.8333333333333334), np.float64(2.385917263730277), 18), 'classic': (np.float64(1.0), np.float64(29.41447101448825), 17), 'real_wins': '5/8', 'syn_wins': '5/10', 'eclat_share': np.float64(0.2222222222222222)}
+perlevel k==3 = {'k': '=3', 'pyfim': (np.float64(0.2), np.float64(0.36359678104610754), 15), 'ext': (np.float64(0.2), np.float64(0.36359678104610754), 15), 'eclat': (np.float64(0.2), np.float64(0.36359678104610754), 15), 'classic': (np.float64(0.9285714285714286), np.float64(27.73317473072484), 14), 'real_wins': '0/5', 'syn_wins': '3/10', 'eclat_share': np.float64(0.8)}
+perlevel k==4 = {'k': '=4', 'pyfim': (np.float64(0.2), np.float64(0.31474816530034433), 15), 'ext': (np.float64(0.2), np.float64(0.26737235142776383), 15), 'eclat': (np.float64(0.2), np.float64(0.26737235142776383), 15), 'classic': (np.float64(0.8571428571428571), np.float64(24.746944296976487), 14), 'real_wins': '0/5', 'syn_wins': '3/10', 'eclat_share': np.float64(0.8)}
+perlevel k==5 = {'k': '=5', 'pyfim': (np.float64(0.2), np.float64(0.27658059159924675), 15), 'ext': (np.float64(0.2), np.float64(0.2561993681953377), 15), 'eclat': (np.float64(0.2), np.float64(0.2561993681953377), 15), 'classic': (np.float64(0.8571428571428571), np.float64(23.455082527463546), 14), 'real_wins': '0/5', 'syn_wins': '3/10', 'eclat_share': np.float64(0.7333333333333333)}
+perlevel k=\in[6,9] = {'k': '\\in[6,9]', 'pyfim': (np.float64(0.2222222222222222), np.float64(0.3987695386690731), 54), 'ext': (np.float64(0.2222222222222222), np.float64(0.3965552549071719), 54), 'eclat': (np.float64(0.2222222222222222), np.float64(0.3965552549071719), 54), 'classic': (np.float64(0.9387755102040817), np.float64(26.16473811574447), 49), 'real_wins': '0/17', 'syn_wins': '12/37', 'eclat_share': np.float64(0.7777777777777778)}
+1T k=2 vs pyfimbest win/median = (np.float64(0.2222222222222222), np.float64(0.748209729695265))
+1T k=2 vs pyfimbest, cells>=0.1s win/median/n = (np.float64(0.2857142857142857), np.float64(0.748209729695265), 14)
+1T k=2 vs extbest win/median = (np.float64(0.2222222222222222), np.float64(0.7166731000547397))
+1T k=2 vs extbest, cells>=0.1s win/median/n = (np.float64(0.2857142857142857), np.float64(0.7166731000547397), 14)
+k=2 lowest-support cells where every method < 50 ms = 2
+datasets where HybridFIM beats best external at some k>=3 = ['T10.I4.D100k.N25k.L25k', 'T20.I4.D1000k.N50k.L50k', 'T25.I8.D5000k.N40k.L40k']
+T15 high/low wall ratio k=3 fastapriori_fast = 3.01
+T15 high/low wall ratio k=3 pyfim_eclat = 1.81
+T15 high/low wall ratio k=3 pyfim_fpgrowth = 1.38
+T15 high/low wall ratio k=3 pyfim_apriori = 0.57
+RSS pyfim/borgelt apriori T20.D1M = 1.31
+RSS pyfim/borgelt eclat T20.D1M = 4.32
+RSS pyfim/borgelt fpgrowth T20.D1M = 2.14
+RSS HybridFIM/pyfim_eclat T20.D1M = 0.56
+RSS pyfim/borgelt apriori T30.D2M = 6.05
+RSS pyfim/borgelt eclat T30.D2M = 4.46
+RSS pyfim/borgelt fpgrowth T30.D2M = 2.33
+RSS HybridFIM/pyfim_eclat T30.D2M = 0.57
+RSS pyfim/borgelt apriori T25.D5M = 2.65
+RSS pyfim/borgelt eclat T25.D5M = 4.39
+RSS pyfim/borgelt fpgrowth T25.D5M = 2.06
+RSS HybridFIM/pyfim_eclat T25.D5M = 0.56
+level-3 marginal: HybridFIM increment > Eclat increment on = 10/10 datasets with T>=0.5s

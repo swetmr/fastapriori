@@ -1,0 +1,27 @@
+# Python 3.12. Analysis pins = the environment that produced the saved figures/ML outputs
+# (Windows; versions recorded 2026-10-29).
+pandas==3.0.1
+numpy==2.4.3
+scipy==1.17.1
+matplotlib==3.10.8
+seaborn==0.13.2
+adjustText==1.3.0
+xgboost==3.2.0
+scikit-learn==1.8.0
+openpyxl==3.1.5
+pyarrow==23.0.1
+# polars omitted: only used by fastapriori backend="python"; every benchmark uses the Rust backend
+tqdm==4.67.3
+psutil==7.2.2
+# notebooks
+jupyter==1.1.1
+nbconvert==7.17.0
+nbformat==5.10.4
+nbclient==0.10.4
+ipykernel==7.2.0
+# comparators (the May runs installed pyfim unpinned; 6.28 is the current release)
+pyfim==6.28
+efficient-apriori==2.0.6
+# library tests
+pytest==9.2.0
+# fastapriori itself is installed by setup_vm.sh (PyPI 0.2.0 or lib/fastapriori-0.2.0)

@@ -1,0 +1,24 @@
+2026-10-29T13:16:24Z waiting for notebook 15
+2026-10-29T15:08:25Z STOP: kernel idle but notebook 15 has no final row (sweep_T_50/lcm/k=4); chain not started
+2026-10-29T15:15:39Z chain2: notebook 15 T sweep, then 13 -> 14 -> 19
+2026-10-29T15:15:40Z START 15_scaling_T
+[NbConvertApp] Converting notebook _15_T.ipynb to notebook
+[NbConvertApp] Writing 172844 bytes to /home/user/artifacts/notebooks/executed/15_scaling_T.ipynb
+2026-10-29T16:30:30Z DONE 15_scaling_T
+2026-10-29T16:30:30Z START 13_memory_boundary
+[NbConvertApp] Converting notebook 13_memory_boundary.ipynb to notebook
+[NbConvertApp] Writing 127275 bytes to /home/user/artifacts/notebooks/executed/13_memory_boundary.ipynb
+2026-10-29T18:57:51Z DONE 13_memory_boundary
+2026-10-29T18:57:51Z START 14_fimi_smoke
+[NbConvertApp] Converting notebook _14_smoke.ipynb to notebook
+[NbConvertApp] Writing 125775 bytes to /home/user/artifacts/notebooks/executed/14_fimi_smoke.ipynb
+2026-10-29T18:58:04Z DONE 14_fimi_smoke
+2026-10-29T18:58:04Z START 14_fimi_lite
+[NbConvertApp] Converting notebook 14_fimi_dense.ipynb to notebook
+[NbConvertApp] Writing 878741 bytes to /home/user/artifacts/notebooks/executed/14_fimi_lite.ipynb
+2026-10-29T19:20:03Z DONE 14_fimi_lite
+2026-10-29T19:20:03Z START 19_phase_profiling
+[NbConvertApp] Converting notebook 19_phase_profiling.ipynb to notebook
+[NbConvertApp] Writing 468976 bytes to /home/user/artifacts/notebooks/executed/19_phase_profiling.ipynb
+2026-10-29T22:15:52Z DONE 19_phase_profiling
+2026-10-29T22:15:52Z CHAIN COMPLETE
