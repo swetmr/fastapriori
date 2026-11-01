@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import warnings
 from collections import Counter, defaultdict
 from itertools import combinations
@@ -13,6 +14,17 @@ import pandas as pd
 logger = logging.getLogger("fastapriori")
 
 _LOWMEM_SENTINEL_STR = "__fastapriori_lowmem_sentinel__"
+
+
+def _seeded_usable(k, backend, max_items_per_txn, backend_options):
+    """Whether algo="auto" can take the seeded path: k>=3, Rust, no capping or tuning."""
+    if k < 3 or backend not in ("auto", "rust") or max_items_per_txn is not None or backend_options:
+        return False
+    try:
+        from fastapriori._fastapriori_rs import rust_eclat_pipeline_seeded  # noqa: F401
+    except ImportError:
+        return False
+    return True
 
 
 def find_associations(
@@ -30,7 +42,7 @@ def find_associations(
     frequent_lower: pd.DataFrame | None = None,
     show_progress: bool = False,
     backend: str = "auto",
-    algo: str = "fast",
+    algo: str = "auto",
     n_workers: int | None = None,
     sorted_by: str | None = "support",
     low_memory: bool | str = "auto",
@@ -92,12 +104,16 @@ def find_associations(
         ``"pandas"``, ``"polars"``, ``"counter_chain"``, ``"combinations"``,
         ``"bin_multi"``.  Ignored when ``algo="classic"`` (always uses Rust).
     algo : str
-        Algorithm selection.  ``"fast"`` (default) uses the inverted-index
-        count-all algorithm.  ``"classic"`` uses a Rust port of the
-        efficient-apriori algorithm (multi-pass Apriori with candidate
-        generation and pruning; requires ``min_support``).  ``"auto"`` uses
-        an ML model to predict which algorithm is faster for the given data
-        characteristics (not yet implemented).
+        Algorithm selection.  ``"auto"`` (default) is ``"seeded"`` at k>=3 and
+        ``"fast"`` otherwise, including whenever the seeded path is unavailable
+        (no Rust engine, a non-Rust ``backend``, ``max_items_per_txn`` or
+        ``backend_options`` set).  ``"fast"`` uses the inverted-index count-all
+        algorithm: pair counting at k=2, anchor-and-extend at k>=3.  ``"seeded"``
+        runs Eclat seeded from scatter-counted pairs at k>=3: same rules as
+        ``"fast"``, Rust backend only, without ``max_items_per_txn``; at k=2 it
+        is ``"fast"``.  ``"classic"`` uses a Rust port of the efficient-apriori
+        algorithm (multi-pass Apriori with candidate generation and pruning;
+        requires ``min_support``).
     n_workers : int or None
         Number of parallel workers for the counter_chain/bin_multi backends
         (k>=3 only). None auto-selects, 1 forces serial. Ignored when k=2.
@@ -119,8 +135,8 @@ def find_associations(
         Default None (no capping).  Note: capping produces approximate
         counts — reported counts are lower bounds (never overcounted),
         but some truly frequent itemsets may be missed if their counts
-        drop below ``min_support`` after capping.  Supported for both
-        ``algo="fast"`` and ``algo="classic"`` when k>=3; ignored at
+        drop below ``min_support`` after capping.  Supported for
+        ``algo="auto"``, ``algo="fast"`` and ``algo="classic"`` when k>=3; ignored at
         k=2 (pairs are always counted exactly).
     item_weights : dict or None
         Item-to-weight mapping used for ranking when ``max_items_per_txn``
@@ -138,7 +154,8 @@ def find_associations(
         Reserved for internal tuning. Not a stable API — keys may be
         renamed or removed without deprecation. Currently recognised:
         ``"fast_variant"`` in {``"apriori"``, ``"eclat"``,
-        ``"eclat_seeded"``}, applied only when ``algo="fast"`` and k>=3;
+        ``"eclat_seeded"``}, applied only when ``algo="fast"`` and k>=3
+        (``algo="seeded"`` is the supported way to reach ``"eclat_seeded"``);
         ``"pair_variant"`` in {``"v0"``, ``"suffix"``, ``"filtered"``,
         ``"suffix_filtered"``}, applied only when ``algo="fast"``, k=2 and
         the Rust backend is used.
@@ -159,9 +176,9 @@ def find_associations(
         raise ValueError(f"Column '{transaction_col}' not found in DataFrame")
     if item_col not in df.columns:
         raise ValueError(f"Column '{item_col}' not found in DataFrame")
-    if algo not in ("fast", "classic", "auto"):
+    if algo not in ("fast", "seeded", "classic", "auto"):
         raise ValueError(
-            f"algo must be 'fast', 'classic', or 'auto', got '{algo}'"
+            f"algo must be 'fast', 'seeded', 'classic', or 'auto', got '{algo}'"
         )
     if algo == "classic" and min_support is None:
         raise ValueError(
@@ -181,7 +198,30 @@ def find_associations(
                 f"(first: {_bad[:3]}). Replace with finite values (e.g. 0)."
             )
     if algo == "auto":
+        algo = "seeded" if _seeded_usable(k, backend, max_items_per_txn, backend_options) else "fast"
+        if algo == "seeded" and os.environ.get("FASTAPRIORI_PROFILE"):
+            warnings.warn("FASTAPRIORI_PROFILE profiles the anchor path only; pass algo='fast' to use it.",
+                          RuntimeWarning, stacklevel=2)
+    algo_label = algo
+    if algo == "seeded":
+        if backend not in ("auto", "rust"):
+            raise ValueError(
+                f"algo='seeded' needs the Rust backend, got backend={backend!r}"
+            )
+        if k >= 3 and max_items_per_txn is not None:
+            raise ValueError(
+                "algo='seeded' does not support max_items_per_txn; "
+                "use algo='fast' for transaction capping."
+            )
+        if (backend_options or {}).get("fast_variant", "eclat_seeded") != "eclat_seeded":
+            raise ValueError(
+                "algo='seeded' conflicts with backend_options['fast_variant']="
+                f"{backend_options['fast_variant']!r}"
+            )
         algo = "fast"
+        if k >= 3:
+            backend = "rust"
+            backend_options = {**(backend_options or {}), "fast_variant": "eclat_seeded"}
 
     # backend_options is reserved; "fast_variant" and "impl_variant" are
     # read today.  impl_variant selects the Rust implementation generation
@@ -308,7 +348,7 @@ def find_associations(
         _msgs = [
             f"[fastapriori] Dataset: {_n_txn:,} txns x {_n_items:,} items | {_n_rows:,} rows",
             f"[fastapriori] d_avg={_d_avg:.1f}  d_max={_d_max}  d_median={_d_median:.1f}  d_std={_d_std:.1f}",
-            f"[fastapriori] k={k}  min_support={min_support}  algo={algo}",
+            f"[fastapriori] k={k}  min_support={min_support}  algo={algo_label}",
         ]
         if k >= 3 and _d_max >= k:
             _est_combos = comb(_d_max, k - 1) * _n_txn

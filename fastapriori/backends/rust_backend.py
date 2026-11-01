@@ -73,6 +73,14 @@ def _sorted_unique_items(series: pd.Series) -> list:
         ) from e
 
 
+def _item_decoder(items: list) -> np.ndarray:
+    """Array mapping encoded IDs back to labels, without coercing them to float."""
+    decoder = np.array(items)
+    if decoder.dtype.kind == "f" and not all(isinstance(x, (float, np.floating)) for x in items):
+        return np.array(items, dtype=object)
+    return decoder
+
+
 _MAX_ROWS = 2**32 - 1
 
 
@@ -136,7 +144,7 @@ def compute_associations(
     unique_items = _sorted_unique_items(clean[item_col])
     _check_encoder_capacity(len(unique_items))
     item_encoder = {item: i for i, item in enumerate(unique_items)}
-    item_decoder = np.array(unique_items)
+    item_decoder = _item_decoder(unique_items)
 
     # Skip pd.factorize when the txn column is already integer — Rust does
     # its own HashMap<i64, u32> factorize inside build_inverted_index.
@@ -515,7 +523,7 @@ def compute_pipeline(
     _check_row_capacity(len(df))
     if fast_variant in ("eclat", "eclat_seeded") and max_items_per_txn is not None:
         raise ValueError(
-            "fast_variant='eclat' does not support max_items_per_txn; "
+            f"fast_variant={fast_variant!r} does not support max_items_per_txn; "
             "transaction capping is an Apriori-path approximation knob "
             "with no direct Eclat analogue. Use "
             "fast_variant='apriori' if you need capping."
@@ -525,7 +533,7 @@ def compute_pipeline(
     unique_items = _sorted_unique_items(clean[item_col])
     _check_encoder_capacity(len(unique_items))
     item_encoder = {item: i for i, item in enumerate(unique_items)}
-    item_decoder = np.array(unique_items)
+    item_decoder = _item_decoder(unique_items)
 
     # Skip pd.factorize when the txn column is already integer — Rust does
     # its own HashMap<i64, u32> factorize inside build_inverted_index, so

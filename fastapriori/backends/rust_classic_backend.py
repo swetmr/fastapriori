@@ -8,6 +8,7 @@ import pandas as pd
 from fastapriori.backends.rust_backend import (
     _check_encoder_capacity,
     _check_row_capacity,
+    _item_decoder,
     _sorted_unique_items,
 )
 
@@ -55,7 +56,7 @@ def compute_associations(
     unique_items = _sorted_unique_items(clean[item_col])
     _check_encoder_capacity(len(unique_items))
     item_encoder = {item: i for i, item in enumerate(unique_items)}
-    item_decoder = np.array(unique_items)
+    item_decoder = _item_decoder(unique_items)
 
     txn_codes, _ = pd.factorize(clean[transaction_col])
     txn_ids = txn_codes.astype(np.int64)
@@ -109,7 +110,7 @@ def compute_pipeline(
     clean = df[[transaction_col, item_col]].dropna()
     unique_items = sorted(clean[item_col].unique())
     item_encoder = {item: i for i, item in enumerate(unique_items)}
-    item_decoder = np.array(unique_items)
+    item_decoder = _item_decoder(unique_items)
 
     txn_codes, _ = pd.factorize(clean[transaction_col])
     txn_ids = txn_codes.astype(np.int64)

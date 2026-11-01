@@ -77,7 +77,7 @@ find_associations(
     low_memory="auto",       # pre-filter infrequent items to reduce memory
     show_progress=False,     # tqdm progress bar
     backend="auto",          # "auto", "rust", "python", "polars", "pandas"
-    algo="fast",             # "fast" (default), "classic", or "auto"
+    algo="auto",             # "auto" (default), "fast", "seeded", or "classic"
     sorted_by="support",     # sort column (or None to skip)
     verbose=False,           # print dataset stats and density warnings
 )
@@ -85,6 +85,8 @@ find_associations(
 
 **`algo`**:
 - `"fast"` (default) — inverted-index count-all. Constant runtime at k=2; wins 91–97% of real-world configurations vs the compiled Apriori control across k=3..9.
+- `"auto"` — the default: `"seeded"` at k>=3, otherwise `"fast"`, and `"fast"` whenever the seeded path is unavailable.
+- `"seeded"` — Eclat seeded from scatter-counted pairs at k>=3 (at k=2 same as `"fast"`). Same rules as `"fast"`; Rust backend only, no `max_items_per_txn`.
 - `"classic"` — Rust port of Apriori (join + prune + short-circuit). Requires `min_support`. Useful for dense, correlated data at k>=4.
 - `"auto"` — routes to `"fast"`.
 

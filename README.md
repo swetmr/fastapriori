@@ -98,9 +98,10 @@ This "best of both worlds" design applies brute-force counting where pruning can
 
 | Algorithm | Description | When to use |
 |-----------|-------------|-------------|
-| `algo="fast"` (default) | Inverted-index count-all | Best in the overwhelming majority of cases, especially at low support |
+| `algo="auto"` (default) | `"seeded"` at k>=3, `"fast"` otherwise or when the seeded path is unavailable | Safe default |
+| `algo="fast"` | Inverted-index count-all | Pairs at low support; at k>=3 the anchor-and-extend path, and the one that supports `max_items_per_txn` |
+| `algo="seeded"` | Eclat seeded from scatter-counted pairs (k>=3; at k=2 same as `"fast"`) | Large sparse data at k>=3, multicore. Same rules as `"fast"`; Rust backend only, no `max_items_per_txn` |
 | `algo="classic"` | Rust port of Apriori (join + prune + short-circuit) | Dense, correlated data where k>=4 *and* the transaction-size tail is heavy |
-| `algo="auto"` | Routes to `"fast"` | Safe default |
 
 ## Performance
 
@@ -210,7 +211,7 @@ MATURIN_PEP517_ARGS="--features phaseprof" pip install --force-reinstall --no-ca
 # or, from a checkout: maturin develop --release --features phaseprof
 ```
 
-Then set `FASTAPRIORI_PROFILE` to a file path. The default k>=3 path (`algo="fast"` on the Rust backend, no `fast_variant`) writes one JSON object per call:
+Then set `FASTAPRIORI_PROFILE` to a file path. The anchor k>=3 path (`algo="fast"` on the Rust backend, no `fast_variant`) writes one JSON object per call:
 
 ```bash
 FASTAPRIORI_PROFILE=profile.json python my_script.py
@@ -279,7 +280,7 @@ find_associations(
     low_memory="auto",       # pre-filter infrequent items to reduce memory
     show_progress=False,     # tqdm progress bar
     backend="auto",          # "auto", "rust", "python", "polars", "pandas"
-    algo="fast",             # "fast", "classic", or "auto"
+    algo="auto",             # "auto", "fast", "seeded", or "classic"
     sorted_by="support",     # sort column (or None to skip)
     verbose=False,           # print dataset stats and density warnings
 )

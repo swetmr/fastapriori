@@ -1,5 +1,5 @@
 """Phase profiling (0.2.1). With the Cargo feature `phaseprof`, FASTAPRIORI_PROFILE=<file> makes the
-default k>=3 Rust path write one JSON object with its phase times and work counters. Default builds
+anchor k>=3 Rust path (algo="fast") write one JSON object with its phase times and work counters. Default builds
 (no feature) warn instead. Without the variable nothing is written and results are unchanged."""
 import json
 import os
@@ -22,7 +22,7 @@ def _random_baskets(seed=0, n_txn=2000, n_items=40, per_txn=6):
 
 def _mine(df, k):
     out = find_associations(df, "txn", "item", k=k, min_support=0.002, min_confidence=0.0,
-                            backend="rust", sorted_by=None)
+                            backend="rust", algo="fast", sorted_by=None)
     cols = [f"antecedent_{i}" for i in range(1, k)] + ["consequent"]
     return out.sort_values(cols).reset_index(drop=True)
 
@@ -73,6 +73,13 @@ def test_default_build_warns(tmp_path, monkeypatch, profiling_build):
     monkeypatch.setenv("FASTAPRIORI_PROFILE", str(tmp_path / "profile.json"))
     with pytest.warns(RuntimeWarning, match="phaseprof"):
         _mine(_random_baskets(n_txn=200), 3)
+    assert not (tmp_path / "profile.json").exists()
+
+
+def test_seeded_default_says_profiling_needs_fast(tmp_path, monkeypatch):
+    monkeypatch.setenv("FASTAPRIORI_PROFILE", str(tmp_path / "profile.json"))
+    with pytest.warns(RuntimeWarning, match="algo='fast'"):
+        find_associations(_random_baskets(n_txn=200), "txn", "item", k=3, min_support=0.002)
     assert not (tmp_path / "profile.json").exists()
 
 

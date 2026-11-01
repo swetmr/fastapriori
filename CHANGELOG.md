@@ -3,6 +3,13 @@
 ## 0.2.1 — 2026-10-30
 
 ### Added
+- `algo="seeded"`: scatter-seeded Eclat at k>=3 as a supported option, replacing the
+  internal `backend_options={"fast_variant": "eclat_seeded"}` route (which still works). It
+  returns the same rules as `algo="fast"`, needs the Rust backend and does not support
+  `max_items_per_txn`. At k=2 it is `algo="fast"`.
+- The default is now `algo="auto"`, which takes `algo="seeded"` at k>=3 and `algo="fast"` at k=2, or
+  whenever the seeded path is unavailable (no Rust engine, a non-Rust `backend`, `max_items_per_txn`
+  or `backend_options` set). Rules are unchanged. Pass `algo="fast"` to keep anchor-and-extend at k>=3.
 - Opt-in phase profiling for the default k≥3 Rust path (`rust_compute_pipeline_v3_adaptive`),
   behind the Cargo feature `phaseprof`. In a build with the feature, `FASTAPRIORI_PROFILE=<file>`
   makes each call write one JSON object with Python-side times (encoding, Rust call, decoding),
@@ -12,6 +19,8 @@
 - A default build warns when `FASTAPRIORI_PROFILE` is set on the default k≥3 path.
 
 ### Fixed
+- Rust-backed paths: integer item labels no longer collapse when NumPy would store them as
+  float (for example `-1` together with `2**63`); such labels now keep their exact values.
 - Python backends: `min_support` no longer counts transactions whose rows are all NaN in the
   denominator (the pandas and polars k=2 paths and the classic k=2 path). The Rust `algo="fast"`
   path was not affected.
