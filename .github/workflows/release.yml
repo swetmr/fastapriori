@@ -3,7 +3,19 @@ name: Build & Publish to PyPI
 on:
   release:
     types: [published]
-  workflow_dispatch:       # manual trigger -> publishes to TestPyPI
+  # Manual trigger. A release event runs the workflow file of the tagged commit, so to
+  # release an existing tag with this file, dispatch it from main with `tag` set.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build, e.g. v0.2.1 (empty: the ref the workflow runs on)"
+        required: false
+        default: ""
+      target:
+        description: "Where to publish"
+        type: choice
+        options: [testpypi, pypi]
+        default: testpypi
 
 permissions:
   contents: read
@@ -17,8 +29,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux x86_64
-          - os: ubuntu-latest
+          # Linux x86_64. Pinned: the ubuntu-latest image (26.04) has no Python 3.9 in setup-python.
+          - os: ubuntu-24.04
             target: x86_64
             pythons-nl: |-
               3.9
@@ -28,7 +40,7 @@ jobs:
               3.13
             pythons-sp: "3.9 3.10 3.11 3.12 3.13"
           # Linux aarch64 (cross-compiled; manylinux container ships its own pythons)
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             target: aarch64
             pythons-nl: |-
               3.10
@@ -60,6 +72,8 @@ jobs:
             pythons-sp: "3.9 3.10 3.11 3.12 3.13"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - uses: actions/setup-python@v5
         with:
@@ -87,6 +101,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - uses: actions/setup-python@v5
         with:
@@ -105,7 +121,7 @@ jobs:
   # --- Publish to TestPyPI (manual trigger only) ---
   publish-testpypi:
     name: Publish to TestPyPI
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
     environment: testpypi
@@ -121,11 +137,12 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
 
   # --- Publish to PyPI (only on a published GitHub Release) ---
   publish-pypi:
     name: Publish to PyPI
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.target == 'pypi')
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
     environment: pypi
