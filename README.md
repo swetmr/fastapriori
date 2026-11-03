@@ -7,7 +7,7 @@
 
 Fast frequent itemset mining (with full association-rule metrics at k=2) — even at very low support thresholds.
 
-Built on a compiled **Rust engine** with an inverted-index architecture. fastapriori counts pair co-occurrences exhaustively at k=2 and uses an anchor-and-extend strategy with Apriori pruning at k>=3. Across **eight real-world datasets** (BMS-WebView-1/2, Chainstore, Groceries, Instacart, Kosarak, Online Retail, Retail Belgian — 9.8K to 3.2M transactions, 169 to 49K items), `algo="fast"` wins **100% of k=2 configurations vs `efficient-apriori`** (median 61x, up to **969x** on Retail Belgian) and **100% vs the like-for-like compiled Apriori baseline** at k=2 (median 3.9x, up to **92.8x**). At k>=3 it wins **91–97%** of configurations vs the same compiled-Apriori baseline (best 27–36x).
+Built on a compiled **Rust engine** with an inverted-index architecture. fastapriori counts pair co-occurrences exhaustively at k=2. At k>=3 the default is Eclat seeded from those scatter-counted pairs (`algo="seeded"`); `algo="fast"` keeps the anchor-and-extend strategy with Apriori pruning, and both return the same rules. Across **eight real-world datasets** (BMS-WebView-1/2, Chainstore, Groceries, Instacart, Kosarak, Online Retail, Retail Belgian — 9.8K to 3.2M transactions, 169 to 49K items), `algo="fast"` wins **100% of k=2 configurations vs `efficient-apriori`** (median 61x, up to **969x** on Retail Belgian) and **100% vs the like-for-like compiled Apriori baseline** at k=2 (median 3.9x, up to **92.8x**). At k>=3 it wins **91–97%** of configurations vs the same compiled-Apriori baseline (best 27–36x).
 
 ## Installation
 

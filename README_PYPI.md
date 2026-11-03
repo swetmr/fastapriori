@@ -6,7 +6,7 @@
 
 Fast frequent itemset mining (with full association-rule metrics at k=2) — even at very low support thresholds.
 
-A compiled Rust engine with an inverted-index architecture. Counts pair co-occurrences exhaustively at k=2 (constant runtime in `min_support`) and uses anchor-and-extend with Apriori pruning at k>=3. Across eight real-world datasets (9.8K to 3.2M transactions, up to 49K items), `algo="fast"` wins **100% of k=2 configurations vs `efficient-apriori`** (median 61x, up to 969x) and **100% vs the like-for-like compiled Apriori baseline** (median 3.9x, up to 92.8x).
+A compiled Rust engine with an inverted-index architecture. Counts pair co-occurrences exhaustively at k=2 (constant runtime in `min_support`). At k>=3 the default is Eclat seeded from those scatter-counted pairs (`algo="seeded"`); `algo="fast"` keeps anchor-and-extend with Apriori pruning, with the same rules. Across eight real-world datasets (9.8K to 3.2M transactions, up to 49K items), `algo="fast"` wins **100% of k=2 configurations vs `efficient-apriori`** (median 61x, up to 969x) and **100% vs the like-for-like compiled Apriori baseline** (median 3.9x, up to 92.8x).
 
 → See the [GitHub repository](https://github.com/swetmr/fastapriori) for benchmarks, the decision rule, performance plots, and the algorithm description.
 
