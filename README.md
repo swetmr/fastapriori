@@ -352,38 +352,25 @@ Requires `networkx` (`pip install fastapriori[graph]`).
 
 ## Citation
 
-If you use *fastapriori* in your research, please cite both the
-software (Zenodo) and the accompanying paper.
+If you use *fastapriori* in your research, please cite the paper.
 
-**Software (Zenodo):**
+**Paper (preprint):**
 
 ```bibtex
-@software{swet2026fastapriori_software,
-  author    = {Mrigank Swet},
-  title     = {fastapriori: A Hybrid Architecture for Fast Frequent Itemset Mining},
+@misc{mrigank2026scatter,
+  author    = {Mrigank, Swet},
+  title     = {Scatter or Intersect? An Experimental Analysis of Counting
+               Strategies for Low-Support Frequent Itemset Mining},
   year      = {2026},
   publisher = {Zenodo},
+  note      = {Preprint},
   doi       = {10.5281/zenodo.20021781},
   url       = {https://doi.org/10.5281/zenodo.20021781}
 }
 ```
 
-The DOI above is the **Concept DOI** — it always resolves to the
-latest version of the deposit. If you need to pin to a specific
-snapshot, use the version-specific DOI from the corresponding
-Zenodo record.
-
-**Paper:**
-
-```bibtex
-@misc{swet2026fastapriori,
-  author = {Mrigank Swet},
-  title  = {A Hybrid Architecture for Fast Frequent Itemset Mining},
-  year   = {2026},
-  url    = {https://github.com/swetmr/fastapriori}
-}
-```
-
+This DOI always resolves to the latest version of the preprint; the current
+version (v2) is [10.5281/zenodo.23913703](https://doi.org/10.5281/zenodo.23913703).
 
 ## Reproducibility
 
