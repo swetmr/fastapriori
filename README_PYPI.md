@@ -68,7 +68,7 @@ find_associations(
     min_support=None,        # minimum support (float or None)
     min_confidence=0.0,      # minimum P(B|A)
     min_lift=0.0,            # minimum lift (k=2 only)
-    min_conviction=0.0,      # minimum conviction (k=2 only)
+    min_conviction=None,     # minimum conviction (k=2 only)
     min_leverage=None,       # minimum leverage (k=2 only)
     min_cosine=0.0,          # minimum cosine similarity (k=2 only)
     min_jaccard=0.0,         # minimum Jaccard similarity (k=2 only)
@@ -84,11 +84,10 @@ find_associations(
 ```
 
 **`algo`**:
-- `"fast"` (default) — inverted-index count-all. Constant runtime at k=2; wins 91–97% of real-world configurations vs the compiled Apriori control across k=3..9.
-- `"auto"` — the default: `"seeded"` at k>=3, otherwise `"fast"`, and `"fast"` whenever the seeded path is unavailable.
-- `"seeded"` — Eclat seeded from scatter-counted pairs at k>=3 (at k=2 same as `"fast"`). Same rules as `"fast"`; Rust backend only, no `max_items_per_txn`.
+- `"auto"` (default) — `"seeded"` at k>=3, otherwise `"fast"`, and `"fast"` whenever the seeded path is unavailable.
+- `"fast"` — inverted-index count-all. Constant runtime at k=2; at k>=3 anchor-and-extend, winning 91–97% of real-world configurations vs the compiled Apriori control across k=3..9. The only path that supports `max_items_per_txn`.
+- `"seeded"` — Eclat seeded from scatter-counted pairs at k>=3 (at k=2 same as `"fast"`). Same rules as `"fast"`; Rust backend only.
 - `"classic"` — Rust port of Apriori (join + prune + short-circuit). Requires `min_support`. Useful for dense, correlated data at k>=4.
-- `"auto"` — routes to `"fast"`.
 
 **`backend`**:
 - `"auto"` (default) — Rust if the compiled extension is available, otherwise Python.

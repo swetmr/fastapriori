@@ -1,4 +1,4 @@
-"""fastapriori - Fast pairwise co-occurrence and association analysis."""
+"""fastapriori - Fast frequent itemset mining and association analysis at low support."""
 
 import logging as _logging
 import os as _os

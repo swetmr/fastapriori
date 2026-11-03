@@ -90,11 +90,13 @@ fastapriori uses a **"count everything, filter later"** architecture:
 
 - **k=2**: Builds an inverted index (item -> transaction set), then for each item counts ALL co-occurring items in a single pass using a flat array buffer. Runtime is **constant with respect to min_support** — the threshold is applied as a post-hoc filter on precomputed counts.
 
-- **k>=3**: Extends the same inverted index with **anchor-and-extend**: each frequent (k-1)-set serves as an anchor, and candidate k-th items are counted by scanning only the anchor's transactions. Apriori's downward-closure property prunes items that cannot participate in frequent k-sets.
+- **k>=3, default (`algo="seeded"`)**: Eclat seeded from the scatter-counted pairs. The frequent pairs and their transaction lists start a depth-first search that extends itemsets by intersecting those lists, so no level-2 candidates are ever enumerated.
 
-This "best of both worlds" design applies brute-force counting where pruning cannot help (k=2) and principled pruning where it genuinely reduces work (k>=3).
+- **k>=3, `algo="fast"`**: Extends the same inverted index with **anchor-and-extend**: each frequent (k-1)-set serves as an anchor, and candidate k-th items are counted by scanning only the anchor's transactions. Apriori's downward-closure property prunes items that cannot participate in frequent k-sets.
 
-### Three Algorithms
+This "best of both worlds" design applies brute-force counting where pruning cannot help (k=2) and principled pruning where it genuinely reduces work (k>=3). Both k>=3 paths return the same rules.
+
+### Algorithms
 
 | Algorithm | Description | When to use |
 |-----------|-------------|-------------|
@@ -124,11 +126,13 @@ Five lines per panel: `efficient_apriori` (Python Apriori), `classic` (compiled 
 At k>=3 (same eight real datasets, k=3..9), `fast` beats the like-for-like compiled Apriori on **91–97% of configurations** with peak speedups of 27–36x. 
 fastapriori gives competitive performance wrt pyfim (median) on k>=3 for wide, sparse, big data. For narrow, dense data at k>=4, prefer pyfim. 
 
+The default k>=3 path, `algo="seeded"`, is faster still on large sparse data: on eight threads it was the fastest tested configuration at k=3 and k=4 in all 32 controlled sweep comparisons (2.0–4.6x over the best tested external configuration), and it beat anchor-and-extend in 108 of 109 grid cells. See the [preprint](https://doi.org/10.5281/zenodo.20021781) for the full study.
+
 ## Decision Rule
 
 ```
 Is k = 2?
-  Yes -> use algo="fast"  (100% real-world win rate; constant runtime in min_support)
+  Yes -> keep the default (algo="fast": 100% real-world win rate; constant runtime in min_support)
 
 Is k >= 3?  Compute two one-pass stats:
     d_per_txn = df.groupby(transaction_col)[item_col].nunique()
@@ -137,14 +141,14 @@ Is k >= 3?  Compute two one-pass stats:
     d_avg = d_per_txn.mean()
 
   Tame data (tau < 25  AND  d_cv < 1.25  AND  d_avg < 15)
-    -> use algo="fast"
+    -> keep the default (algo="seeded")
        e.g. Groceries (tau=7.3, cv=0.81, d_avg=4.4),
             Instacart (tau=14.4, cv=0.75, d_avg=10.1),
             Retail Belgian (tau=7.4, cv=0.79, d_avg=10.3),
             Chainstore (tau=23.5, cv=1.23, d_avg=7.2)
 
   Heavy outlier tail (tau >= 25 or d_cv >= 1.25), e.g. BMS-WebView-1/2, Kosarak
-    -> k = 3:    use algo="fast"
+    -> k = 3:    keep the default
        k >= 4:   use algo="fast" with max_items_per_txn=50
                  (caps the C(d_max, k-1) blow-up; counts become lower bounds)
 
@@ -153,7 +157,7 @@ Is k >= 3?  Compute two one-pass stats:
        or algo="fast" with max_items_per_txn=50
 ```
 
-If you don't want to think about it, `algo="fast"` is the right answer everywhere except the dense-and-high-k corner — and even there the penalty is bounded by `max_items_per_txn`.
+If you don't want to think about it, the default is the right answer everywhere except the dense-and-high-k corner — and even there the penalty is bounded by `max_items_per_txn` (with `algo="fast"`).
 
 ## Handling Dense / Outlier Transactions: `max_items_per_txn`
 
@@ -172,7 +176,7 @@ result = find_associations(
 - **What it does.** Transactions with more than N items are reduced to their top-N by weight. Others are left untouched.
 - **Counts are lower bounds.** A capped itemset's count is never higher than the true count; some genuinely frequent itemsets may be missed if their count drops below `min_support` after capping. Use it when you *prefer a fast, conservative answer* to a slow, exact one.
 - **Custom weights.** Pass an `item_weights={item: score}` dict to prioritize high-revenue / high-margin / business-critical items regardless of frequency.
-- **Only applies at k>=3.** Pairs are always counted exactly. Supported by both `algo="fast"` and `algo="classic"`.
+- **Only applies at k>=3.** Pairs are always counted exactly. Supported by `algo="fast"` and `algo="classic"`, not by `algo="seeded"`; with the cap set, the default uses `"fast"`.
 - **When it pays off.** On Online Retail at k=4 with cap=50, per-anchor enumeration cost drops by ~1,300x; on Kosarak, ~133,000x.
 
 ## Low-Memory Mode
@@ -271,7 +275,7 @@ find_associations(
     min_support=None,        # minimum pair support (float or None)
     min_confidence=0.0,      # minimum P(B|A)
     min_lift=0.0,            # minimum lift
-    min_conviction=0.0,      # minimum conviction (k=2 only)
+    min_conviction=None,     # minimum conviction (k=2 only)
     min_leverage=None,       # minimum leverage (k=2 only)
     min_cosine=0.0,          # minimum cosine similarity (k=2 only)
     min_jaccard=0.0,         # minimum Jaccard similarity (k=2 only)
@@ -287,9 +291,10 @@ find_associations(
 ```
 
 **Algorithm choice:**
-- `"fast"` (default) — inverted-index count-all. Constant runtime at k=2 (100% real-world wins); 91–97% wins vs the compiled Apriori control across k=3..9 on real datasets.
+- `"auto"` (default) — `"seeded"` at k>=3 and `"fast"` at k=2, and `"fast"` whenever the seeded path is unavailable (no Rust engine, a non-Rust `backend`, or `max_items_per_txn`, `backend_options` or `frequent_lower` set).
+- `"fast"` — inverted-index count-all. Constant runtime at k=2 (100% real-world wins); at k>=3 anchor-and-extend, with 91–97% wins vs the compiled Apriori control across k=3..9 on real datasets. The only path that supports `max_items_per_txn`.
+- `"seeded"` — Eclat seeded from scatter-counted pairs at k>=3 (at k=2 same as `"fast"`). Same rules as `"fast"`; Rust backend only.
 - `"classic"` — Rust port of Apriori with join+prune+short-circuit. Requires `min_support`. Potentially useful for dense, correlated data at k>=4 where the transaction-size tail violates the `tau < 25 and d_cv < 1.25` heuristic above.
-- `"auto"` — routes to `"fast"` (the safe default in all but edge cases).
 
 **Backend choice:**
 - `"auto"` (default) — uses Rust if the compiled extension is available, otherwise falls back to Python.
